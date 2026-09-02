@@ -78,42 +78,32 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
 
 <Layout title={pageTitle} description={pageDescription}>
   <!-- 1. Hero Section & Instant Search -->
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-6">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-zinc-800/80">
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-8 pb-4">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-6 border-b border-zinc-800/80">
       <div>
-        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 mb-3">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Engine v2026.1</span>
-          <span class="text-zinc-700">•</span>
-          <span id="header-matrix-count">{allComparisons.length} Matrices Indexed</span>
-        </div>
         <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
           Diff Any AI Stack.
         </h1>
-        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl leading-relaxed">
+        <p class="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl leading-relaxed">
           Objective, side-by-side technical specifications, commercial tiers, and architecture constraints. Zero marketing fluff.
         </p>
       </div>
 
-      <!-- Quick Metrics Strip -->
-      <div class="flex items-center justify-center sm:justify-end gap-2.5 text-left font-mono shrink-0">
-        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-xs font-bold text-white">{tools.length} Tools</div>
-          <div class="text-[10px] text-zinc-500">Indexed</div>
+      <!-- Quick Metrics Strip (2 Columns on Mobile) -->
+      <div class="grid grid-cols-2 gap-2 text-left font-mono w-full sm:w-auto shrink-0 mt-3 sm:mt-0">
+        <div class="px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-center sm:text-left">
+          <div class="text-sm font-bold text-white">{tools.length} Tools</div>
+          <div class="text-[10px] text-zinc-500 uppercase tracking-wider">Indexed</div>
         </div>
-        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-xs font-bold text-white">{allComparisons.length} Diffs</div>
-          <div class="text-[10px] text-zinc-500">Pairwise</div>
-        </div>
-        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-xs font-bold text-emerald-400">100%</div>
-          <div class="text-[10px] text-zinc-500">Verified</div>
+        <div class="px-3.5 py-2 rounded-lg bg-zinc-900 border border-zinc-800 text-center sm:text-left">
+          <div class="text-sm font-bold text-white">{allComparisons.length} Diffs</div>
+          <div class="text-[10px] text-zinc-500 uppercase tracking-wider">Pairwise</div>
         </div>
       </div>
     </div>
 
     <!-- Instant Client-side Search Bar (Terminal Style) -->
-    <div class="mt-6">
+    <div class="mt-5">
       <div class="relative flex items-center">
         <div class="absolute left-3.5 text-zinc-500 font-mono text-xs select-none pointer-events-none">
           &gt;_
@@ -122,7 +112,7 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
           type="text"
           id="instant-search-input"
           placeholder='Search AI tools, e.g. "Runway", "ElevenLabs", "Code", "Claude"...'
-          class="w-full pl-9 pr-24 py-2.5 rounded-lg bg-[#121215] border border-zinc-800 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600 transition-colors font-mono"
+          class="w-full pl-9 pr-24 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600 transition-colors font-mono"
           autocomplete="off"
           spellcheck="false"
         />
@@ -130,11 +120,11 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
           <button
             id="clear-search-btn"
             type="button"
-            class="hidden text-[10px] font-mono text-zinc-400 hover:text-white px-1.5 py-0.5 rounded bg-zinc-850 border border-zinc-750 transition-colors"
+            class="hidden text-[10px] font-mono text-zinc-400 hover:text-white px-1.5 py-0.5 rounded bg-zinc-800 border border-zinc-700 transition-colors"
           >
             Clear [esc]
           </button>
-          <span id="search-counter" class="text-[10px] font-mono text-zinc-500 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 select-none">
+          <span id="search-counter" class="text-[10px] font-mono text-zinc-500 px-2 py-0.5 rounded bg-zinc-950 border border-zinc-800 select-none">
             {allComparisons.length} diffs
           </span>
         </div>
@@ -142,23 +132,14 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
     </div>
   </section>
 
-  <!-- 2. Taxonomies / Category Tabs (Interactive Filter) -->
-  <section id="categories" class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
-    <div class="flex items-center justify-between mb-2.5">
-      <h2 class="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
-        Taxonomies
-      </h2>
-      <span id="active-category-label" class="text-[11px] font-mono text-zinc-500">
-        All Categories ({allComparisons.length})
-      </span>
-    </div>
-
-    <!-- Interactive Filter Buttons -->
-    <div class="flex flex-wrap gap-1.5" id="category-tab-container">
+  <!-- 2. Categories Horizontal Scrollable Strip -->
+  <section id="categories" class="max-w-5xl mx-auto px-4 sm:px-6 pt-1 pb-3">
+    <!-- Interactive Filter Buttons (Smooth Horizontal Scroll on Mobile, Wrapped on Desktop) -->
+    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 -mx-4 px-4 sm:mx-0 sm:px-0 sm:flex-wrap" id="category-tab-container">
       <button
         type="button"
         data-cat="all"
-        class="category-tab-btn px-2.5 py-1 rounded text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white"
+        class="category-tab-btn shrink-0 px-3 py-1.5 rounded-md text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white"
       >
         <span>All</span>
         <span class="text-[10px] opacity-70">({allComparisons.length})</span>
@@ -168,10 +149,10 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
         <button
           type="button"
           data-cat={cat.name}
-          class="category-tab-btn px-2.5 py-1 rounded bg-zinc-900/90 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5"
+          class="category-tab-btn shrink-0 px-3 py-1.5 rounded-md bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5"
         >
           <span>{cat.name}</span>
-          <span class="text-[10px] text-zinc-500 bg-zinc-800 px-1 py-0.2 rounded">
+          <span class="text-[10px] text-zinc-500 bg-zinc-950 px-1.5 py-0.5 rounded border border-zinc-800">
             {cat.diffCount}
           </span>
         </button>
@@ -221,11 +202,11 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
             </div>
 
             <!-- Cards Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               {catComparisons.map((pair) => (
                 <a
                   href={`/compare/${pair.slug}`}
-                  class="comparison-card group p-3.5 rounded-lg bg-[#121215] border border-zinc-800/90 hover:border-zinc-600 hover:bg-[#15151a] transition-all flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-zinc-800/20"
+                  class="comparison-card group p-4 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-zinc-600 hover:bg-[#18181c] transition-all flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-zinc-900/40"
                   data-search={pair.searchText}
                   data-category={pair.category}
                 >
@@ -241,25 +222,25 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
                     </div>
 
                     <!-- Duel Heading -->
-                    <h4 class="text-sm font-bold text-zinc-100 group-hover:text-white transition-colors truncate mb-2">
+                    <h4 class="text-base font-bold text-zinc-100 group-hover:text-white transition-colors truncate mb-2">
                       {pair.toolA.name} <span class="text-zinc-500 font-normal font-mono text-xs">vs</span> {pair.toolB.name}
                     </h4>
 
                     <!-- Price Spec Pill -->
-                    <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-400 mb-2.5 bg-zinc-900/90 px-2 py-1 rounded border border-zinc-800/80">
+                    <div class="flex items-center gap-2 text-[11px] font-mono text-zinc-400 mb-2.5 bg-zinc-950/80 px-2.5 py-1.5 rounded-md border border-zinc-800">
                       <span class="text-zinc-200 font-semibold truncate">{pair.toolA.starting_price}</span>
                       <span class="text-zinc-600">vs</span>
                       <span class="text-zinc-200 font-semibold truncate">{pair.toolB.starting_price}</span>
                     </div>
 
                     <!-- Description -->
-                    <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mb-3 overflow-hidden">
+                    <p class="text-xs text-zinc-400 line-clamp-2 leading-relaxed mb-3 overflow-hidden">
                       {pair.toolA.best_for} vs {pair.toolB.best_for}.
                     </p>
                   </div>
 
                   <!-- Footer Status -->
-                  <div class="pt-2 border-t border-zinc-800/60 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                  <div class="pt-2.5 border-t border-zinc-800/80 flex items-center justify-between text-[11px] font-mono text-zinc-500">
                     <span>{pair.toolA.free_tier ? 'Free tier' : 'Paid'} / {pair.toolB.free_tier ? 'Free tier' : 'Paid'}</span>
                     <span class="text-zinc-400 group-hover:text-zinc-200">View Diff &rarr;</span>
                   </div>
@@ -402,9 +383,9 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
         tabBtns.forEach((btn) => {
           const cat = btn.getAttribute('data-cat');
           if (cat === currentCategory) {
-            btn.className = 'category-tab-btn px-2.5 py-1 rounded text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white';
+            btn.className = 'category-tab-btn shrink-0 px-3 py-1.5 rounded-md text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white';
           } else {
-            btn.className = 'category-tab-btn px-2.5 py-1 rounded bg-zinc-900/90 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5';
+            btn.className = 'category-tab-btn shrink-0 px-3 py-1.5 rounded-md bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5';
           }
         });
 
