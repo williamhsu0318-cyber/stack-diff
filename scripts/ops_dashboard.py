@@ -8,6 +8,7 @@ Zero-Terminal One-Click Git Push, and Spec Drift Auditing.
 
 import json
 import os
+import socket
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -120,6 +121,20 @@ if ENV_PATH.exists():
                         os.environ[k] = v
     except Exception:
         pass
+
+def get_local_lan_ip() -> str:
+    """Returns local LAN/Tailscale IP for seamless mobile access."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
+
+LAN_IP = os.getenv("HOST_IP") or get_local_lan_ip()
 
 # -----------------------------------------------------------------------------
 # Mobile-First Optimized CSS Styling (@media max-width: 768px)
@@ -675,8 +690,21 @@ is_gsc_connected = gsc_creds is not None and gsc_creds.valid
 discord_webhook = os.getenv("DISCORD_WEBHOOK_URL") or os.getenv("ALERT_WEBHOOK_URL") or ""
 webhook_url = discord_webhook
 
+# Portal Target Host & URL calculation
+portal_host = os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
+clip_studio_url = os.getenv("CLIP_STUDIO_URL") or f"http://{portal_host}:8501"
+
+# 1. Portal Quick Switch Button at the Very Top of Sidebar
+st.sidebar.link_button(
+    "🎬 切換至：實況精華自動剪輯 (8501)",
+    url=clip_studio_url,
+    use_container_width=True,
+    help=f"點擊開新分頁跳轉至同一主機的 8501 剪輯工作台: {clip_studio_url}",
+)
+
 # Sidebar: Compact Telemetry & Collapsible Settings
 with st.sidebar:
+    st.markdown("<div style='margin-bottom: 4px;'></div>", unsafe_allow_html=True)
     st.markdown("### ± StackDiff Mobile")
     st.markdown("<p style='color: #71717a; font-size: 11px; margin-top: -8px;'>Zero-Terminal Autonomous Ops Deck</p>", unsafe_allow_html=True)
     st.divider()
@@ -772,6 +800,19 @@ with st.sidebar:
                     st.success("✅ Discord 測試訊息已成功送達！請查看手機。")
                 else:
                     st.error(f"❌ 發送失敗，錯誤詳情: {err}")
+
+        st.markdown("---")
+        st.markdown("##### 🌐 跨專案傳送門設定")
+        saved_clip_host = os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
+        custom_clip_host = st.text_input(
+            "傳送門目標主機 IP / Host (Port 8501)",
+            value=saved_clip_host,
+            placeholder="例如 100.xx.xx.xx (Tailscale IP) 或 localhost",
+            help="填入 Tailscale IP 或主機網址，系統會自動儲存至專案 .env 檔案中 (CLIP_STUDIO_HOST)。",
+        )
+        if custom_clip_host != saved_clip_host and custom_clip_host.strip():
+            save_env_var("CLIP_STUDIO_HOST", custom_clip_host.strip())
+            st.toast("💾 傳送門目標主機已更新至 .env！", icon="✅")
 
     if st.button("🔒 鎖定後台 (登出)", key="sidebar_logout_btn", use_container_width=True):
         st.session_state["authenticated"] = False
