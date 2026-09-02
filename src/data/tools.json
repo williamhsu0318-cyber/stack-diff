@@ -64,7 +64,7 @@
     "tagline": "The enterprise-standard AI pair programmer seamlessly embedded across all major development IDEs",
     "pricing_model": "Paid Only",
     "starting_price": "$10/mo",
-    "free_tier": false,
+    "free_tier": true,
     "best_for": "Enterprise developers, engineering teams, and JetBrains/Visual Studio users wanting integrated completions",
     "key_features": [
       "Real-time inline ghost-text code completions as you type",
