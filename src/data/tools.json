@@ -1863,5 +1863,61 @@
     "verdict_context": "Lovable is best-in-class for software teams looking to eliminate frontend boilerplate and rapidly deploy production-grade React web applications with connected Supabase backends while retaining 100% source code control.",
     "url": "https://lovable.dev",
     "affiliate_url": "https://lovable.dev"
+  },
+  {
+    "id": "n8n",
+    "name": "n8n",
+    "slug": "n8n",
+    "category": "Workflow AI",
+    "pricing_model": "Freemium",
+    "starting_price": "$20/mo",
+    "free_tier": true,
+    "primary_audience": "Software engineers, DevOps teams, and technical builders requiring data-sovereign workflow automation and native LLM agent orchestration.",
+    "best_for": "Self-hosted, high-volume workflow automation combining API integration, custom Node.js/Python execution, and complex AI agent memory/routing nodes.",
+    "platforms": [
+      "Web",
+      "API",
+      "Self-Hosted"
+    ],
+    "supported_platforms": [
+      "Web",
+      "API",
+      "Self-Hosted"
+    ],
+    "core_positioning": "Extensible, node-based workflow automation platform combining standard REST/GraphQL API integration with native AI agent orchestration and fully self-hostable execution environments.",
+    "tagline": "Source-available workflow automation platform with native AI agent orchestration and inline code execution.",
+    "key_capabilities": [
+      "Native AI agent and memory nodes built on LangChain logic supporting custom tools, vector databases, and multi-model routing.",
+      "Inline custom JavaScript (Node.js) and Python code execution with direct npm and pip module loading capabilities.",
+      "Dual deployment model supporting SOC2-compliant n8n Cloud or self-hosted Docker/Kubernetes container orchestration.",
+      "Event-driven trigger architecture supporting native webhooks, Server-Sent Events (SSE), message queues (AMQP, Kafka), and cron schedules."
+    ],
+    "key_features": [
+      "Native AI agent and memory nodes built on LangChain logic supporting custom tools, vector databases, and multi-model routing.",
+      "Inline custom JavaScript (Node.js) and Python code execution with direct npm and pip module loading capabilities.",
+      "Dual deployment model supporting SOC2-compliant n8n Cloud or self-hosted Docker/Kubernetes container orchestration.",
+      "Event-driven trigger architecture supporting native webhooks, Server-Sent Events (SSE), message queues (AMQP, Kafka), and cron schedules."
+    ],
+    "strengths": [
+      "Complete data sovereignty and compliance control via air-gapped self-hosted execution options.",
+      "Superior technical flexibility through custom code nodes, Git version control, and granular error-handling branch logic.",
+      "Significantly lower total cost of ownership (TCO) at high execution volumes compared to per-step SaaS automation tools."
+    ],
+    "pros": [
+      "Complete data sovereignty and compliance control via air-gapped self-hosted execution options.",
+      "Superior technical flexibility through custom code nodes, Git version control, and granular error-handling branch logic.",
+      "Significantly lower total cost of ownership (TCO) at high execution volumes compared to per-step SaaS automation tools."
+    ],
+    "trade_offs": [
+      "Requires active infrastructure maintenance, database tuning, and runner scaling overhead when self-hosted.",
+      "Fair-code Sustainable Use License restricts commercial sub-licensing and embedded white-label SaaS resale without enterprise licensing."
+    ],
+    "cons": [
+      "Requires active infrastructure maintenance, database tuning, and runner scaling overhead when self-hosted.",
+      "Fair-code Sustainable Use License restricts commercial sub-licensing and embedded white-label SaaS resale without enterprise licensing."
+    ],
+    "verdict_context": "n8n is the industry-standard workflow engine for technical teams bridging traditional integration middleware with modern LLM agent orchestration. Its hybrid self-hostable design bypasses strict enterprise data-privacy bottlenecks while delivering full Node.js/Python extensibility.",
+    "url": "https://n8n.io",
+    "affiliate_url": "https://n8n.io"
   }
 ]
