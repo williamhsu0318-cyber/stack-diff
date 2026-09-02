@@ -1,0 +1,223 @@
+---
+import Layout from '../layouts/Layout.astro';
+import toolsData from '../../data/tools.json';
+
+interface ToolItem {
+  id: string;
+  name: string;
+  slug: string;
+  category: string;
+  tagline: string;
+  pricing_model: string;
+  starting_price: string;
+  free_tier: boolean;
+  best_for: string;
+  key_features: string[];
+  pros: string[];
+  cons: string[];
+  supported_platforms: string[];
+  affiliate_url: string;
+}
+
+const tools = toolsData as ToolItem[];
+
+// Group tools by category
+const categoryMap = new Map<string, ToolItem[]>();
+for (const tool of tools) {
+  if (!categoryMap.has(tool.category)) {
+    categoryMap.set(tool.category, []);
+  }
+  categoryMap.get(tool.category)!.push(tool);
+}
+
+// Generate all valid same-category pairwise comparisons
+interface ComparisonPair {
+  slug: string;
+  toolA: ToolItem;
+  toolB: ToolItem;
+  category: string;
+}
+
+const allComparisons: ComparisonPair[] = [];
+
+for (const [category, groupTools] of categoryMap.entries()) {
+  if (groupTools.length < 2) continue;
+
+  for (let i = 0; i < groupTools.length; i++) {
+    for (let j = i + 1; j < groupTools.length; j++) {
+      const [toolA, toolB] = [groupTools[i], groupTools[j]].sort((a, b) =>
+        a.slug.localeCompare(b.slug)
+      );
+      const slug = `${toolA.slug}-vs-${toolB.slug}`;
+      allComparisons.push({
+        slug,
+        toolA,
+        toolB,
+        category,
+      });
+    }
+  }
+}
+
+// Category meta details
+const categoriesList = Array.from(categoryMap.entries()).map(([name, items]) => ({
+  name,
+  count: items.length,
+  diffCount: (items.length * (items.length - 1)) / 2,
+}));
+
+const pageTitle = "StackDiff - Diff Any AI Stack. Objective, Side-by-Side AI Tool Comparisons";
+const pageDescription = "Explore data-backed AI tool comparison matrices. Compare ChatGPT vs Claude, Cursor vs GitHub Copilot, Runway vs Kling AI, ElevenLabs vs Edge-TTS, and more.";
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <!-- 1. Hero Section -->
+  <section class="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden text-center">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      
+      <!-- Top Release Pill -->
+      <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-dark-900 border border-dark-750 text-xs font-mono text-dark-300 mb-8 shadow-inner">
+        <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span>
+        <span class="text-white font-medium">StackDiff Engine 2026</span>
+        <span class="text-dark-600">/</span>
+        <span class="text-brand-indigo">{allComparisons.length} Programmatic Diffs Ready</span>
+      </div>
+
+      <!-- Main Headline -->
+      <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white tracking-tight leading-[1.15] mb-6">
+        Diff Any <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-indigo via-brand-cyan to-brand-violet">AI Stack.</span>
+        <br />
+        <span class="text-dark-100">Objective, side-by-side specs.</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-base sm:text-lg text-dark-400 max-w-2xl mx-auto leading-relaxed mb-10">
+        Stop relying on marketing fluff. Compare real pricing tiers, platform constraints, and verified pros &amp; cons across leading AI models and tools.
+      </p>
+
+      <!-- Quick Metrics Bar -->
+      <div class="inline-grid grid-cols-3 gap-6 p-4 rounded-2xl bg-dark-900/80 border border-dark-800/80 shadow-2xl backdrop-blur-sm text-left">
+        <div>
+          <div class="text-2xl font-bold font-mono text-white">20</div>
+          <div class="text-xs text-dark-500 font-mono">Tools Indexed</div>
+        </div>
+        <div class="border-x border-dark-800 px-6">
+          <div class="text-2xl font-bold font-mono text-brand-cyan">{allComparisons.length}</div>
+          <div class="text-xs text-dark-500 font-mono">Verified Diffs</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold font-mono text-brand-emerald">100%</div>
+          <div class="text-xs text-dark-500 font-mono">Objective Data</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 2. AI Categories Section -->
+  <section id="categories" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-dark-800/60">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+      <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">AI Stack Categories</h2>
+        <p class="text-sm text-dark-400 mt-1">Explore comparisons grouped strictly by functional capability</p>
+      </div>
+      <div class="text-xs font-mono text-dark-500">
+        {categoriesList.length} Active Taxonomies
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      {categoriesList.map((cat) => (
+        <a
+          href={`#category-${cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+          class="p-4 rounded-xl bg-dark-900/60 border border-dark-800 hover:border-brand-indigo/50 hover:bg-dark-850/80 transition-all text-center group"
+        >
+          <div class="text-sm font-semibold text-white group-hover:text-brand-cyan transition-colors mb-1 truncate">
+            {cat.name}
+          </div>
+          <div class="text-[11px] font-mono text-dark-500">
+            {cat.diffCount} {cat.diffCount === 1 ? 'diff' : 'diffs'}
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- 3. Popular Comparisons Grid -->
+  <section id="popular-comparisons" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h2 class="text-2xl font-bold text-white tracking-tight">Popular Comparisons</h2>
+        <p class="text-sm text-dark-400 mt-1">High-intent side-by-side matrices updated for 2026</p>
+      </div>
+      <span class="text-xs font-mono text-brand-cyan bg-dark-900 border border-dark-800 px-3 py-1 rounded-full">
+        Showing all {allComparisons.length} matchups
+      </span>
+    </div>
+
+    <!-- Grouped by Category for SEO Clustering -->
+    <div class="space-y-12">
+      {Array.from(categoryMap.entries()).map(([catName, catTools]) => {
+        const catComparisons = allComparisons.filter((c) => c.category === catName);
+        if (catComparisons.length === 0) return null;
+
+        return (
+          <div id={`category-${catName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} class="scroll-mt-24">
+            <div class="flex items-center gap-3 mb-5">
+              <h3 class="text-lg font-bold text-white font-mono flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-brand-indigo"></span>
+                <span>{catName}</span>
+              </h3>
+              <div class="h-px flex-grow bg-dark-800"></div>
+              <span class="text-xs text-dark-500 font-mono">{catComparisons.length} comparisons</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {catComparisons.map((pair) => (
+                <a
+                  href={`/compare/${pair.slug}`}
+                  class="group p-5 rounded-2xl bg-dark-900/80 border border-dark-800/90 hover:border-brand-indigo/50 hover:bg-dark-850/80 shadow-lg hover:shadow-brand-indigo/5 transition-all flex flex-col justify-between"
+                >
+                  <div>
+                    <!-- Header Badges -->
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                      <span class="text-[10px] font-mono uppercase tracking-wider text-dark-400 px-2 py-0.5 rounded bg-dark-800 border border-dark-750">
+                        {pair.category}
+                      </span>
+                      <span class="text-xs text-dark-500 group-hover:text-brand-cyan transition-colors font-mono font-bold">
+                        Compare &rarr;
+                      </span>
+                    </div>
+
+                    <!-- Title -->
+                    <h4 class="text-base font-bold text-white group-hover:text-brand-cyan transition-colors mb-2">
+                      {pair.toolA.name} <span class="text-dark-500 font-light">vs</span> {pair.toolB.name}
+                    </h4>
+
+                    <!-- Mini Price Comparison -->
+                    <div class="flex items-center gap-2 text-xs font-mono text-dark-400 mb-4 bg-dark-850/60 p-2 rounded-lg border border-dark-800">
+                      <span class="text-dark-300 font-semibold">{pair.toolA.starting_price}</span>
+                      <span class="text-dark-600">vs</span>
+                      <span class="text-dark-300 font-semibold">{pair.toolB.starting_price}</span>
+                    </div>
+
+                    <!-- Short Best-for snippet -->
+                    <p class="text-xs text-dark-400 line-clamp-2 leading-relaxed mb-4">
+                      Diffing <strong class="text-dark-300">{pair.toolA.name}</strong> ({pair.toolA.pricing_model}) against <strong class="text-dark-300">{pair.toolB.name}</strong> ({pair.toolB.pricing_model}).
+                    </p>
+                  </div>
+
+                  <!-- Footer tags -->
+                  <div class="pt-3 border-t border-dark-800/80 flex items-center justify-between text-[11px] font-mono text-dark-500">
+                    <span>{pair.toolA.free_tier ? 'Free tier available' : 'Paid only'}</span>
+                    <span class="text-brand-indigo group-hover:underline">View Matrix</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </section>
+</Layout>

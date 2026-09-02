@@ -1,0 +1,6 @@
+# Standard robots.txt for StackDiff pSEO Engine
+User-agent: *
+Allow: /
+
+# Canonical Sitemap Index
+Sitemap: https://stackdiff.pages.dev/sitemap-index.xml
