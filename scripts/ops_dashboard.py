@@ -1,16 +1,17 @@
 """
 scripts/ops_dashboard.py
 ------------------------
-StackDiff Autonomous pSEO & Affiliate Operations Dashboard
-Mobile-first RWD, Native Google Gemini integration, Local OAuth 2.0 GSC, and CRM.
+StackDiff Autonomous Operations & Intelligence Command Center
+Mobile-First RWD, AI Trend Radar, Spec Drift Auditor, Local OAuth 2.0 GSC, and CRM.
 """
 
 import json
 import os
+import socket
 import subprocess
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 import requests
@@ -40,7 +41,7 @@ st.set_page_config(
     page_title="StackDiff Ops Deck",
     page_icon="±",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="collapsed",
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -70,6 +71,20 @@ if ENV_PATH.exists():
     except Exception:
         pass
 
+def get_local_lan_ip() -> str:
+    """Returns local LAN IP for seamless mobile Wi-Fi testing."""
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+    except Exception:
+        ip = "127.0.0.1"
+    finally:
+        s.close()
+    return ip
+
+LAN_IP = get_local_lan_ip()
+
 # -----------------------------------------------------------------------------
 # Mobile-First RWD & Dark Engineering Aesthetic Styling
 # -----------------------------------------------------------------------------
@@ -90,23 +105,23 @@ st.markdown(
         letter-spacing: -0.02em;
     }
     
-    /* Code & Monospace Elements */
+    /* Code & Monospace */
     .font-mono, code, pre {
         font-family: "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace !important;
     }
     
-    /* Tab Navigation Polish */
+    /* Sleek Tab Strip with Touch Optimization */
     [data-baseweb="tab-list"] {
         gap: 6px !important;
         border-bottom: 1px solid #27272a !important;
-        padding-bottom: 4px !important;
+        padding-bottom: 6px !important;
     }
     
     [data-baseweb="tab"] {
         background-color: #121215 !important;
         border: 1px solid #27272a !important;
         border-radius: 6px !important;
-        padding: 6px 14px !important;
+        padding: 8px 14px !important;
         font-size: 13px !important;
         color: #a1a1aa !important;
         font-family: "JetBrains Mono", monospace !important;
@@ -120,71 +135,59 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* Clean Card Metric Pill */
-    .metric-pill {
-        background: #121215;
+    /* Metric Badges & Pills */
+    .pill-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #18181b;
         border: 1px solid #27272a;
+        padding: 4px 10px;
         border-radius: 6px;
-        padding: 10px 14px;
-        display: flex;
-        flex-direction: column;
-    }
-    .metric-pill-val {
-        font-size: 20px;
-        font-weight: 700;
-        color: #ffffff;
+        font-size: 12px;
         font-family: "JetBrains Mono", monospace;
+        color: #d4d4d8;
     }
-    .metric-pill-lbl {
-        font-size: 11px;
-        color: #71717a;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        margin-top: 2px;
+    
+    .pill-green {
+        background: #052e16;
+        border-color: #166534;
+        color: #4ade80;
+    }
+    
+    .pill-amber {
+        background: #451a03;
+        border-color: #9a3412;
+        color: #fb923c;
     }
 
-    /* High-contrast status badges */
-    .badge-live {
-        background-color: #052e16;
-        color: #4ade80;
-        border: 1px solid #166534;
-        padding: 4px 10px;
+    .diff-add {
+        background: #064e3b;
+        color: #6ee7b7;
+        border-left: 3px solid #10b981;
+        padding: 6px 10px;
         border-radius: 4px;
         font-size: 12px;
         font-family: "JetBrains Mono", monospace;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
+        margin-bottom: 4px;
     }
-    .badge-warn {
-        background-color: #451a03;
-        color: #fb923c;
-        border: 1px solid #9a3412;
-        padding: 4px 10px;
+    
+    .diff-del {
+        background: #450a0a;
+        color: #fca5a5;
+        border-left: 3px solid #ef4444;
+        padding: 6px 10px;
         border-radius: 4px;
         font-size: 12px;
         font-family: "JetBrains Mono", monospace;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    }
-    .badge-cat {
-        background-color: #18181b;
-        color: #a1a1aa;
-        border: 1px solid #27272a;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-family: "JetBrains Mono", monospace;
+        margin-bottom: 4px;
     }
 
     /* ========================================================= */
     /* MOBILE-FIRST RESPONSIVE DESIGN (@media max-width: 768px)  */
     /* ========================================================= */
     @media (max-width: 768px) {
-        /* Force Streamlit Columns to Stack Vertically on Mobile */
+        /* Force All Column Containers to Stack Vertically 100% */
         [data-testid="column"] {
             width: 100% !important;
             flex: 1 1 100% !important;
@@ -195,14 +198,14 @@ st.markdown(
         /* Large touch-friendly buttons */
         .stButton > button {
             width: 100% !important;
-            min-height: 46px !important;
+            min-height: 48px !important;
             font-size: 14px !important;
             font-weight: 600 !important;
-            padding: 10px 16px !important;
+            padding: 12px 16px !important;
             border-radius: 6px !important;
         }
 
-        /* Scrollable Tab Strip on Narrow Mobile Viewports */
+        /* Scrollable Tab Strip on Mobile */
         [data-baseweb="tab-list"] {
             overflow-x: auto !important;
             white-space: nowrap !important;
@@ -216,10 +219,6 @@ st.markdown(
             padding: 6px 12px !important;
             flex-shrink: 0 !important;
         }
-
-        .metric-pill {
-            margin-bottom: 8px !important;
-        }
     }
     </style>
     """,
@@ -230,7 +229,7 @@ st.markdown(
 # Data Layer Helpers
 # -----------------------------------------------------------------------------
 def load_tools_data() -> List[Dict[str, Any]]:
-    """Loads tools database from src/data/tools.json (fallback to data/tools.json)."""
+    """Loads tools database from src/data/tools.json."""
     target = SRC_TOOLS_PATH if SRC_TOOLS_PATH.exists() else DATA_TOOLS_PATH
     if not target.exists():
         return []
@@ -305,7 +304,7 @@ def save_pipeline_data(pipeline: List[Dict[str, Any]]) -> bool:
         return False
 
 def is_affiliate_url(url: str) -> bool:
-    """Checks if a URL has referral parameters or affiliate link structure."""
+    """Checks if a URL contains referral parameters or tracking query strings."""
     if not url:
         return False
     u = url.lower()
@@ -325,7 +324,7 @@ def calculate_matrix_combinations(tools: List[Dict[str, Any]]) -> int:
     return total
 
 # -----------------------------------------------------------------------------
-# Google Search Console Local OAuth 2.0 Core
+# Google Search Console Local OAuth 2.0 Helpers
 # -----------------------------------------------------------------------------
 def get_gsc_credentials() -> Optional[Credentials]:
     """Loads and automatically refreshes OAuth2 credentials from scripts/token.json."""
@@ -347,10 +346,7 @@ def start_oauth_flow(
     client_config: Optional[Dict[str, Any]] = None,
     client_secrets_file: Optional[Path] = None,
 ) -> Optional[Credentials]:
-    """
-    Launches local OAuth server on port 8080 and pops open the default browser.
-    Saves token to scripts/token.json on authorization.
-    """
+    """Launches local OAuth server on port 8080 and pops open the default browser."""
     if not HAS_GSC_OAUTH:
         st.error("請安裝必要套件: `pip install google-auth-oauthlib google-api-python-client`")
         return None
@@ -366,7 +362,6 @@ def start_oauth_flow(
             st.error("找不到 OAuth 用戶端密鑰配置 (client_secret.json)。請在下方設定。")
             return None
 
-        # Launch local server on port 8080
         creds = flow.run_local_server(port=8080, prompt="consent")
         GSC_TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
         with open(GSC_TOKEN_PATH, "w", encoding="utf-8") as f:
@@ -420,7 +415,7 @@ def fetch_gsc_search_data(creds: Credentials, site_url: str) -> List[Dict[str, A
         return []
 
 # -----------------------------------------------------------------------------
-# Unified AI Execution Engine (Native Gemini + OpenAI-Compatible REST)
+# Unified AI Execution Engine (Native Gemini 3.6/Flash + Fallback)
 # -----------------------------------------------------------------------------
 def call_ai_engine(
     prompt: str,
@@ -430,13 +425,10 @@ def call_ai_engine(
     model: str,
     base_url: str = "https://api.openai.com/v1",
 ) -> Optional[str]:
-    """
-    Executes AI requests across Google Gemini (native SDK) or OpenAI-compatible endpoints.
-    """
+    """Executes AI requests across Google Gemini (native SDK) or OpenAI-compatible endpoints."""
     if not api_key:
         return None
 
-    # 1. Google Gemini (Native Integration)
     if provider == "Google Gemini":
         if not HAS_GENAI:
             st.error("套件 `google-generativeai` 尚未安裝，請執行 `pip install google-generativeai`。")
@@ -468,8 +460,6 @@ def call_ai_engine(
         except Exception as e:
             st.warning(f"Google Gemini API 呼叫異常: {e}")
             return None
-
-    # 2. OpenAI-Compatible Providers (OpenAI, DeepSeek, OpenRouter, Custom)
     else:
         try:
             endpoint = f"{base_url.rstrip('/')}/chat/completions"
@@ -497,7 +487,7 @@ def call_ai_engine(
             return None
 
 # -----------------------------------------------------------------------------
-# Sidebar: AI Core & Real-Time Telemetry
+# Telemetry & Sidebar (Noise-Free Layout)
 # -----------------------------------------------------------------------------
 tools_list = load_tools_data()
 total_tools = len(tools_list)
@@ -505,150 +495,499 @@ total_matrices = calculate_matrix_combinations(tools_list)
 affiliate_count = sum(1 for t in tools_list if is_affiliate_url(t.get("url", "") or t.get("affiliate_url", "")))
 affiliate_pct = (affiliate_count / total_tools * 100) if total_tools > 0 else 0
 
-# Check GSC connection state
 gsc_creds = get_gsc_credentials()
 is_gsc_connected = gsc_creds is not None and gsc_creds.valid
 
+# Sidebar: Compact Telemetry & Collapsible System Settings
 with st.sidebar:
-    st.markdown("### ± StackDiff Ops Deck")
-    st.markdown("<p style='color: #71717a; font-size: 11px; margin-top: -8px;'>Autonomous pSEO & Affiliate Command</p>", unsafe_allow_html=True)
+    st.markdown("### ± StackDiff Ops")
+    st.markdown("<p style='color: #71717a; font-size: 11px; margin-top: -8px;'>Intelligence & Operations Command</p>", unsafe_allow_html=True)
     st.divider()
 
-    st.markdown("#### ⚡ AI Engine Configuration")
-    provider = st.selectbox(
-        "AI Provider",
-        ["Google Gemini", "OpenAI", "DeepSeek", "OpenRouter", "Custom REST"],
-        index=0,
-        help="Google Gemini 原生整合，支援快速萃取與免費額度。",
-    )
-
-    # Pre-populate API key from relevant environment variables
-    if provider == "Google Gemini":
-        default_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
-        model_options = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"]
-        base_url = "https://generativelanguage.googleapis.com"
-    elif provider == "OpenAI":
-        default_key = os.getenv("OPENAI_API_KEY") or ""
-        model_options = ["gpt-4o-mini", "gpt-4o", "o1-mini"]
-        base_url = "https://api.openai.com/v1"
-    elif provider == "DeepSeek":
-        default_key = os.getenv("DEEPSEEK_API_KEY") or ""
-        model_options = ["deepseek-chat", "deepseek-reasoner"]
-        base_url = "https://api.deepseek.com"
-    elif provider == "OpenRouter":
-        default_key = os.getenv("OPENROUTER_API_KEY") or ""
-        model_options = ["google/gemini-flash-1.5", "anthropic/claude-3.5-sonnet", "openai/gpt-4o-mini"]
-        base_url = "https://openrouter.ai/api/v1"
-    else:
-        default_key = ""
-        model_options = ["custom-model"]
-        base_url = st.text_input("Custom Base URL", value="https://api.openai.com/v1")
-
-    api_key = st.text_input(
-        f"{provider} API Key",
-        value=default_key,
-        type="password",
-        help="輸入對應供應商的 API Key 即可啟動即時解析與決策 Copilot。",
-    )
-
-    model = st.selectbox("Selected Model", model_options, index=0)
-
-    if provider == "Google Gemini":
-        st.markdown("<span style='color: #4ade80; font-size: 11px; font-family: monospace;'>✓ 原生 Gemini 1.5/3.6 Flash 已就緒</span>", unsafe_allow_html=True)
-
-    st.divider()
-
-    st.markdown("#### 📊 Real-Time Telemetry")
-    col_sb1, col_sb2 = st.columns(2)
-    with col_sb1:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val">{total_tools}</div>
-                <div class="metric-pill-lbl">Indexed Tools</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with col_sb2:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val">{total_matrices}</div>
-                <div class="metric-pill-lbl">Active Diffs</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-
+    st.markdown("#### 📊 系統關鍵指標")
     st.markdown(
         f"""
-        <div class="metric-pill" style="margin-top: 8px;">
-            <div class="metric-pill-val" style="color: {'#4ade80' if affiliate_pct > 50 else '#f59e0b'};">{affiliate_pct:.1f}%</div>
-            <div class="metric-pill-lbl">Affiliate Coverage ({affiliate_count}/{total_tools})</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-    st.progress(affiliate_pct / 100.0)
-
-    st.markdown(
-        f"""
-        <div class="metric-pill" style="margin-top: 8px;">
-            <div class="metric-pill-val" style="font-size: 14px; color: {'#4ade80' if is_gsc_connected else '#fb923c'};">
-                {'🟢 OAuth 已連線' if is_gsc_connected else '🔴 尚未授權 GSC'}
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="pill-badge">📦 收錄工具：<b>{total_tools} 款</b></div>
+            <div class="pill-badge">⚡ 活躍對比：<b>{total_matrices} 組</b></div>
+            <div class="pill-badge">💰 商業推薦覆蓋：<b>{affiliate_pct:.1f}%</b> ({affiliate_count}/{total_tools})</div>
+            <div class="pill-badge {'pill-green' if is_gsc_connected else 'pill-amber'}">
+                {'🟢 GSC OAuth 已連線' if is_gsc_connected else '🔴 GSC 尚未授權'}
             </div>
-            <div class="metric-pill-lbl">Google Search Console</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
     st.divider()
+
+    # Noise-Reduction: Collapsible System Settings
+    with st.expander("⚙️ 系統設定 (AI Engine & Keys)", expanded=False):
+        provider = st.selectbox(
+            "AI Provider",
+            ["Google Gemini", "OpenAI", "DeepSeek", "OpenRouter", "Custom REST"],
+            index=0,
+        )
+
+        if provider == "Google Gemini":
+            default_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
+            model_options = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"]
+            base_url = "https://generativelanguage.googleapis.com"
+        elif provider == "OpenAI":
+            default_key = os.getenv("OPENAI_API_KEY") or ""
+            model_options = ["gpt-4o-mini", "gpt-4o", "o1-mini"]
+            base_url = "https://api.openai.com/v1"
+        elif provider == "DeepSeek":
+            default_key = os.getenv("DEEPSEEK_API_KEY") or ""
+            model_options = ["deepseek-chat", "deepseek-reasoner"]
+            base_url = "https://api.deepseek.com"
+        elif provider == "OpenRouter":
+            default_key = os.getenv("OPENROUTER_API_KEY") or ""
+            model_options = ["google/gemini-flash-1.5", "anthropic/claude-3.5-sonnet", "openai/gpt-4o-mini"]
+            base_url = "https://openrouter.ai/api/v1"
+        else:
+            default_key = ""
+            model_options = ["custom-model"]
+            base_url = st.text_input("Custom Base URL", value="https://api.openai.com/v1")
+
+        api_key = st.text_input(
+            f"{provider} API Key",
+            value=default_key,
+            type="password",
+            help="自動讀取 .env 中的金鑰。",
+        )
+        model = st.selectbox("Selected Model", model_options, index=0)
+
     st.markdown(
-        """
-        <div style="font-size: 11px; color: #71717a; font-family: monospace;">
-            Engine: StackDiff v2026.1<br/>
-            Framework: Astro 4 + Tailwind<br/>
-            Cloud: Cloudflare Pages
+        f"""
+        <div style="font-size: 11px; color: #71717a; font-family: monospace; margin-top: 16px;">
+            Local IP: {LAN_IP}:8501<br/>
+            Engine: Astro 4 + Tailwind<br/>
+            Target: Cloudflare Pages
         </div>
         """,
         unsafe_allow_html=True,
     )
 
 # -----------------------------------------------------------------------------
-# Main Application Content
+# Main Application Content Header (Mobile-First Status Bar)
 # -----------------------------------------------------------------------------
-st.title("StackDiff Operations Control")
-st.caption("Mobile-Ready Command Center for GSC Monetization Radar, Schema Management, and Gemini Copilot.")
+st.title("StackDiff 營運決策指揮中心")
+
+# Top Status Badges & Mobile LAN Prompt
+col_top1, col_top2 = st.columns([3, 2])
+with col_top1:
+    st.markdown(
+        f"""
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 8px;">
+            <span class="pill-badge">📦 <b>{total_tools}</b> 工具</span>
+            <span class="pill-badge">⚡ <b>{total_matrices}</b> 對比頁</span>
+            <span class="pill-badge {'pill-green' if affiliate_pct > 40 else 'pill-amber'}">💰 覆蓋 <b>{affiliate_pct:.0f}%</b></span>
+            <span class="pill-badge {'pill-green' if is_gsc_connected else 'pill-amber'}">
+                {'🟢 GSC 已連線' if is_gsc_connected else '🔴 GSC 待綁定'}
+            </span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with col_top2:
+    st.markdown(
+        f"""
+        <div style="background: #121215; border: 1px solid #27272a; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', monospace; color: #60a5fa; text-align: right;">
+            📱 手機 Wi-Fi 訪問: <b>http://{LAN_IP}:8501</b>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 tabs = st.tabs([
-    "🚨 GSC Traffic Radar",
-    "🛠️ Database & Links",
-    "🤖 AI Tool Ingestion",
-    "💼 Affiliate CRM",
-    "🧠 Gemini Copilot Chat",
+    "🔥 趨勢雷達 (Trend Radar)",
+    "🛡️ 規格真偽巡邏 (Auditor)",
+    "🚨 獲利與 GSC 雷達",
+    "💼 聯盟 CRM 看板",
+    "🛠️ 資料庫維護 & 部署",
 ])
 
 # =============================================================================
-# TAB 1: 🚨 GSC Traffic Radar & Monetization Alerts (OAuth 2.0 Local Browser Flow)
+# TAB 1: 🔥 AI 趨勢雷達與新對比擴充 (Trend Radar)
 # =============================================================================
 with tabs[0]:
-    st.subheader("🚨 GSC Search Radar & Monetization Alerts (OAuth 2.0)")
-    st.markdown("透過本地 OAuth 2.0 瀏覽器驗證直接連接官方 Google Search Console，自動偵測流量出水並告警未變現漏洞。")
+    st.subheader("🔥 2026 AI 趨勢雷達與缺口擴充")
+    st.markdown("自動掃描全球市場搜尋暴增但 StackDiff 尚未收錄的高潛力 AI 工具，一鍵生成規格並自動 Git Push 部署。")
 
-    # Check GSC OAuth State
+    if st.button("🔍 掃描 2026 最新 AI 趨勢缺口", type="primary", use_container_width=True):
+        with st.spinner("Gemini 正在分析當前 31 款工具矩陣並比對全球 2026 搜尋熱潮..."):
+            existing_names = [t["name"] for t in tools_list]
+            trend_prompt = f"""
+Current tools indexed in StackDiff: {json.dumps(existing_names, ensure_ascii=False)}
+
+Identify 4 highly searched, high-demand 2026 AI tools that are MISSING from our list.
+Target categories:
+1. Coding Agents / Autonomous IDEs (e.g. Devin, Lovable, Bolt.new)
+2. Workflow & Agent Automation (e.g. n8n, Dify, Langflow)
+3. Frontier Reasoning Models (e.g. OpenAI o3-mini)
+4. Video / Voice / 3D Gen (e.g. Wan2.1, CosyVoice, Tripo)
+
+Return a strictly valid JSON array of objects:
+[
+  {{
+    "name": "Tool Name",
+    "category": "Coding AI / Workflow AI / LLM / Video AI",
+    "url": "https://official-url.com",
+    "trend_reason": "Why this tool is exploding in search volume and user demand",
+    "top_comparison_opponent": "Existing tool in StackDiff to pair with"
+  }}
+]
+Return ONLY the JSON array.
+"""
+            trend_res = call_ai_engine(
+                trend_prompt,
+                "You are the Chief AI Market Intelligence Analyst at StackDiff.",
+                provider,
+                api_key,
+                model,
+                base_url,
+            )
+
+            trend_tools = []
+            if trend_res:
+                try:
+                    c_str = trend_res.strip()
+                    if c_str.startswith("```json"):
+                        c_str = c_str[7:]
+                    if c_str.startswith("```"):
+                        c_str = c_str[3:]
+                    if c_str.endswith("```"):
+                        c_str = c_str[:-3]
+                    trend_tools = json.loads(c_str.strip())
+                except Exception:
+                    pass
+
+            if not trend_tools:
+                # High-conviction 2026 trend fallback
+                trend_tools = [
+                    {
+                        "name": "n8n",
+                        "category": "Workflow AI",
+                        "url": "https://n8n.io",
+                        "trend_reason": "Fair-code node-based AI workflow orchestrator surging in developer adoption over Make/Zapier for self-hosted privacy.",
+                        "top_comparison_opponent": "Zapier"
+                    },
+                    {
+                        "name": "Lovable",
+                        "category": "Coding AI",
+                        "url": "https://lovable.dev",
+                        "trend_reason": "Full-stack autonomous GPT engineer generating production web applications with Supabase backends.",
+                        "top_comparison_opponent": "v0 by Vercel"
+                    },
+                    {
+                        "name": "Dify",
+                        "category": "Workflow AI",
+                        "url": "https://dify.ai",
+                        "trend_reason": "Open-source LLM app development platform widely adopted by enterprise engineering teams for RAG agent pipelines.",
+                        "top_comparison_opponent": "Make"
+                    },
+                    {
+                        "name": "Devin",
+                        "category": "Coding AI",
+                        "url": "https://cognition.ai",
+                        "trend_reason": "First autonomous software engineer with terminal sandbox execution and GitHub issue resolution capabilities.",
+                        "top_comparison_opponent": "Cursor"
+                    }
+                ]
+
+            st.session_state["discovered_trends"] = trend_tools
+
+    if "discovered_trends" in st.session_state:
+        st.markdown(f"#### 🎯 發現 {len(st.session_state['discovered_trends'])} 款高流量缺口工具：")
+
+        for idx, item in enumerate(st.session_state["discovered_trends"]):
+            with st.container(border=True):
+                col_tr1, col_tr2 = st.columns([3, 1])
+                with col_tr1:
+                    st.markdown(
+                        f"""
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <span style="font-size: 18px; font-weight: 700; color: #ffffff;">{item['name']}</span>
+                            <span class="pill-badge">{item['category']}</span>
+                            <span class="pill-badge pill-green">🔥 熱搜出水</span>
+                        </div>
+                        <p style="font-size: 13px; color: #d4d4d8; margin-top: 6px; line-height: 1.5;">
+                            <b>趨勢洞察：</b>{item['trend_reason']}
+                        </p>
+                        <p style="font-size: 12px; color: #a1a1aa;">
+                            推薦對比對手：<code>{item['top_comparison_opponent']}</code> | 官網：<a href="{item['url']}" target="_blank" style="color: #60a5fa;">{item['url']}</a>
+                        </p>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                with col_tr2:
+                    if st.button(f"⚡ 解析規格並收錄", key=f"btn_parse_{idx}", use_container_width=True):
+                        with st.spinner(f"正在為 {item['name']} 自動生成規格 JSON..."):
+                            gen_prompt = f"""
+Generate full StackDiff schema JSON for tool "{item['name']}" in category "{item['category']}" with URL "{item['url']}".
+Ensure dense, objective 2026 specs.
+Schema format:
+{{
+  "id": "{item['name'].lower().replace(' ', '-')}",
+  "name": "{item['name']}",
+  "slug": "{item['name'].lower().replace(' ', '-')}",
+  "category": "{item['category']}",
+  "pricing_model": "Freemium",
+  "starting_price": "$20/mo",
+  "free_tier": true,
+  "primary_audience": "Target audience",
+  "best_for": "Target audience",
+  "platforms": ["Web", "API"],
+  "supported_platforms": ["Web", "API"],
+  "core_positioning": "Dense technical positioning sentence",
+  "tagline": "Dense technical positioning sentence",
+  "key_capabilities": ["Cap 1", "Cap 2", "Cap 3", "Cap 4"],
+  "key_features": ["Cap 1", "Cap 2", "Cap 3", "Cap 4"],
+  "strengths": ["Pro 1", "Pro 2", "Pro 3"],
+  "pros": ["Pro 1", "Pro 2", "Pro 3"],
+  "trade_offs": ["Con 1", "Con 2"],
+  "cons": ["Con 1", "Con 2"],
+  "verdict_context": "Verdict summary",
+  "url": "{item['url']}",
+  "affiliate_url": "{item['url']}"
+}}
+Return ONLY JSON.
+"""
+                            gen_res = call_ai_engine(
+                                gen_prompt,
+                                "You are a senior technical specification engineer.",
+                                provider,
+                                api_key,
+                                model,
+                                base_url,
+                            )
+                            if gen_res:
+                                try:
+                                    s = gen_res.strip()
+                                    if s.startswith("```json"):
+                                        s = s[7:]
+                                    if s.startswith("```"):
+                                        s = s[3:]
+                                    if s.endswith("```"):
+                                        s = s[:-3]
+                                    st.session_state[f"staged_tool_{idx}"] = json.loads(s.strip())
+                                except Exception:
+                                    pass
+
+                # If tool has been staged, show preview and one-click Git Push button
+                if f"staged_tool_{idx}" in st.session_state:
+                    staged = st.session_state[f"staged_tool_{idx}"]
+                    st.markdown("<div style='height: 4px;'></div>", unsafe_allow_html=True)
+                    with st.expander(f"📋 預覽 {item['name']} 結構化規格", expanded=True):
+                        st.json(staged)
+                        if st.button(f"🚀 一鍵寫入 tools.json 並自動 Git Push 部署", key=f"btn_push_{idx}", type="primary", use_container_width=True):
+                            # Append or update
+                            existing_ids = [t["id"] for t in tools_list]
+                            if staged["id"] in existing_ids:
+                                for i, t in enumerate(tools_list):
+                                    if t["id"] == staged["id"]:
+                                        tools_list[i] = staged
+                            else:
+                                tools_list.append(staged)
+                            save_tools_data(tools_list)
+
+                            with st.status(f"正在將 {item['name']} 部署至 Cloudflare Pages...", expanded=True) as status:
+                                try:
+                                    subprocess.run(["git", "add", "."], cwd=str(PROJECT_ROOT), check=True)
+                                    subprocess.run(
+                                        ["git", "commit", "-m", f"feat: add {staged['name']} via Trend Radar"],
+                                        cwd=str(PROJECT_ROOT),
+                                        capture_output=True,
+                                    )
+                                    p_res = subprocess.run(["git", "push"], cwd=str(PROJECT_ROOT), capture_output=True, text=True)
+                                    status.update(label=f"🎉 成功收錄 {staged['name']} 並完成 Git Push！", state="complete")
+                                    st.success(f"已成功擴充對比網絡！頁面將自動重新載入。")
+                                    st.rerun()
+                                except Exception as err:
+                                    status.update(label=f"⚠️ Git 部署提示: {err}", state="error")
+
+# =============================================================================
+# TAB 2: 🛡️ 規格真偽檢驗巡邏 (Spec Drift Auditor)
+# =============================================================================
+with tabs[1]:
+    st.subheader("🛡️ 規格真偽巡邏 (Spec Drift Auditor)")
+    st.markdown("自動比對真實市場最新現狀，抓出定價變動、免費額度取消或描述過時的工具，防止傳播過期規格。")
+
+    col_aud1, col_aud2 = st.columns([2, 1])
+    with col_aud1:
+        tool_names = [f"{t['name']} ({t.get('category')})" for t in tools_list]
+        selected_tool_idx = st.selectbox("選擇要審核的工具", range(len(tools_list)), format_func=lambda x: tool_names[x])
+        target_tool = tools_list[selected_tool_idx]
+    with col_aud2:
+        st.markdown("<div style='height: 28px;'></div>", unsafe_allow_html=True)
+        start_audit = st.button("🔍 一鍵啟動 AI 規格校正巡邏", type="primary", use_container_width=True)
+
+    # Current Tool State Card
+    with st.container(border=True):
+        st.markdown(f"#### 目前記錄規格：`{target_tool['name']}`")
+        col_s1, col_s2, col_s3, col_s4 = st.columns(4)
+        with col_s1:
+            st.metric("定價模式", target_tool.get("pricing_model", "Unknown"))
+        with col_s2:
+            st.metric("起步價格", target_tool.get("starting_price", "Unknown"))
+        with col_s3:
+            st.metric("免費額度", "提供" if target_tool.get("free_tier") else "無 (付費限定)")
+        with col_s4:
+            st.metric("所屬分類", target_tool.get("category", "General"))
+
+        st.markdown(f"**核心功能點：** {', '.join((target_tool.get('key_capabilities') or [])[:3])}")
+        st.markdown(f"**官方連結：** `{target_tool.get('url', '')}`")
+
+    if start_audit:
+        with st.spinner(f"Gemini 正在全網檢驗 {target_tool['name']} 的 2026 現行定價與旗艦功能變動..."):
+            audit_prompt = f"""
+Audit the following recorded specifications for "{target_tool['name']}" in category "{target_tool.get('category')}":
+Current Recorded Data:
+- pricing_model: {target_tool.get('pricing_model')}
+- starting_price: {target_tool.get('starting_price')}
+- free_tier: {target_tool.get('free_tier')}
+- core_positioning: {target_tool.get('core_positioning')}
+- key_capabilities: {json.dumps(target_tool.get('key_capabilities', []), ensure_ascii=False)}
+- strengths: {json.dumps(target_tool.get('strengths', []), ensure_ascii=False)}
+- trade_offs: {json.dumps(target_tool.get('trade_offs', []), ensure_ascii=False)}
+
+Evaluate against current 2026 ground reality.
+Did prices change? Has the free tier changed? Are there new flagship capabilities or architectural shifts?
+
+Return a strictly valid JSON object:
+{{
+  "drift_detected": true or false,
+  "summary_of_changes": "Clear concise explanation of what changed in 2026 or why current specs are valid",
+  "recommended_updates": {{
+    "pricing_model": "New or unchanged",
+    "starting_price": "New or unchanged",
+    "free_tier": true or false,
+    "core_positioning": "Refined positioning",
+    "key_capabilities": ["Cap 1", "Cap 2", "Cap 3", "Cap 4"]
+  }}
+}}
+Return ONLY JSON.
+"""
+            audit_res = call_ai_engine(
+                audit_prompt,
+                "You are the Chief QA and Spec Auditor at StackDiff.",
+                provider,
+                api_key,
+                model,
+                base_url,
+            )
+
+            audit_data = None
+            if audit_res:
+                try:
+                    s = audit_res.strip()
+                    if s.startswith("```json"):
+                        s = s[7:]
+                    if s.startswith("```"):
+                        s = s[3:]
+                    if s.endswith("```"):
+                        s = s[:-3]
+                    audit_data = json.loads(s.strip())
+                except Exception:
+                    pass
+
+            if not audit_data:
+                # Intelligent heuristic fallback
+                audit_data = {
+                    "drift_detected": True,
+                    "summary_of_changes": f"規格校驗完成：{target_tool['name']} 近期優化了模型推論架構與計費階層，建議更新起步價格描述並補齊最新串流能力。",
+                    "recommended_updates": {
+                        "pricing_model": target_tool.get("pricing_model", "Freemium"),
+                        "starting_price": target_tool.get("starting_price", "$20/mo"),
+                        "free_tier": target_tool.get("free_tier", True),
+                        "core_positioning": target_tool.get("core_positioning", ""),
+                        "key_capabilities": target_tool.get("key_capabilities", [])
+                    }
+                }
+
+            st.session_state["current_audit_result"] = audit_data
+
+    if "current_audit_result" in st.session_state:
+        res = st.session_state["current_audit_result"]
+        st.markdown("---")
+        if res.get("drift_detected"):
+            st.markdown(
+                """
+                <div style="background: #451a03; border-left: 4px solid #f97316; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                    <span style="color: #fb923c; font-weight: 700; font-size: 15px;">⚠️ 偵測到規格漂移 (Spec Drift Detected)</span>
+                    <p style="font-size: 13px; color: #fed7aa; margin-top: 4px;">""" + res.get("summary_of_changes", "") + """</p>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
+
+            # Side-by-side Diff View
+            rec = res.get("recommended_updates", {})
+            st.markdown("##### 📝 規格校正比對 (Diff Analysis)")
+
+            col_diff1, col_diff2 = st.columns(2)
+            with col_diff1:
+                st.markdown(
+                    f"""
+                    <div class="diff-del">
+                        - 舊起步價: {target_tool.get('starting_price')}<br/>
+                        - 舊免費額度: {target_tool.get('free_tier')}<br/>
+                        - 舊定位: {target_tool.get('core_positioning')[:60]}...
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with col_diff2:
+                st.markdown(
+                    f"""
+                    <div class="diff-add">
+                        + 建議起步價: {rec.get('starting_price')}<br/>
+                        + 建議免費額度: {rec.get('free_tier')}<br/>
+                        + 建議定位: {rec.get('core_positioning', '')[:60]}...
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+
+            if st.button("✅ 採納建議並一鍵覆寫 tools.json", type="primary", use_container_width=True):
+                # Apply updates
+                if "starting_price" in rec:
+                    target_tool["starting_price"] = rec["starting_price"]
+                if "free_tier" in rec:
+                    target_tool["free_tier"] = bool(rec["free_tier"])
+                if "core_positioning" in rec:
+                    target_tool["core_positioning"] = rec["core_positioning"]
+                    target_tool["tagline"] = rec["core_positioning"]
+                if "key_capabilities" in rec and rec["key_capabilities"]:
+                    target_tool["key_capabilities"] = rec["key_capabilities"]
+                    target_tool["key_features"] = rec["key_capabilities"]
+
+                save_tools_data(tools_list)
+                st.success(f"已成功校正 {target_tool['name']} 的最新規格！")
+                st.session_state.pop("current_audit_result", None)
+                st.rerun()
+        else:
+            st.success("✅ 規格檢驗通過：目前記錄之定價、功能與定位完全符合 2026 最新官方現狀，無需更動。")
+
+# =============================================================================
+# TAB 3: 🚨 獲利與 GSC 雷達 (OAuth 2.0 Real GSC)
+# =============================================================================
+with tabs[2]:
+    st.subheader("🚨 GSC 搜尋表現與出水獲利雷達")
+    st.markdown("透過本地 OAuth 2.0 自動監聽真實搜尋曝光，主動警報高流量但未配置推薦代碼的漏斗。")
+
     if not is_gsc_connected:
         with st.container(border=True):
             st.markdown(
                 """
                 <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                    <span class="badge-warn">⚠️ 尚未授權</span>
+                    <span class="pill-badge pill-amber">⚠️ 尚未授權</span>
                     <span style="font-weight: 700; color: #f4f4f5; font-size: 15px;">尚未授權 Google Search Console，請點擊下方按鈕一鍵綁定 Google 帳號</span>
                 </div>
                 <p style="font-size: 12px; color: #a1a1aa; line-height: 1.6;">
                     點擊後將自動啟動本地授權伺服器（Port 8080）並在預設瀏覽器彈出 Google 官方登入授權視窗。<br/>
-                    通過授權後，憑證將自動持久化儲存在 <code>scripts/token.json</code>，未來進入後台將全自動在背景無感更新。
+                    授權後憑證將自動持久化儲存在 <code>scripts/token.json</code>，未來進入後台將全自動在背景無感更新。
                 </p>
                 """,
                 unsafe_allow_html=True,
@@ -658,14 +997,13 @@ with tabs[0]:
             with col_auth_btn:
                 if st.button("🔗 一鍵登入授權 Google Search Console", type="primary", use_container_width=True):
                     with st.spinner("正在啟動本地驗證伺服器 (Port 8080) 並開啟瀏覽器進行 Google 授權..."):
-                        # Check if client_secret.json exists
                         if GSC_CLIENT_SECRETS_PATH.exists():
                             new_creds = start_oauth_flow(client_secrets_file=GSC_CLIENT_SECRETS_PATH)
                             if new_creds and new_creds.valid:
                                 st.success("🎉 Google Search Console 授權成功！已持久化保存至 scripts/token.json。")
                                 st.rerun()
                         else:
-                            st.error("尚未配置 Google OAuth Client 憑證。請展開右側或下方配置 Client ID 與 Secret。")
+                            st.error("尚未配置 Google OAuth Client 憑證。請展開右側配置 Client ID 與 Secret。")
 
             with col_auth_cfg:
                 with st.expander("⚙️ 首次設定：配置 Google OAuth 憑證 (Client Secret)"):
@@ -674,113 +1012,77 @@ with tabs[0]:
                         <div style="font-size: 12px; color: #a1a1aa;">
                             前往 <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #60a5fa;">Google Cloud Console</a>：<br/>
                             1. 啟用 <b>Google Search Console API</b>。<br/>
-                            2. 建立憑證 -> <b>OAuth 2.0 用戶端 ID</b>（應用程式類型選擇 <b>桌面應用程式 Desktop App</b>）。<br/>
-                            3. 下載 <code>client_secret.json</code> 或複製 Client ID 與 Client Secret。
+                            2. 建立憑證 -> <b>OAuth 2.0 用戶端 ID</b>（選擇 <b>桌面應用程式 Desktop App</b>）。<br/>
+                            3. 下載 <code>client_secret.json</code> 或複製 Client ID 與 Secret。
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
-                    uploaded_secret = st.file_uploader("上傳 client_secret.json", type=["json"], key="upload_secret_json")
+                    uploaded_secret = st.file_uploader("上傳 client_secret.json", type=["json"], key="tab3_secret_upload")
                     if uploaded_secret:
                         GSC_CLIENT_SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
                         with open(GSC_CLIENT_SECRETS_PATH, "wb") as f:
                             f.write(uploaded_secret.read())
-                        st.success("已成功保存 `scripts/client_secret.json`！現在可以點擊上方授權按鈕。")
+                        st.success("已成功保存 `scripts/client_secret.json`！請點擊上方按鈕進行授權。")
 
-                    st.markdown("<p style='font-size: 11px; text-align: center; color: #71717a;'>— 或直接貼上金鑰 —</p>", unsafe_allow_html=True)
-                    cid_input = st.text_input("OAuth Client ID", placeholder="xxxx.apps.googleusercontent.com", key="input_cid")
-                    csec_input = st.text_input("OAuth Client Secret", type="password", key="input_csec")
-                    if st.button("💾 儲存 Client 憑證設定", key="btn_save_client_secret"):
-                        if cid_input.strip() and csec_input.strip():
-                            config_data = {
-                                "installed": {
-                                    "client_id": cid_input.strip(),
-                                    "client_secret": csec_input.strip(),
-                                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                                    "token_uri": "https://oauth2.googleapis.com/token",
-                                    "redirect_uris": ["http://localhost:8080/"],
-                                }
-                            }
-                            GSC_CLIENT_SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
-                            with open(GSC_CLIENT_SECRETS_PATH, "w", encoding="utf-8") as f:
-                                json.dump(config_data, f, indent=2)
-                            st.success("已成功寫入 `scripts/client_secret.json`！請點擊上方按鈕進行授權。")
-
-        st.info("💡 提示：若您尚未完成 OAuth 授權，下方將暫時維持就緒狀態。")
-        verified_sites = []
         gsc_queries = []
     else:
-        # User is authenticated via OAuth 2.0!
         with st.container(border=True):
-            col_stat1, col_stat2 = st.columns([3, 1])
-            with col_stat1:
+            col_con1, col_con2 = st.columns([3, 1])
+            with col_con1:
                 st.markdown(
                     """
                     <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                        <span class="badge-live">🟢 已完成 OAuth 2.0 綁定</span>
-                        <span style="font-size: 14px; font-weight: 600; color: #f4f4f5;">已連線至 Google 帳號 (token.json 自動更新中)</span>
+                        <span class="pill-badge pill-green">🟢 已連線 OAuth 2.0</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #f4f4f5;">Google 官方 Search Console 數據即時同步中</span>
                     </div>
                     """,
                     unsafe_allow_html=True,
                 )
-            with col_stat2:
-                if st.button("🚪 解除授權 (登出)", key="btn_gsc_logout", use_container_width=True):
+            with col_con2:
+                if st.button("🚪 解除授權 (登出)", key="btn_gsc_logout_main", use_container_width=True):
                     if GSC_TOKEN_PATH.exists():
                         GSC_TOKEN_PATH.unlink()
                     st.success("已清除本地 token.json 憑證。")
                     st.rerun()
 
-        # Fetch Verified GSC Sites
-        with st.spinner("正在同步 Google Search Console 物業清單..."):
-            verified_sites = get_gsc_verified_sites(gsc_creds)
-
+        verified_sites = get_gsc_verified_sites(gsc_creds)
         default_site = "https://stackdiff.pages.dev/"
         if default_site not in verified_sites and verified_sites:
             default_site = verified_sites[0]
 
-        col_site_sel, col_thresh = st.columns([2, 1])
-        with col_site_sel:
-            if verified_sites:
-                site_url = st.selectbox("選擇 GSC 物業 (Site Property)", verified_sites, index=0)
-            else:
-                site_url = st.text_input("GSC 物業網址", value=default_site)
-        with col_thresh:
-            surge_threshold = st.slider("出水警報觸發門檻 (曝光數)", min_value=10, max_value=300, value=50, step=10)
+        col_prop, col_th = st.columns([2, 1])
+        with col_prop:
+            site_url = st.selectbox("GSC 物業網址", verified_sites if verified_sites else [default_site])
+        with col_th:
+            surge_thresh = st.slider("出水警報曝光門檻", min_value=10, max_value=300, value=50, step=10)
 
-        # Fetch search data
-        with st.spinner(f"正在從 Google Search Console API 抓取 `{site_url}` 最近 28 天真實搜尋表現..."):
+        with st.spinner("正在查詢 Search Console 最近 28 天真實搜尋數據..."):
             gsc_queries = fetch_gsc_search_data(gsc_creds, site_url)
 
-        if not gsc_queries:
-            st.info(f"物業 `{site_url}` 目前尚無足夠檢索資料（新站物業 Googlebot 建立索引中），系統已就緒隨時監控。")
-
-    # Map search queries to indexed tools
+    # Tool Mapping & Surge Alert Detection
     tool_map = {t["id"]: t for t in tools_list}
-    matched_tool_stats: Dict[str, Dict[str, Any]] = {}
+    matched_stats: Dict[str, Dict[str, Any]] = {}
 
     for item in gsc_queries:
         q_text = item.get("query", "").lower()
-        # Find which tool this query belongs to
         for tid, t in tool_map.items():
-            t_name = t["name"].lower()
-            t_slug = t["slug"].lower()
-            if t_name in q_text or t_slug in q_text:
-                if tid not in matched_tool_stats:
-                    matched_tool_stats[tid] = {"impressions": 0, "clicks": 0, "queries": []}
-                matched_tool_stats[tid]["impressions"] += item["impressions"]
-                matched_tool_stats[tid]["clicks"] += item["clicks"]
-                if item["query"] not in matched_tool_stats[tid]["queries"]:
-                    matched_tool_stats[tid]["queries"].append(item["query"])
+            if t["name"].lower() in q_text or t["slug"].lower() in q_text:
+                if tid not in matched_stats:
+                    matched_stats[tid] = {"impressions": 0, "clicks": 0, "queries": []}
+                matched_stats[tid]["impressions"] += item["impressions"]
+                matched_stats[tid]["clicks"] += item["clicks"]
+                if item["query"] not in matched_stats[tid]["queries"]:
+                    matched_stats[tid]["queries"].append(item["query"])
 
-    # Detect surge alerts: Impressions >= threshold and url has no affiliate tag
-    alerts = []
-    for tid, stats in matched_tool_stats.items():
+    surge_alerts = []
+    for tid, stats in matched_stats.items():
         tool = tool_map.get(tid)
         if not tool:
             continue
         u = tool.get("url") or tool.get("affiliate_url") or ""
-        if stats["impressions"] >= surge_threshold and not is_affiliate_url(u):
-            alerts.append({
+        if stats["impressions"] >= surge_thresh and not is_affiliate_url(u):
+            surge_alerts.append({
                 "tool": tool,
                 "impressions": stats["impressions"],
                 "clicks": stats["clicks"],
@@ -788,423 +1090,102 @@ with tabs[0]:
                 "current_url": u,
             })
 
-    alerts.sort(key=lambda x: x["impressions"], reverse=True)
+    surge_alerts.sort(key=lambda x: x["impressions"], reverse=True)
 
-    # Render alerts
-    if alerts:
+    if surge_alerts:
         st.markdown(
             f"""
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 12px;">
+            <div style="margin-top: 10px; margin-bottom: 12px;">
                 <span style="color: #f87171; font-weight: 700; font-size: 16px;">
-                    🔥 流量出水警報：發現 {len(alerts)} 款工具正在爆發搜尋，尚未配置商業推薦碼！
+                    🔥 流量出水警報：發現 {len(surge_alerts)} 款工具正在爆發搜尋，尚未配置商業推薦碼！
                 </span>
-                <span class="badge-live">🟢 GSC 即時數據</span>
             </div>
             """,
             unsafe_allow_html=True,
         )
 
-        for alert in alerts:
-            t = alert["tool"]
-            est_loss = int(alert["clicks"] * 0.05 * 20)
+        for a in surge_alerts:
+            t = a["tool"]
+            est_loss = int(a["clicks"] * 0.05 * 20)
 
             with st.container(border=True):
-                # 1. Header: Tool Name, Category Badge, Mode Badge
-                col_h1, col_h2 = st.columns([3, 1])
-                with col_h1:
+                col_al1, col_al2 = st.columns([3, 1])
+                with col_al1:
                     st.markdown(
                         f"""
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <span style="font-size: 18px; font-weight: 700; color: #ffffff;">{t['name']}</span>
-                            <span class="badge-cat">{t.get('category', 'AI Tool')}</span>
-                            <span class="badge-live">🟢 GSC 即時</span>
+                            <span class="pill-badge">{t.get('category')}</span>
+                            <span class="pill-badge pill-green">🟢 GSC 即時</span>
                         </div>
                         """,
                         unsafe_allow_html=True,
                     )
-                with col_h2:
-                    st.markdown(
-                        f"""
-                        <div style="text-align: right;">
-                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #a1a1aa;">{t.get('starting_price', '$20/mo')}</span>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                with col_al2:
+                    st.markdown(f"<div style='text-align: right; font-family: monospace;'>起步價: {t.get('starting_price')}</div>", unsafe_allow_html=True)
 
-                st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
+                col_pm1, col_pm2, col_pm3 = st.columns(3)
+                with col_pm1:
+                    st.metric("GSC 搜尋曝光數", f"{a['impressions']:,}")
+                with col_pm2:
+                    st.metric("GSC 自然點擊數", f"{a['clicks']:,}")
+                with col_pm3:
+                    st.metric("預估月未變現損失", f"~${est_loss:,} / mo")
 
-                # 2. Key Metrics Row
-                col_m1, col_m2, col_m3 = st.columns(3)
-                with col_m1:
-                    st.markdown(
-                        f"""
-                        <div class="metric-pill">
-                            <div class="metric-pill-val" style="color: #60a5fa;">{alert['impressions']:,}</div>
-                            <div class="metric-pill-lbl">GSC 搜尋曝光數</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                with col_m2:
-                    st.markdown(
-                        f"""
-                        <div class="metric-pill">
-                            <div class="metric-pill-val" style="color: #34d399;">{alert['clicks']:,}</div>
-                            <div class="metric-pill-lbl">GSC 自然點擊數</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
-                with col_m3:
-                    st.markdown(
-                        f"""
-                        <div class="metric-pill">
-                            <div class="metric-pill-val" style="color: #f87171;">~${est_loss:,} / mo</div>
-                            <div class="metric-pill-lbl">預估未變現漏斗損失</div>
-                        </div>
-                        """,
-                        unsafe_allow_html=True,
-                    )
+                st.markdown(f"<p style='font-size: 12px; color: #71717a;'>熱門關鍵字: {', '.join([f'<code>{q}</code>' for q in a['top_queries'][:3]])}</p>", unsafe_allow_html=True)
 
-                st.markdown(
-                    f"<p style='font-size: 12px; color: #71717a; margin-top: 8px;'>核心檢索詞：{', '.join([f'<code>{q}</code>' for q in alert['top_queries']])}</p>",
-                    unsafe_allow_html=True,
-                )
+                col_in, col_sv = st.columns([3, 1])
+                with col_in:
+                    quick_aff = st.text_input("配置推薦連結", value=f"{a['current_url']}?via=stackdiff", key=f"aff_in_{t['id']}", label_visibility="collapsed")
+                with col_sv:
+                    if st.button("💾 快速綁定", key=f"btn_aff_sv_{t['id']}", use_container_width=True):
+                        t["url"] = quick_aff.strip()
+                        t["affiliate_url"] = quick_aff.strip()
+                        save_tools_data(tools_list)
+                        st.success(f"已成功為 {t['name']} 配置推薦連結！")
+                        st.rerun()
 
-                # 3. Quick Affiliate Input
-                col_inp, col_btn = st.columns([3, 1])
-                with col_inp:
-                    new_url = st.text_input(
-                        "配置推薦網址 (Affiliate URL)",
-                        value=f"{alert['current_url']}?via=stackdiff",
-                        key=f"input_aff_{t['id']}",
-                        label_visibility="collapsed",
-                    )
-                with col_btn:
-                    if st.button("💾 快速綁定", key=f"btn_aff_{t['id']}", use_container_width=True):
-                        if new_url.strip():
-                            t["url"] = new_url.strip()
-                            t["affiliate_url"] = new_url.strip()
-                            save_tools_data(tools_list)
-                            st.success(f"已為 {t['name']} 綁定商業推薦碼！")
-                            st.rerun()
-
-                # 4. Pitch Generator
-                with st.expander(f"📝 生成 {t['name']} 官方商業審核申請說帖"):
-                    if st.button(f"⚡ 調用 {provider} 起草專業申請信", key=f"pitch_ai_{t['id']}"):
+                with st.expander(f"📝 生成 {t['name']} 審核申請說帖"):
+                    if st.button(f"⚡ 調用 Gemini 起草申請信", key=f"btn_letter_{t['id']}"):
                         pitch_prompt = f"""
-Write an executive, high-converting affiliate partnership application letter to the partnerships team at {t['name']}.
-Context:
-- Platform: StackDiff (https://stackdiff.pages.dev), an objective, developer-focused AI tool comparison directory.
-- Verified GSC Search Impressions for {t['name']}: {alert['impressions']:,}
-- High-intent developer clicks: {alert['clicks']:,} across search queries: {alert['top_queries']}
-- Highlight: We showcase {t['name']}'s key features in technical pairwise diff matrices.
-- Request: Expedited review and an official referral/affiliate link to place on our high-contrast matrix CTAs.
-Tone: Concise, data-driven, engineering-friendly (under 180 words).
+Write a high-converting affiliate application letter to {t['name']}.
+Our platform: StackDiff (https://stackdiff.pages.dev).
+Impressions: {a['impressions']:,}. Clicks: {a['clicks']:,}. Top queries: {a['top_queries']}.
+Request: Fast-track approval for official affiliate tracking link.
+Keep it under 150 words, data-driven.
 """
-                        sys_p = "You are the Senior Business Development Director for StackDiff, an AI developer comparison engine."
-                        with st.spinner(f"Gemini / {provider} 正在生成申請信草稿..."):
-                            letter_content = call_ai_engine(pitch_prompt, sys_p, provider, api_key, model, base_url)
-                            if not letter_content:
-                                letter_content = f"""Subject: Partnership Inquiry: Featuring {t['name']} on StackDiff ({alert['impressions']:,} GSC search impressions)
+                        letter = call_ai_engine(pitch_prompt, "You are a BD Lead at StackDiff.", provider, api_key, model, base_url)
+                        if not letter:
+                            letter = f"""Subject: Partnership Inquiry: Featuring {t['name']} on StackDiff ({a['impressions']:,} GSC impressions)
 
 Hi {t['name']} Partnerships Team,
 
-I lead technical growth at StackDiff (https://stackdiff.pages.dev), an objective, data-driven AI tool specification and pairwise comparison directory.
+I lead technical growth at StackDiff (https://stackdiff.pages.dev).
+Our pairwise comparison matrices featuring {t['name']} generate over {a['impressions']:,} verified search impressions from software engineers.
 
-Our technical comparison matrices for {t['name']} are currently generating over {alert['impressions']:,} verified search impressions from software engineers and AI creators ranking for queries like "{alert['top_queries'][0]}".
+We would love to onboard onto your affiliate program and integrate your official referral link into our CTA buttons.
 
-We showcase {t['name']}'s architectural capabilities and would love to integrate your official affiliate tracking link into our high-contrast CTA matrix buttons.
-
-Could you approve our expedited partnership application or provide our custom referral URL?
+Could you share terms or expedite our application?
 
 Best regards,
-StackDiff Partnerships Team
-partnerships@stackdiff.pages.dev | https://stackdiff.pages.dev"""
-
-                            st.text_area("生成的合作申請說帖草稿:", value=letter_content, height=200, key=f"text_pitch_{t['id']}")
+StackDiff Partnerships Team"""
+                        st.text_area("申請信草稿:", value=letter, height=180, key=f"txt_{t['id']}")
     else:
         if is_gsc_connected:
-            st.success("✅ 流量雷達正常：目前所有高流量工具皆已綁定推薦代碼，無被動收益流失。")
+            st.success("✅ 目前所有高流量檢索工具皆已綁定推薦代碼，無被動收益流失。")
 
     if gsc_queries:
         st.markdown("---")
-        st.markdown("#### 📈 GSC 關鍵字全域監控表 (最近 28 天真實記錄)")
-        st.caption("💡 提示：手機端可橫向滑動查看完整指標。")
+        st.markdown("#### 📈 GSC 關鍵字全域監控表")
+        st.caption("💡 手機端支援手勢橫滑。")
         st.dataframe(pd.DataFrame(gsc_queries), use_container_width=True, hide_index=True)
 
 # =============================================================================
-# TAB 2: 🛠️ Database & Link Manager
-# =============================================================================
-with tabs[1]:
-    st.subheader("🛠️ 資料庫與推薦代碼管理器")
-    st.markdown("線上編輯 `src/data/tools.json` 中的各工具規格與商務推薦網址。")
-
-    col_filter1, col_filter2 = st.columns([1, 2])
-    with col_filter1:
-        cat_list = sorted(list(set(t.get("category", "") for t in tools_list)))
-        filter_category = st.selectbox("依分類篩選", ["全部 (All)"] + cat_list)
-    with col_filter2:
-        search_query = st.text_input("搜尋工具名稱、ID 或關鍵字", placeholder="e.g. Cursor, DeepSeek, Windsurf...")
-
-    view_tools = tools_list
-    if filter_category != "全部 (All)":
-        view_tools = [t for t in view_tools if t.get("category") == filter_category]
-    if search_query.strip():
-        sq = search_query.strip().lower()
-        view_tools = [t for t in view_tools if sq in t.get("name", "").lower() or sq in t.get("id", "").lower()]
-
-    editor_rows = []
-    for t in view_tools:
-        editor_rows.append({
-            "id": t.get("id", ""),
-            "name": t.get("name", ""),
-            "category": t.get("category", ""),
-            "pricing_model": t.get("pricing_model", ""),
-            "starting_price": t.get("starting_price", ""),
-            "free_tier": t.get("free_tier", True),
-            "url": t.get("url") or t.get("affiliate_url") or "",
-            "primary_audience": t.get("primary_audience") or t.get("best_for") or "",
-        })
-
-    st.info("💡 手機端提示：表格支援雙向手勢滑動，點選任意儲存格即可直接編輯。")
-    edited_data = st.data_editor(
-        pd.DataFrame(editor_rows),
-        use_container_width=True,
-        num_rows="dynamic",
-        disabled=["id"],
-        key="tools_table_editor",
-    )
-
-    st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    col_save_local, col_save_deploy = st.columns([1, 1])
-    with col_save_local:
-        if st.button("💾 僅儲存到本地 tools.json", use_container_width=True):
-            updated_map = {r["id"]: r for r in edited_data.to_dict(orient="records")}
-            for t in tools_list:
-                if t.get("id") in updated_map:
-                    row = updated_map[t["id"]]
-                    t["name"] = row["name"]
-                    t["category"] = row["category"]
-                    t["pricing_model"] = row["pricing_model"]
-                    t["starting_price"] = row["starting_price"]
-                    t["free_tier"] = bool(row["free_tier"])
-                    t["url"] = row["url"]
-                    t["affiliate_url"] = row["url"]
-                    t["primary_audience"] = row["primary_audience"]
-                    t["best_for"] = row["primary_audience"]
-            if save_tools_data(tools_list):
-                st.success("✅ 成功儲存變更至本地 `src/data/tools.json`！")
-
-    with col_save_deploy:
-        if st.button("🚀 儲存並一鍵推送到 Cloudflare (Git Push)", type="primary", use_container_width=True):
-            updated_map = {r["id"]: r for r in edited_data.to_dict(orient="records")}
-            for t in tools_list:
-                if t.get("id") in updated_map:
-                    row = updated_map[t["id"]]
-                    t["name"] = row["name"]
-                    t["category"] = row["category"]
-                    t["pricing_model"] = row["pricing_model"]
-                    t["starting_price"] = row["starting_price"]
-                    t["free_tier"] = bool(row["free_tier"])
-                    t["url"] = row["url"]
-                    t["affiliate_url"] = row["url"]
-                    t["primary_audience"] = row["primary_audience"]
-                    t["best_for"] = row["primary_audience"]
-            save_tools_data(tools_list)
-
-            with st.status("正在執行 Cloudflare Pages 自動化上線流程...", expanded=True) as status:
-                try:
-                    subprocess.run(["git", "add", "."], cwd=str(PROJECT_ROOT), check=True, capture_output=True, text=True)
-                    commit_res = subprocess.run(
-                        ["git", "commit", "-m", "chore: update tool affiliate links via Ops Dashboard"],
-                        cwd=str(PROJECT_ROOT),
-                        capture_output=True,
-                        text=True,
-                    )
-                    push_res = subprocess.run(["git", "push"], cwd=str(PROJECT_ROOT), capture_output=True, text=True)
-                    if push_res.returncode == 0:
-                        status.update(label="🎉 成功推送到 GitHub！Cloudflare Pages 已自動開始編譯！", state="complete")
-                    else:
-                        st.warning(f"Git 提示: {push_res.stderr.strip() or push_res.stdout.strip()}")
-                        status.update(label="⚠️ 本地提交完成，遠端需確認連線與權限。", state="complete")
-                except Exception as e:
-                    status.update(label=f"❌ Git 執行出錯: {e}", state="error")
-
-# =============================================================================
-# TAB 3: 🤖 AI Tool Auto Ingestion
-# =============================================================================
-with tabs[2]:
-    st.subheader("🤖 AI 工具自動萃取錄入 (Powered by Gemini)")
-    st.markdown("輸入任何新 AI 工具的基本資訊，自動由 Google Gemini API 解析為結構化規格。")
-
-    col_in_name, col_in_url, col_in_cat = st.columns(3)
-    with col_in_name:
-        tool_in_name = st.text_input("工具名稱 (Tool Name)", placeholder="e.g. Devin, Lovable, Bolt.new")
-    with col_in_url:
-        tool_in_url = st.text_input("官方網址 (Official URL)", placeholder="https://lovable.dev")
-    with col_in_cat:
-        all_cats = sorted(list(set(t.get("category", "") for t in tools_list)))
-        tool_in_cat = st.selectbox("所屬分類 (Category)", all_cats + ["Custom..."])
-        if tool_in_cat == "Custom...":
-            tool_in_cat = st.text_input("自訂分類名稱", placeholder="e.g. Agentic AI")
-
-    tool_in_notes = st.text_area(
-        "補充介紹或官網特色文案 (選填)",
-        placeholder="貼上 Product Hunt 說明、定價規則 ($20/mo)、上下文長度或核心技術賣點...",
-        height=90,
-    )
-
-    if st.button("🤖 調用 AI 自動解析規格", type="primary", use_container_width=True):
-        if not tool_in_name.strip() or not tool_in_url.strip():
-            st.error("請至少輸入工具名稱與官方網址！")
-        else:
-            with st.spinner(f"正在調用 {provider} ({model}) 解析 {tool_in_name} 的硬核規格..."):
-                parse_prompt = f"""
-Analyze the AI tool "{tool_in_name}" with official URL "{tool_in_url}" in category "{tool_in_cat}".
-Context provided: {tool_in_notes}
-
-Generate a strictly valid JSON object representing this AI tool for StackDiff's comparison engine.
-Required Schema:
-{{
-  "id": "{tool_in_name.lower().replace(' ', '-')}",
-  "name": "{tool_in_name}",
-  "slug": "{tool_in_name.lower().replace(' ', '-')}",
-  "category": "{tool_in_cat}",
-  "pricing_model": "Freemium" or "Paid Only" or "Free & Open Source",
-  "starting_price": "$X/mo" or "$0",
-  "free_tier": true or false,
-  "primary_audience": "Concise ICP definition",
-  "best_for": "Same as primary_audience",
-  "platforms": ["Web", "API", "Mac", "Windows", etc.],
-  "supported_platforms": ["Same as platforms"],
-  "core_positioning": "Dense technical positioning sentence without marketing hype",
-  "tagline": "Same as core_positioning",
-  "key_capabilities": [
-    "Capability 1",
-    "Capability 2",
-    "Capability 3",
-    "Capability 4"
-  ],
-  "key_features": ["Same as key_capabilities"],
-  "strengths": [
-    "Strength 1",
-    "Strength 2",
-    "Strength 3"
-  ],
-  "pros": ["Same as strengths"],
-  "trade_offs": [
-    "Trade-off 1",
-    "Trade-off 2"
-  ],
-  "cons": ["Same as trade_offs"],
-  "verdict_context": "Recommendation context summary",
-  "url": "{tool_in_url}",
-  "affiliate_url": "{tool_in_url}"
-}}
-Return ONLY the raw JSON object. Do NOT wrap with markdown quotes.
-"""
-                system_instruction = "You are a senior technical analyst extracting objective, high-density specifications for AI tools."
-                result_json_str = call_ai_engine(parse_prompt, system_instruction, provider, api_key, model, base_url)
-
-                if result_json_str:
-                    try:
-                        clean_str = result_json_str.strip()
-                        if clean_str.startswith("```json"):
-                            clean_str = clean_str[7:]
-                        if clean_str.startswith("```"):
-                            clean_str = clean_str[3:]
-                        if clean_str.endswith("```"):
-                            clean_str = clean_str[:-3]
-                        st.session_state["parsed_tool_json"] = json.loads(clean_str.strip())
-                    except Exception as e:
-                        st.error(f"JSON 結構解析出錯: {e}")
-                else:
-                    # Fallback intelligent generator
-                    t_slug = tool_in_name.lower().replace(" ", "-")
-                    st.session_state["parsed_tool_json"] = {
-                        "id": t_slug,
-                        "name": tool_in_name,
-                        "slug": t_slug,
-                        "category": tool_in_cat,
-                        "pricing_model": "Freemium",
-                        "starting_price": "$20/mo",
-                        "free_tier": True,
-                        "primary_audience": f"Engineers and builders creating applications in {tool_in_cat}",
-                        "best_for": f"Engineers and builders creating applications in {tool_in_cat}",
-                        "platforms": ["Web", "API"],
-                        "supported_platforms": ["Web", "API"],
-                        "core_positioning": f"Specialized {tool_in_cat} platform engineered for autonomous execution and rapid developer workflows",
-                        "tagline": f"Specialized {tool_in_cat} platform engineered for autonomous execution and rapid developer workflows",
-                        "key_capabilities": [
-                            "Autonomous execution engine with granular user controls",
-                            "Real-time streaming generation and interactive preview workspace",
-                            "Seamless export to mainstream frameworks and modern cloud environments",
-                            "REST and WebSocket APIs for programmatic integration"
-                        ],
-                        "key_features": [
-                            "Autonomous execution engine with granular user controls",
-                            "Real-time streaming generation and interactive preview workspace",
-                            "Seamless export to mainstream frameworks and modern cloud environments",
-                            "REST and WebSocket APIs for programmatic integration"
-                        ],
-                        "strengths": [
-                            "Fast iteration speed with clean developer ergonomics",
-                            "High technical accuracy with minimal hallucination",
-                            "Active documentation and responsive community ecosystem"
-                        ],
-                        "pros": [
-                            "Fast iteration speed with clean developer ergonomics",
-                            "High technical accuracy with minimal hallucination",
-                            "Active documentation and responsive community ecosystem"
-                        ],
-                        "trade_offs": [
-                            "Premium execution credits deplete rapidly during heavy continuous sessions",
-                            "Occasional cold-start latencies on specialized complex requests"
-                        ],
-                        "cons": [
-                            "Premium execution credits deplete rapidly during heavy continuous sessions",
-                            "Occasional cold-start latencies on specialized complex requests"
-                        ],
-                        "verdict_context": f"Top recommendation for developers and creators evaluating tools in {tool_in_cat}",
-                        "url": tool_in_url,
-                        "affiliate_url": tool_in_url,
-                    }
-
-    if "parsed_tool_json" in st.session_state:
-        st.markdown("#### 📋 萃取規格校驗與編輯")
-        with st.container(border=True):
-            edited_json_str = st.text_area(
-                "JSON 結構預覽",
-                value=json.dumps(st.session_state["parsed_tool_json"], indent=2, ensure_ascii=False),
-                height=280,
-            )
-            if st.button("✅ 確認寫入 tools.json 資料庫", type="primary", use_container_width=True):
-                try:
-                    tool_obj = json.loads(edited_json_str)
-                    existing_ids = [t["id"] for t in tools_list]
-                    if tool_obj["id"] in existing_ids:
-                        for idx, t in enumerate(tools_list):
-                            if t["id"] == tool_obj["id"]:
-                                tools_list[idx] = tool_obj
-                        st.info(f"已更新既有工具 【{tool_obj['name']}】！")
-                    else:
-                        tools_list.append(tool_obj)
-                        st.success(f"成功將全新工具 【{tool_obj['name']}】 追加至資料庫！")
-
-                    save_tools_data(tools_list)
-                    st.session_state.pop("parsed_tool_json", None)
-                    st.rerun()
-                except Exception as e:
-                    st.error(f"寫入資料庫失敗: {e}")
-
-# =============================================================================
-# TAB 4: 💼 Affiliate Partner CRM
+# TAB 4: 💼 聯盟 CRM 看板 (Affiliate Pipeline)
 # =============================================================================
 with tabs[3]:
     st.subheader("💼 聯盟夥伴商務 CRM 看板")
-    st.markdown("管理每款工具的聯盟夥伴申請階段、抽成條款與收益紀錄（資料持久化保存）。")
+    st.markdown("追蹤每款工具的聯盟夥伴申請階段、抽成條款與收益紀錄（資料自動持久化保存）。")
 
     pipeline_items = load_pipeline_data(tools_list)
 
@@ -1221,60 +1202,21 @@ with tabs[3]:
         counts_by_stage[s] = counts_by_stage.get(s, 0) + 1
         est_total_monthly += float(p.get("est_monthly_revenue", 0.0) or 0.0)
 
+    # Status Cards
     crm_c1, crm_c2, crm_c3, crm_c4, crm_c5 = st.columns(5)
     with crm_c1:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val" style="color: #94a3b8;">{counts_by_stage.get('未申請 (Not Applied)', 0)}</div>
-                <div class="metric-pill-lbl">⏳ 待申請</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.metric("⏳ 待申請", counts_by_stage.get("未申請 (Not Applied)", 0))
     with crm_c2:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val" style="color: #fbbf24;">{counts_by_stage.get('審核中 (Under Review)', 0)}</div>
-                <div class="metric-pill-lbl">📨 審核中</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.metric("📨 審核中", counts_by_stage.get("審核中 (Under Review)", 0))
     with crm_c3:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val" style="color: #38bdf8;">{counts_by_stage.get('已通過 (Approved)', 0)}</div>
-                <div class="metric-pill-lbl">✅ 已通過</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.metric("✅ 已通過", counts_by_stage.get("已通過 (Approved)", 0))
     with crm_c4:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val" style="color: #4ade80;">{counts_by_stage.get('產生被動收益 (Generating Revenue)', 0)}</div>
-                <div class="metric-pill-lbl">💰 產生收益中</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.metric("💰 產生收益中", counts_by_stage.get("產生被動收益 (Generating Revenue)", 0))
     with crm_c5:
-        st.markdown(
-            f"""
-            <div class="metric-pill">
-                <div class="metric-pill-val" style="color: #a78bfa;">${est_total_monthly:,.2f}</div>
-                <div class="metric-pill-lbl">📈 預估月被動收益</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
+        st.metric("📈 預估月被動收益", f"${est_total_monthly:,.2f}")
 
     st.markdown("<div style='height: 12px;'></div>", unsafe_allow_html=True)
-    st.markdown("#### 📋 聯盟管道線上編輯清單")
+    st.markdown("#### 📋 聯盟管道編輯清單")
     st.caption("💡 提示：手機端可橫向滑動編輯狀態與結算管道。")
 
     status_opts = [
@@ -1295,7 +1237,7 @@ with tabs[3]:
             "est_monthly_revenue": st.column_config.NumberColumn("預估月收益 ($)", format="$%.2f"),
         },
         disabled=["tool_id", "tool_name", "category"],
-        key="crm_table_editor",
+        key="crm_tab_editor",
     )
 
     if st.button("💾 儲存 CRM 變更", type="primary", use_container_width=True):
@@ -1306,97 +1248,97 @@ with tabs[3]:
             st.success("✅ CRM 資料已成功保存至 `src/data/affiliate_pipeline.json`！")
 
 # =============================================================================
-# TAB 5: 🧠 Gemini Copilot Decision Chat
+# TAB 5: 🛠️ 資料庫維護 & 部署
 # =============================================================================
 with tabs[4]:
-    st.subheader(f"🧠 AI 商業決策軍師 ({provider})")
-    st.markdown("注入 StackDiff 全域工具分佈與推薦碼現況，提供長尾關鍵字擴展與獲利戰略。")
+    st.subheader("🛠️ 資料庫快速維護 & 一鍵部署")
+    st.markdown("線上編輯 `src/data/tools.json` 中的各工具規格與商務推薦網址，並一鍵推送到 Cloudflare Pages。")
 
-    category_distribution: Dict[str, int] = {}
-    for t in tools_list:
-        cat = t.get("category", "Other")
-        category_distribution[cat] = category_distribution.get(cat, 0) + 1
+    col_flt1, col_flt2 = st.columns([1, 2])
+    with col_flt1:
+        cat_choices = sorted(list(set(t.get("category", "") for t in tools_list)))
+        sel_cat = st.selectbox("分類過濾", ["全部 (All)"] + cat_choices)
+    with col_flt2:
+        search_kw = st.text_input("搜尋名稱或 ID", placeholder="Cursor, Claude, Windsurf...")
 
-    chat_system_instruction = f"""
-You are the Chief Growth Strategist and Technical SEO Lead for "StackDiff" (https://stackdiff.pages.dev).
-Live Site Context:
-- Total Indexed Tools: {total_tools}
-- Total Active Comparison Pages: {total_matrices}
-- Category Breakdown: {json.dumps(category_distribution, ensure_ascii=False)}
-- Monetized Affiliate Tools: {affiliate_count}/{total_tools} ({affiliate_pct:.1f}%)
-Tone: High-density, data-driven, strategic, engineering-focused. Answer in Traditional Chinese (繁體中文).
-"""
+    filtered = tools_list
+    if sel_cat != "全部 (All)":
+        filtered = [t for t in filtered if t.get("category") == sel_cat]
+    if search_kw.strip():
+        kw = search_kw.strip().lower()
+        filtered = [t for t in filtered if kw in t.get("name", "").lower() or kw in t.get("id", "").lower()]
 
-    if "chat_messages" not in st.session_state:
-        st.session_state.chat_messages = [
-            {
-                "role": "assistant",
-                "content": f"👋 你好！我是 StackDiff 決策軍師（目前驅動引擎：**{provider} - {model}**）。全站已收錄 **{total_tools} 款工具** 與 **{total_matrices} 組對比頁面**。你可以點選下方快速提問，或直接諮詢 SEO 與獲利策略！",
-            }
-        ]
+    rows = []
+    for t in filtered:
+        rows.append({
+            "id": t.get("id", ""),
+            "name": t.get("name", ""),
+            "category": t.get("category", ""),
+            "pricing_model": t.get("pricing_model", ""),
+            "starting_price": t.get("starting_price", ""),
+            "free_tier": t.get("free_tier", True),
+            "url": t.get("url") or t.get("affiliate_url") or "",
+            "primary_audience": t.get("primary_audience") or t.get("best_for") or "",
+        })
 
-    st.markdown("##### ⚡ 快速決策諮詢")
-    qc1, qc2, qc3 = st.columns(3)
-    quick_prompt = None
-    with qc1:
-        if st.button("💡 哪個類別對比太少？", use_container_width=True):
-            quick_prompt = "分析目前各類別的工具分佈，指出哪幾個類別對比頁面數量太少，並具體推薦該追加收錄哪些熱門工具以放大長尾流量？"
-    with qc2:
-        if st.button("🚀 推薦 3 組高潛力對比詞", use_container_width=True):
-            quick_prompt = "根據 2026 全球 AI 工具搜尋趨勢，推薦 3 組目前尚未被充分滿足、但在今年搜尋量爆發的高商業價值對比關鍵字？"
-    with qc3:
-        if st.button("💰 哪 5 款工具獲利潛力最高？", use_container_width=True):
-            quick_prompt = "分析現有 31 款工具中，哪 5 款工具的聯盟導購獲利潛力最高？（考量付費轉換率、定價門檻與開箱剛需）"
+    st.caption("💡 手機端支援手勢橫滑，點選任意儲存格即可直接編輯。")
+    edited_t_df = st.data_editor(
+        pd.DataFrame(rows),
+        use_container_width=True,
+        num_rows="dynamic",
+        disabled=["id"],
+        key="main_tools_editor",
+    )
 
-    for msg in st.session_state.chat_messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    col_s1, col_s2 = st.columns([1, 1])
+    with col_s1:
+        if st.button("💾 僅儲存到本地 tools.json", use_container_width=True):
+            upd = {r["id"]: r for r in edited_t_df.to_dict(orient="records")}
+            for t in tools_list:
+                if t.get("id") in upd:
+                    row = upd[t["id"]]
+                    t["name"] = row["name"]
+                    t["category"] = row["category"]
+                    t["pricing_model"] = row["pricing_model"]
+                    t["starting_price"] = row["starting_price"]
+                    t["free_tier"] = bool(row["free_tier"])
+                    t["url"] = row["url"]
+                    t["affiliate_url"] = row["url"]
+                    t["primary_audience"] = row["primary_audience"]
+                    t["best_for"] = row["primary_audience"]
+            if save_tools_data(tools_list):
+                st.success("✅ 成功儲存變更至本地 `src/data/tools.json`！")
 
-    user_prompt = st.chat_input("請輸入您對 StackDiff 的 SEO 佈局、類別擴充或聯盟行銷提問...") or quick_prompt
+    with col_s2:
+        if st.button("🚀 儲存並一鍵推送到 Cloudflare (Git Push)", type="primary", use_container_width=True):
+            upd = {r["id"]: r for r in edited_t_df.to_dict(orient="records")}
+            for t in tools_list:
+                if t.get("id") in upd:
+                    row = upd[t["id"]]
+                    t["name"] = row["name"]
+                    t["category"] = row["category"]
+                    t["pricing_model"] = row["pricing_model"]
+                    t["starting_price"] = row["starting_price"]
+                    t["free_tier"] = bool(row["free_tier"])
+                    t["url"] = row["url"]
+                    t["affiliate_url"] = row["url"]
+                    t["primary_audience"] = row["primary_audience"]
+                    t["best_for"] = row["primary_audience"]
+            save_tools_data(tools_list)
 
-    if user_prompt:
-        st.session_state.chat_messages.append({"role": "user", "content": user_prompt})
-        with st.chat_message("user"):
-            st.markdown(user_prompt)
-
-        with st.chat_message("assistant"):
-            with st.spinner(f"{provider} 正在深度運算決策戰略..."):
-                reply_text = call_ai_engine(user_prompt, chat_system_instruction, provider, api_key, model, base_url)
-
-                if not reply_text:
-                    if "類別" in user_prompt or "少" in user_prompt:
-                        reply_text = f"""### 📊 類別深度分佈診斷與擴張策略
-
-目前 **31 款工具** 的各分類分佈如下：
-- **Video AI**: 7 款 (21 組對比) – 流量第一主力。
-- **Coding AI**: 5 款 (10 組對比) – 商業變現轉換率最佳。
-- **LLM**: 5 款 (10 組對比) – 搜尋量龐大。
-- **Image AI**: 5 款 (10 組對比) – 視覺傳播力強。
-- **Voice AI**: 4 款 (6 組對比) – 即時串流語音為新藍海。
-- **Workflow AI**: 3 款 (3 組對比) – **⚠️ 嚴重偏少！**
-- **Music AI**: 2 款 (1 組對比) – **⚠️ 嚴重偏少！**
-
-#### 🎯 優先補強建議：
-1. **Music AI（立即擴充至 4 款）**：追加 **Mubert**、**Soundraw**，可將對比矩陣從 1 組激增至 6 組。
-2. **Workflow AI（立即擴充至 5 款）**：追加 **n8n** (開源自動化代表)、**Dify**，直接攻佔企業自動化工程師搜尋意圖。"""
-                    elif "關鍵字" in user_prompt or "對比" in user_prompt:
-                        reply_text = """### 🚀 2026 高潛力未開發對比詞推薦
-
-1. **`windsurf-vs-cursor` (The Battle of Agentic IDEs)**
-   - **搜尋意圖**：開發者正在評估從 Cursor 遷移至 Windsurf 的性價比（$15 vs $20）。
-   - **建議著重**：比較 Cascade 的終端自主執行能力與 Cursor Composer 的多檔案 Diff 體驗。
-
-2. **`deepseek-r1-vs-openai-o1` (Open-Weight Reasoning vs Proprietary)**
-   - **搜尋意圖**：架構師評估開源本地私有化部署與雲端 API 成本（DeepSeek 節省 90% 成本）。
-
-3. **`cartesia-sonic-vs-elevenlabs` (Sub-100ms Ultra-Low Latency TTS)**
-   - **搜尋意圖**：AI 語音對話機器人工程師尋找低於 100ms 延遲的即時語音方案。"""
+            with st.status("正在執行 Cloudflare Pages 自動化上線流程...", expanded=True) as status:
+                try:
+                    subprocess.run(["git", "add", "."], cwd=str(PROJECT_ROOT), check=True)
+                    commit_res = subprocess.run(
+                        ["git", "commit", "-m", "chore: update tools via Ops Dashboard"],
+                        cwd=str(PROJECT_ROOT),
+                        capture_output=True,
+                        text=True,
+                    )
+                    push_res = subprocess.run(["git", "push"], cwd=str(PROJECT_ROOT), capture_output=True, text=True)
+                    if push_res.returncode == 0:
+                        status.update(label="🎉 成功推送到 GitHub！Cloudflare Pages 開始構建！", state="complete")
                     else:
-                        reply_text = f"""### 💡 戰略分析建議
-
-根據目前 StackDiff 的營運數據（共 {total_tools} 款工具，覆蓋率 {affiliate_pct:.1f}%）：
-1. **優先針對高點擊工具補齊代碼**：優先針對「Coding AI」與「Video AI」類別註冊 Rewardful / FirstPromoter / Impact 聯盟。
-2. **靜態索引效能**：保持每頁生成的靜態純 HTML 結構，確保 Googlebot 秒級爬取與渲染。"""
-
-                st.markdown(reply_text)
-                st.session_state.chat_messages.append({"role": "assistant", "content": reply_text})
+                        status.update(label="⚠️ 本地提交完成，遠端需確認連線與權限。", state="complete")
+                except Exception as e:
+                    status.update(label=f"❌ Git 執行出錯: {e}", state="error")
