@@ -313,74 +313,88 @@ def upsert_tool(tools: List[Dict[str, Any]], new_tool: Dict[str, Any]) -> Tuple[
     tools.append(new_tool)
     return tools, True, f"✅ 成功收錄全新工具【{new_tool.get('name', target_id)}】！"
 
+def save_env_var(key: str, value: str) -> bool:
+    """Updates or appends a key-value pair in .env and os.environ."""
+    try:
+        os.environ[key] = value
+        lines = []
+        found = False
+        if ENV_PATH.exists():
+            with open(ENV_PATH, "r", encoding="utf-8") as f:
+                lines = f.readlines()
+            new_lines = []
+            for line in lines:
+                stripped = line.strip()
+                if stripped.startswith(f"{key}=") or stripped.startswith(f"{key} ="):
+                    new_lines.append(f"{key}={value}\n")
+                    found = True
+                else:
+                    new_lines.append(line)
+            lines = new_lines
+
+        if not found:
+            lines.append(f"{key}={value}\n")
+
+        with open(ENV_PATH, "w", encoding="utf-8") as f:
+            f.writelines(lines)
+        return True
+    except Exception as e:
+        st.warning(f"儲存 .env 設定失敗: {e}")
+        return False
+
+def send_discord_alert(
+    webhook_url: str,
+    title: str = "🚨 StackDiff 流量出水警報",
+    description: str = "",
+    fields: Optional[List[Dict[str, Any]]] = None,
+) -> Tuple[bool, str]:
+    """
+    Sends Discord Rich Embed traffic surge alert.
+    Color: 0xff4b4b (Bright red/orange).
+    """
+    if not webhook_url or not webhook_url.strip():
+        return False, "未設定 Discord Webhook 網址"
+
+    url = webhook_url.strip()
+    try:
+        embed = {
+            "title": title,
+            "description": description,
+            "color": 0xFF4B4B,  # 亮橘色/紅色
+            "timestamp": datetime.utcnow().isoformat(),
+            "footer": {
+                "text": "StackDiff Operations Engine • Traffic Sentinel"
+            },
+        }
+        if fields:
+            embed["fields"] = fields
+
+        payload = {
+            "content": "🚨 **[StackDiff 收益出水提醒]** 發現高流量但未配置商業推薦代碼之工具！",
+            "embeds": [embed],
+        }
+
+        resp = requests.post(
+            url,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=10,
+        )
+        if resp.status_code in [200, 204]:
+            return True, "Discord 警報推播成功！"
+        else:
+            return False, f"HTTP 代碼 {resp.status_code}: {resp.text[:120]}"
+    except Exception as e:
+        return False, f"發送 Discord 警報失敗: {str(e)}"
+
+# Backwards compatible alias
 def send_webhook_alert(
     webhook_url: str,
     title: str,
     description: str,
     fields: Optional[List[Dict[str, Any]]] = None,
 ) -> Tuple[bool, str]:
-    """
-    Sends automated revenue/traffic surge alert to Discord or Telegram.
-    Returns (success: bool, message: str).
-    """
-    if not webhook_url or not webhook_url.strip():
-        return False, "未配置 Webhook URL"
-
-    url = webhook_url.strip()
-    try:
-        # 1. Discord Webhook
-        if "discord.com/api/webhooks" in url or "discordapp.com/api/webhooks" in url:
-            embed = {
-                "title": title,
-                "description": description,
-                "color": 16734296,
-                "timestamp": datetime.utcnow().isoformat(),
-                "footer": {"text": "StackDiff Operations Engine"},
-            }
-            if fields:
-                embed["fields"] = fields
-            payload = {
-                "content": "🚨 **[StackDiff 流量出水未變現警報]**",
-                "embeds": [embed],
-            }
-            resp = requests.post(url, json=payload, timeout=10)
-            if resp.status_code in [200, 204]:
-                return True, "Discord 通知發送成功！"
-            else:
-                return False, f"Discord API 回傳代碼 {resp.status_code}: {resp.text[:120]}"
-
-        # 2. Telegram Bot API / Webhook
-        elif "api.telegram.org" in url:
-            target_url = url if "sendMessage" in url else f"{url.rstrip('/')}/sendMessage"
-            text_content = f"🚨 *{title}*\n\n{description}\n\n_Sent from StackDiff Ops Deck_"
-            payload = {
-                "text": text_content,
-                "parse_mode": "Markdown",
-            }
-            resp = requests.post(target_url, json=payload, timeout=10)
-            if resp.status_code == 200:
-                return True, "Telegram 通知發送成功！"
-            else:
-                return False, f"Telegram API 回傳代碼 {resp.status_code}: {resp.text[:120]}"
-
-        # 3. Generic JSON Webhook (Slack, Make, Zapier, n8n, etc.)
-        else:
-            payload = {
-                "event": "stackdiff_surge_alert",
-                "title": title,
-                "message": description,
-                "timestamp": datetime.utcnow().isoformat(),
-            }
-            if fields:
-                payload["fields"] = fields
-            resp = requests.post(url, json=payload, timeout=10)
-            if resp.status_code in [200, 201, 202, 204]:
-                return True, "Webhook 通知發送成功！"
-            else:
-                return False, f"Webhook 回傳狀態碼 {resp.status_code}: {resp.text[:120]}"
-
-    except Exception as e:
-        return False, f"發送 Webhook 異常: {str(e)}"
+    return send_discord_alert(webhook_url, title, description, fields)
 
 def load_pipeline_data(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Loads CRM pipeline data from src/data/affiliate_pipeline.json."""
@@ -658,7 +672,8 @@ affiliate_pct = (affiliate_count / total_tools * 100) if total_tools > 0 else 0
 
 gsc_creds = get_gsc_credentials()
 is_gsc_connected = gsc_creds is not None and gsc_creds.valid
-webhook_url = os.getenv("ALERT_WEBHOOK_URL") or os.getenv("DISCORD_WEBHOOK_URL") or ""
+discord_webhook = os.getenv("DISCORD_WEBHOOK_URL") or os.getenv("ALERT_WEBHOOK_URL") or ""
+webhook_url = discord_webhook
 
 # Sidebar: Compact Telemetry & Collapsible Settings
 with st.sidebar:
@@ -723,25 +738,40 @@ with st.sidebar:
         model = st.selectbox("模型選擇", model_options, index=0)
 
         st.markdown("---")
-        st.markdown("##### 📢 收益警報通知 (Webhook)")
-        default_webhook = os.getenv("ALERT_WEBHOOK_URL") or os.getenv("DISCORD_WEBHOOK_URL") or ""
-        webhook_url = st.text_input(
-            "Discord / Telegram Webhook URL",
-            value=default_webhook,
+        st.markdown("##### 📢 收益警報通知 (Discord Webhook)")
+        saved_discord_webhook = os.getenv("DISCORD_WEBHOOK_URL") or os.getenv("ALERT_WEBHOOK_URL") or ""
+        discord_webhook = st.text_input(
+            "Discord Webhook 網址",
+            value=saved_discord_webhook,
             type="password",
-            help="支援 Discord、Telegram 或一般 Webhook URL。當流量出水未變現時可推送離線警報。",
+            placeholder="https://discord.com/api/webhooks/...",
+            help="輸入後將自動持久化儲存至專案根目錄的 .env 檔案中 (DISCORD_WEBHOOK_URL)，重啟免重複輸入。",
         )
-        if webhook_url:
-            if st.button("🧪 測試 Webhook 發送", key="btn_test_webhook", use_container_width=True):
-                ok, w_msg = send_webhook_alert(
-                    webhook_url,
-                    "🔔 StackDiff Webhook 測試通知",
-                    "您的通訊軟體 Webhook 已成功綁定！未來搜尋流量暴增但未配置分潤碼時將自動發送警報。",
+        if discord_webhook != saved_discord_webhook and discord_webhook.strip():
+            save_env_var("DISCORD_WEBHOOK_URL", discord_webhook.strip())
+            st.toast("💾 Discord Webhook 網址已自動儲存至 .env！", icon="✅")
+
+        if discord_webhook:
+            if st.button("📲 發送 Discord 測試推播", key="btn_test_discord_webhook", use_container_width=True):
+                dashboard_url = f"http://{LAN_IP}:8502"
+                test_fields = [
+                    {"name": "🛠️ 工具名稱", "value": "**Cursor (測試範例)**", "inline": True},
+                    {"name": "📈 近 30 天曝光數", "value": "1,520 次", "inline": True},
+                    {"name": "🎯 自然點擊數", "value": "98 次", "inline": True},
+                    {"name": "⚠️ 當前狀態", "value": "❌ **尚未配置聯盟代碼** (連線測試正常)", "inline": False},
+                    {"name": "🔗 後台直達連結", "value": f"[{dashboard_url}]({dashboard_url})", "inline": False},
+                ]
+                ok, err = send_discord_alert(
+                    discord_webhook,
+                    title="🚨 StackDiff 流量出水警報 (連線測試)",
+                    description="恭喜！您的 Discord Webhook 已成功綁定 StackDiff 後台，離線獲利推播機制已就緒。",
+                    fields=test_fields,
                 )
                 if ok:
-                    st.success("✅ 測試通知發送成功！請檢查通訊軟體頻道。")
+                    save_env_var("DISCORD_WEBHOOK_URL", discord_webhook.strip())
+                    st.success("✅ Discord 測試訊息已成功送達！請查看手機。")
                 else:
-                    st.error(f"❌ 發送失敗: {w_msg}")
+                    st.error(f"❌ 發送失敗，錯誤詳情: {err}")
 
     if st.button("🔒 鎖定後台 (登出)", key="sidebar_logout_btn", use_container_width=True):
         st.session_state["authenticated"] = False
@@ -1280,38 +1310,68 @@ with tabs[2]:
             unsafe_allow_html=True,
         )
 
-        # Webhook Broadcast Action
-        if webhook_url:
+        # Automated Discord Webhook Push Sentinel
+        if discord_webhook:
+            if "discord_alerted_tool_ids" not in st.session_state:
+                st.session_state["discord_alerted_tool_ids"] = set()
+
+            unalerted_surges = [a for a in surge_alerts if a["tool"]["id"] not in st.session_state["discord_alerted_tool_ids"]]
+            if unalerted_surges:
+                dashboard_url = f"http://{LAN_IP}:8502"
+                auto_count = 0
+                for sa in unalerted_surges:
+                    st_tool = sa["tool"]
+                    loss = int(sa["clicks"] * 0.05 * 20)
+                    fields = [
+                        {"name": "🛠️ 工具名稱", "value": f"**{st_tool['name']}** ({st_tool.get('category', 'General')})", "inline": True},
+                        {"name": "📈 近 30 天曝光數", "value": f"{sa['impressions']:,} 次", "inline": True},
+                        {"name": "🎯 自然點擊數", "value": f"{sa['clicks']:,} 次", "inline": True},
+                        {"name": "⚠️ 當前狀態", "value": "❌ **尚未配置聯盟代碼** (收益流失中)", "inline": False},
+                        {"name": "🔗 後台直達連結", "value": f"[{dashboard_url}]({dashboard_url})", "inline": False},
+                    ]
+                    ok, _ = send_discord_alert(
+                        discord_webhook,
+                        title="🚨 StackDiff 流量出水警報",
+                        description=f"偵測到 **{st_tool['name']}** 正在爆發自然搜尋流量，目前官方網址未帶分潤參數，預估月損失 ~${loss:,}！",
+                        fields=fields,
+                    )
+                    if ok:
+                        st.session_state["discord_alerted_tool_ids"].add(st_tool["id"])
+                        auto_count += 1
+                if auto_count > 0:
+                    st.toast(f"🚨 已自動推播 {auto_count} 則出水警報至 Discord！", icon="📲")
+
+        # Manual Broadcast Bar
+        if discord_webhook:
             col_wh_info, col_wh_act = st.columns([3, 1])
             with col_wh_info:
-                st.info(f"📢 已配置 Webhook，可將這 {len(surge_alerts)} 則未變現出水警報即時推播至 Discord / Telegram 頻道。")
+                st.info(f"📢 Discord 連線正常：已監控到 {len(surge_alerts)} 款出水工具（新出水將自動推播，亦可手動全量重發）。")
             with col_wh_act:
-                if st.button("🔔 一鍵發送推播警報", key="btn_send_all_surge_webhook", use_container_width=True):
+                if st.button("🔔 手動重發全量警報", key="btn_send_all_surge_webhook", use_container_width=True):
+                    dashboard_url = f"http://{LAN_IP}:8502"
                     sent_cnt = 0
                     for sa in surge_alerts:
                         st_tool = sa["tool"]
                         loss = int(sa["clicks"] * 0.05 * 20)
                         fields = [
-                            {"name": "類別", "value": st_tool.get("category", "General"), "inline": True},
-                            {"name": "GSC 曝光", "value": f"{sa['impressions']:,}", "inline": True},
-                            {"name": "自然點擊", "value": f"{sa['clicks']:,}", "inline": True},
-                            {"name": "預估月損失", "value": f"~${loss:,}/mo", "inline": True},
-                            {"name": "目前網址", "value": sa['current_url'], "inline": False},
+                            {"name": "🛠️ 工具名稱", "value": f"**{st_tool['name']}** ({st_tool.get('category', 'General')})", "inline": True},
+                            {"name": "📈 近 30 天曝光數", "value": f"{sa['impressions']:,} 次", "inline": True},
+                            {"name": "🎯 自然點擊數", "value": f"{sa['clicks']:,} 次", "inline": True},
+                            {"name": "⚠️ 當前狀態", "value": "❌ **尚未配置聯盟代碼** (收益流失中)", "inline": False},
+                            {"name": "🔗 後台直達連結", "value": f"[{dashboard_url}]({dashboard_url})", "inline": False},
                         ]
-                        ok, _ = send_webhook_alert(
-                            webhook_url,
-                            f"🚨 [StackDiff 流量出水] {st_tool['name']} 尚未配置推薦碼！",
-                            f"**{st_tool['name']}** 在過去 28 天獲得 **{sa['impressions']:,}** 次曝光與 **{sa['clicks']:,}** 次點擊！\n"
-                            f"預估未變現損失約 **${loss:,}/月**。\n"
-                            f"👉 請盡速進入 StackDiff Ops 後台配置推薦代碼！",
+                        ok, _ = send_discord_alert(
+                            discord_webhook,
+                            title="🚨 StackDiff 流量出水警報 (手動重發)",
+                            description=f"**{st_tool['name']}** 曝光達 {sa['impressions']:,} 次，請盡速前往後台配置推薦碼。",
                             fields=fields,
                         )
                         if ok:
                             sent_cnt += 1
                     if sent_cnt > 0:
-                        st.success(f"🎉 成功推播 {sent_cnt} 則出水警報至 Webhook 頻道！")
+                        st.success(f"🎉 成功推播 {sent_cnt} 則出水警報至 Discord！")
                     else:
-                        st.error("Webhook 發送失敗，請確認網址正確。")
+                        st.error("Discord 發送失敗，請確認 Webhook 網址。")
 
         for a in surge_alerts:
             t = a["tool"]
@@ -1355,21 +1415,23 @@ with tabs[2]:
                         st.success(f"已為 {t['name']} 配置推薦連結並自動推送！")
                         st.rerun()
                 with col_wh_btn:
-                    if webhook_url and st.button("📢 推播警報", key=f"btn_wh_single_{t['id']}", use_container_width=True):
+                    if discord_webhook and st.button("📢 推播 Discord", key=f"btn_wh_single_{t['id']}", use_container_width=True):
+                        dashboard_url = f"http://{LAN_IP}:8502"
                         fields = [
-                            {"name": "類別", "value": t.get("category", "General"), "inline": True},
-                            {"name": "GSC 曝光", "value": f"{a['impressions']:,}", "inline": True},
-                            {"name": "自然點擊", "value": f"{a['clicks']:,}", "inline": True},
-                            {"name": "預估月損失", "value": f"~${est_loss:,}/mo", "inline": True},
+                            {"name": "🛠️ 工具名稱", "value": f"**{t['name']}** ({t.get('category', 'General')})", "inline": True},
+                            {"name": "📈 近 30 天曝光數", "value": f"{a['impressions']:,} 次", "inline": True},
+                            {"name": "🎯 自然點擊數", "value": f"{a['clicks']:,} 次", "inline": True},
+                            {"name": "⚠️ 當前狀態", "value": "❌ **尚未配置聯盟代碼**", "inline": False},
+                            {"name": "🔗 後台直達連結", "value": f"[{dashboard_url}]({dashboard_url})", "inline": False},
                         ]
-                        ok, msg = send_webhook_alert(
-                            webhook_url,
-                            f"🚨 [StackDiff 流量出水] {t['name']} 未配置分潤碼！",
-                            f"**{t['name']}** 在過去 28 天獲得 **{a['impressions']:,}** 次曝光與 **{a['clicks']:,}** 次點擊！\n預估未變現損失約 **${est_loss:,}/月**。",
+                        ok, msg = send_discord_alert(
+                            discord_webhook,
+                            title="🚨 StackDiff 流量出水警報",
+                            description=f"**{t['name']}** 近期搜尋流量飆升，預估月損失 ~${est_loss:,}/mo，請盡速配置推薦碼！",
                             fields=fields,
                         )
                         if ok:
-                            st.success("✅ 已推播！")
+                            st.success("✅ 已推播至 Discord！")
                         else:
                             st.error(f"❌ {msg}")
     else:
