@@ -21,7 +21,7 @@ interface ToolItem {
 
 const tools = toolsData as ToolItem[];
 
-// Group tools by category
+// Group tools strictly by category
 const categoryMap = new Map<string, ToolItem[]>();
 for (const tool of tools) {
   if (!categoryMap.has(tool.category)) {
@@ -36,6 +36,7 @@ interface ComparisonPair {
   toolA: ToolItem;
   toolB: ToolItem;
   category: string;
+  searchText: string;
 }
 
 const allComparisons: ComparisonPair[] = [];
@@ -49,11 +50,16 @@ for (const [category, groupTools] of categoryMap.entries()) {
         a.slug.localeCompare(b.slug)
       );
       const slug = `${toolA.slug}-vs-${toolB.slug}`;
+      
+      // Search index string for instant client-side matching
+      const searchText = `${toolA.name} ${toolB.name} ${toolA.slug} ${toolB.slug} ${category} ${toolA.tagline} ${toolB.tagline} ${toolA.best_for} ${toolB.best_for} ${toolA.pricing_model} ${toolB.pricing_model} ${toolA.supported_platforms.join(' ')} ${toolB.supported_platforms.join(' ')}`.toLowerCase();
+
       allComparisons.push({
         slug,
         toolA,
         toolB,
         category,
+        searchText,
       });
     }
   }
@@ -66,87 +72,150 @@ const categoriesList = Array.from(categoryMap.entries()).map(([name, items]) => 
   diffCount: (items.length * (items.length - 1)) / 2,
 }));
 
-const pageTitle = "StackDiff - Diff Any AI Stack. Side-by-Side AI Tool Comparisons";
-const pageDescription = "Objective, data-driven AI tool specifications and pairwise comparison matrices. Compare pricing, free tiers, and capabilities across top AI tools.";
+const pageTitle = "StackDiff - Diff Any AI Stack. Objective, Side-by-Side AI Tool Comparisons";
+const pageDescription = "Objective, data-driven AI tool specifications and pairwise comparison matrices. Real-time search and compare pricing, free tiers, and capabilities across 20 top AI tools.";
 ---
 
 <Layout title={pageTitle} description={pageDescription}>
-  <!-- 1. Compact Hero Section (Information-dense, zero neon clutter) -->
-  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-8 text-center sm:text-left">
-    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-zinc-800">
+  <!-- 1. Hero Section & Instant Search -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-6">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-6 border-b border-zinc-800/80">
       <div>
         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-400 mb-3">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Engine v2026.1</span>
           <span class="text-zinc-700">•</span>
-          <span>{allComparisons.length} Matrices Indexed</span>
+          <span id="header-matrix-count">{allComparisons.length} Matrices Indexed</span>
         </div>
         <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
           Diff Any AI Stack.
         </h1>
-        <p class="text-xs sm:text-sm text-zinc-400 mt-2 max-w-xl leading-relaxed">
+        <p class="text-xs sm:text-sm text-zinc-400 mt-1.5 max-w-xl leading-relaxed">
           Objective, side-by-side technical specifications, commercial tiers, and architecture constraints. Zero marketing fluff.
         </p>
       </div>
 
       <!-- Quick Metrics Strip -->
-      <div class="flex items-center justify-center sm:justify-end gap-3 text-left font-mono">
-        <div class="px-3 py-2 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-sm font-bold text-white">20</div>
-          <div class="text-[10px] text-zinc-500 uppercase">Tools</div>
+      <div class="flex items-center justify-center sm:justify-end gap-2.5 text-left font-mono shrink-0">
+        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
+          <div class="text-xs font-bold text-white">20 Tools</div>
+          <div class="text-[10px] text-zinc-500">Indexed</div>
         </div>
-        <div class="px-3 py-2 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-sm font-bold text-white">{allComparisons.length}</div>
-          <div class="text-[10px] text-zinc-500 uppercase">Diffs</div>
+        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
+          <div class="text-xs font-bold text-white">{allComparisons.length} Diffs</div>
+          <div class="text-[10px] text-zinc-500">Pairwise</div>
         </div>
-        <div class="px-3 py-2 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-sm font-bold text-emerald-400">100%</div>
-          <div class="text-[10px] text-zinc-500 uppercase">Verified</div>
+        <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
+          <div class="text-xs font-bold text-emerald-400">100%</div>
+          <div class="text-[10px] text-zinc-500">Verified</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instant Client-side Search Bar (Terminal Style) -->
+    <div class="mt-6">
+      <div class="relative flex items-center">
+        <div class="absolute left-3.5 text-zinc-500 font-mono text-xs select-none pointer-events-none">
+          &gt;_
+        </div>
+        <input
+          type="text"
+          id="instant-search-input"
+          placeholder='Search AI tools, e.g. "Runway", "ElevenLabs", "Code", "Claude"...'
+          class="w-full pl-9 pr-24 py-2.5 rounded-lg bg-[#121215] border border-zinc-800 text-xs sm:text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-600 focus:ring-1 focus:ring-zinc-600 transition-colors font-mono"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="absolute right-2.5 flex items-center gap-1.5">
+          <button
+            id="clear-search-btn"
+            type="button"
+            class="hidden text-[10px] font-mono text-zinc-400 hover:text-white px-1.5 py-0.5 rounded bg-zinc-850 border border-zinc-750 transition-colors"
+          >
+            Clear [esc]
+          </button>
+          <span id="search-counter" class="text-[10px] font-mono text-zinc-500 px-2 py-0.5 rounded bg-zinc-900 border border-zinc-800 select-none">
+            {allComparisons.length} diffs
+          </span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- 2. Categories Filter Badges -->
-  <section id="categories" class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-    <div class="flex items-center justify-between mb-3">
+  <!-- 2. Taxonomies / Category Tabs (Interactive Filter) -->
+  <section id="categories" class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+    <div class="flex items-center justify-between mb-2.5">
       <h2 class="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
         Taxonomies
       </h2>
-      <span class="text-[11px] font-mono text-zinc-500">{categoriesList.length} Categories</span>
+      <span id="active-category-label" class="text-[11px] font-mono text-zinc-500">
+        All Categories ({allComparisons.length})
+      </span>
     </div>
 
-    <div class="flex flex-wrap gap-2">
+    <!-- Interactive Filter Buttons -->
+    <div class="flex flex-wrap gap-1.5" id="category-tab-container">
+      <button
+        type="button"
+        data-cat="all"
+        class="category-tab-btn px-2.5 py-1 rounded text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white"
+      >
+        <span>All</span>
+        <span class="text-[10px] opacity-70">({allComparisons.length})</span>
+      </button>
+
       {categoriesList.map((cat) => (
-        <a
-          href={`#category-${cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-          class="px-3 py-1.5 rounded bg-zinc-900/80 border border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850 transition-colors text-xs flex items-center gap-2 group"
+        <button
+          type="button"
+          data-cat={cat.name}
+          class="category-tab-btn px-2.5 py-1 rounded bg-zinc-900/90 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5"
         >
-          <span class="text-zinc-200 group-hover:text-white font-medium">{cat.name}</span>
-          <span class="text-[10px] font-mono text-zinc-500 bg-zinc-800 px-1.5 py-0.2 rounded">
+          <span>{cat.name}</span>
+          <span class="text-[10px] text-zinc-500 bg-zinc-800 px-1 py-0.2 rounded">
             {cat.diffCount}
           </span>
-        </a>
+        </button>
       ))}
     </div>
   </section>
 
-  <!-- 3. Popular Comparisons (High-Density Grid, No Overlap) -->
-  <section id="popular-comparisons" class="max-w-5xl mx-auto px-4 sm:px-6 py-6">
-    <div class="space-y-10">
+  <!-- 3. Popular Comparisons (High-Density Cards Grid) -->
+  <section id="popular-comparisons" class="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+    <!-- Zero Results Fallback State -->
+    <div id="no-results-state" class="hidden text-center py-12 px-4 rounded-lg bg-[#121215] border border-zinc-800 my-4">
+      <div class="font-mono text-zinc-500 text-xs mb-2">&gt; [QUERY_NOT_FOUND]</div>
+      <h3 class="text-sm font-semibold text-zinc-200 mb-1">No matching comparisons found</h3>
+      <p class="text-xs text-zinc-500 max-w-sm mx-auto mb-4" id="no-results-query">
+        Try searching by tool name (e.g. "Cursor", "ElevenLabs") or functional category.
+      </p>
+      <button
+        id="reset-search-btn"
+        type="button"
+        class="px-3 py-1.5 rounded bg-zinc-850 hover:bg-zinc-800 text-zinc-200 border border-zinc-750 text-xs font-mono transition-colors"
+      >
+        Reset Filter
+      </button>
+    </div>
+
+    <!-- Category Groups -->
+    <div class="space-y-8" id="matrices-container">
       {Array.from(categoryMap.entries()).map(([catName, catTools]) => {
         const catComparisons = allComparisons.filter((c) => c.category === catName);
         if (catComparisons.length === 0) return null;
 
         return (
-          <div id={`category-${catName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`} class="scroll-mt-20">
-            <!-- Category Subheader -->
+          <div
+            class="category-group scroll-mt-20"
+            data-category-group={catName}
+            id={`category-${catName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+          >
+            <!-- Category Header -->
             <div class="flex items-center justify-between pb-2 mb-3 border-b border-zinc-800/80">
               <h3 class="text-xs font-mono font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
                 <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
                 <span>{catName}</span>
               </h3>
-              <span class="text-[11px] font-mono text-zinc-500">
+              <span class="text-[11px] font-mono text-zinc-500 category-group-count">
                 {catComparisons.length} {catComparisons.length === 1 ? 'pair' : 'pairs'}
               </span>
             </div>
@@ -156,10 +225,12 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
               {catComparisons.map((pair) => (
                 <a
                   href={`/compare/${pair.slug}`}
-                  class="group p-3.5 rounded-lg bg-[#121215] border border-zinc-800/90 hover:border-zinc-700 hover:bg-[#15151a] transition-all flex flex-col justify-between overflow-hidden"
+                  class="comparison-card group p-3.5 rounded-lg bg-[#121215] border border-zinc-800/90 hover:border-zinc-600 hover:bg-[#15151a] transition-all flex flex-col justify-between overflow-hidden shadow-sm hover:shadow-zinc-800/20"
+                  data-search={pair.searchText}
+                  data-category={pair.category}
                 >
                   <div class="min-w-0">
-                    <!-- Top Info Row -->
+                    <!-- Top Row -->
                     <div class="flex items-center justify-between gap-2 mb-2">
                       <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider truncate">
                         {pair.category}
@@ -169,7 +240,7 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
                       </span>
                     </div>
 
-                    <!-- Duel Heading (Safe truncation) -->
+                    <!-- Duel Heading -->
                     <h4 class="text-sm font-bold text-zinc-100 group-hover:text-white transition-colors truncate mb-2">
                       {pair.toolA.name} <span class="text-zinc-500 font-normal font-mono text-xs">vs</span> {pair.toolB.name}
                     </h4>
@@ -181,7 +252,7 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
                       <span class="text-zinc-200 font-semibold truncate">{pair.toolB.starting_price}</span>
                     </div>
 
-                    <!-- Concise Description (Strict line-clamp-2) -->
+                    <!-- Description -->
                     <p class="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed mb-3 overflow-hidden">
                       {pair.toolA.best_for} vs {pair.toolB.best_for}.
                     </p>
@@ -200,4 +271,168 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
       })}
     </div>
   </section>
+
+  <!-- 4. Legal & Regulatory Affiliate Disclosure Block (FTC / EU Compliant) -->
+  <section class="max-w-5xl mx-auto px-4 sm:px-6 pt-10 pb-4">
+    <div class="p-4 rounded-lg bg-[#121215] border border-zinc-800 text-xs font-mono text-zinc-400 leading-relaxed">
+      <div class="flex items-center gap-2 text-zinc-300 font-semibold uppercase tracking-wider mb-1.5 text-[11px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+        <span>Independent Research &amp; Affiliate Disclosure</span>
+      </div>
+      <p class="text-[11px] text-zinc-500 leading-normal">
+        StackDiff is an independent software comparison directory. When you purchase through our links, we may earn an affiliate commission at no extra cost to you. We strictly evaluate tools on objective technical specifications.
+      </p>
+    </div>
+  </section>
+
+  <!-- Client-side Interactive Search and Taxonomy Filtering Logic -->
+  <script is:inline>
+    (function () {
+      const searchInput = document.getElementById('instant-search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      const counterEl = document.getElementById('search-counter');
+      const noResultsEl = document.getElementById('no-results-state');
+      const noResultsQueryEl = document.getElementById('no-results-query');
+      const resetBtn = document.getElementById('reset-search-btn');
+      const activeCatLabel = document.getElementById('active-category-label');
+      const tabBtns = document.querySelectorAll('.category-tab-btn');
+      const cards = document.querySelectorAll('.comparison-card');
+      const groups = document.querySelectorAll('.category-group');
+
+      let currentCategory = 'all';
+      let currentQuery = '';
+
+      function applyFilter() {
+        const query = currentQuery.trim().toLowerCase();
+        let visibleCount = 0;
+
+        // Show/hide clear button
+        if (query.length > 0) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+
+        // Iterate over each category group
+        groups.forEach((group) => {
+          const groupCat = group.getAttribute('data-category-group');
+          const groupCards = group.querySelectorAll('.comparison-card');
+          let groupVisibleCount = 0;
+
+          groupCards.forEach((card) => {
+            const cardCat = card.getAttribute('data-category');
+            const cardSearch = card.getAttribute('data-search') || '';
+
+            const matchesCategory = (currentCategory === 'all' || cardCat === currentCategory);
+            const matchesQuery = (query === '' || cardSearch.includes(query));
+
+            if (matchesCategory && matchesQuery) {
+              card.classList.remove('hidden');
+              groupVisibleCount++;
+              visibleCount++;
+            } else {
+              card.classList.add('hidden');
+            }
+          });
+
+          // Show or hide whole category section based on matching card count
+          if (groupVisibleCount > 0) {
+            group.classList.remove('hidden');
+            const countEl = group.querySelector('.category-group-count');
+            if (countEl) {
+              countEl.textContent = `${groupVisibleCount} ${groupVisibleCount === 1 ? 'pair' : 'pairs'}`;
+            }
+          } else {
+            group.classList.add('hidden');
+          }
+        });
+
+        // Update counter & empty state
+        counterEl.textContent = `${visibleCount} diffs`;
+
+        if (visibleCount === 0) {
+          noResultsEl.classList.remove('hidden');
+          if (query.length > 0) {
+            noResultsQueryEl.textContent = `No results found for "${query}" in ${currentCategory === 'all' ? 'all categories' : currentCategory}.`;
+          } else {
+            noResultsQueryEl.textContent = `No comparisons found in ${currentCategory}.`;
+          }
+        } else {
+          noResultsEl.classList.add('hidden');
+        }
+      }
+
+      // Input event listener
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          currentQuery = e.target.value;
+          applyFilter();
+        });
+
+        searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            searchInput.value = '';
+            currentQuery = '';
+            applyFilter();
+          }
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          currentQuery = '';
+          searchInput.focus();
+          applyFilter();
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          currentQuery = '';
+          currentCategory = 'all';
+          updateTabStyles();
+          applyFilter();
+        });
+      }
+
+      // Category tab switcher
+      function updateTabStyles() {
+        tabBtns.forEach((btn) => {
+          const cat = btn.getAttribute('data-cat');
+          if (cat === currentCategory) {
+            btn.className = 'category-tab-btn px-2.5 py-1 rounded text-xs font-mono transition-colors flex items-center gap-1.5 bg-zinc-100 text-zinc-950 font-semibold border border-white';
+          } else {
+            btn.className = 'category-tab-btn px-2.5 py-1 rounded bg-zinc-900/90 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 text-xs font-mono transition-colors flex items-center gap-1.5';
+          }
+        });
+
+        if (activeCatLabel) {
+          activeCatLabel.textContent = currentCategory === 'all'
+            ? 'All Categories'
+            : `Category: ${currentCategory}`;
+        }
+      }
+
+      tabBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cat = btn.getAttribute('data-cat');
+          if (!cat) return;
+          currentCategory = cat;
+          updateTabStyles();
+          applyFilter();
+
+          // If clicked a specific category and not searching, smooth scroll to it
+          if (cat !== 'all' && currentQuery.trim() === '') {
+            const targetId = `category-${cat.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+              targetEl.scrollIntoView({ behavior: 'smooth' });
+            }
+          }
+        });
+      });
+    })();
+  </script>
 </Layout>
