@@ -297,6 +297,91 @@ def save_tools_data(tools: List[Dict[str, Any]]) -> bool:
         st.error(f"寫入資料庫失敗: {e}")
         return False
 
+def upsert_tool(tools: List[Dict[str, Any]], new_tool: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], bool, str]:
+    """
+    Deduplication Guard: Strictly checks if new_tool['id'] already exists.
+    - If id exists: updates the tool in-place and returns (tools, False, warning_msg).
+    - If id does not exist: appends the new tool and returns (tools, True, success_msg).
+    """
+    target_id = new_tool.get("id", "").strip().lower()
+    for idx, existing in enumerate(tools):
+        existing_id = existing.get("id", "").strip().lower()
+        if existing_id == target_id:
+            tools[idx] = new_tool
+            return tools, False, f"⚠️ 此工具【{new_tool.get('name', target_id)}】已存在資料庫中 (ID: {target_id})，已自動更新規格而非重複新增！"
+
+    tools.append(new_tool)
+    return tools, True, f"✅ 成功收錄全新工具【{new_tool.get('name', target_id)}】！"
+
+def send_webhook_alert(
+    webhook_url: str,
+    title: str,
+    description: str,
+    fields: Optional[List[Dict[str, Any]]] = None,
+) -> Tuple[bool, str]:
+    """
+    Sends automated revenue/traffic surge alert to Discord or Telegram.
+    Returns (success: bool, message: str).
+    """
+    if not webhook_url or not webhook_url.strip():
+        return False, "未配置 Webhook URL"
+
+    url = webhook_url.strip()
+    try:
+        # 1. Discord Webhook
+        if "discord.com/api/webhooks" in url or "discordapp.com/api/webhooks" in url:
+            embed = {
+                "title": title,
+                "description": description,
+                "color": 16734296,
+                "timestamp": datetime.utcnow().isoformat(),
+                "footer": {"text": "StackDiff Operations Engine"},
+            }
+            if fields:
+                embed["fields"] = fields
+            payload = {
+                "content": "🚨 **[StackDiff 流量出水未變現警報]**",
+                "embeds": [embed],
+            }
+            resp = requests.post(url, json=payload, timeout=10)
+            if resp.status_code in [200, 204]:
+                return True, "Discord 通知發送成功！"
+            else:
+                return False, f"Discord API 回傳代碼 {resp.status_code}: {resp.text[:120]}"
+
+        # 2. Telegram Bot API / Webhook
+        elif "api.telegram.org" in url:
+            target_url = url if "sendMessage" in url else f"{url.rstrip('/')}/sendMessage"
+            text_content = f"🚨 *{title}*\n\n{description}\n\n_Sent from StackDiff Ops Deck_"
+            payload = {
+                "text": text_content,
+                "parse_mode": "Markdown",
+            }
+            resp = requests.post(target_url, json=payload, timeout=10)
+            if resp.status_code == 200:
+                return True, "Telegram 通知發送成功！"
+            else:
+                return False, f"Telegram API 回傳代碼 {resp.status_code}: {resp.text[:120]}"
+
+        # 3. Generic JSON Webhook (Slack, Make, Zapier, n8n, etc.)
+        else:
+            payload = {
+                "event": "stackdiff_surge_alert",
+                "title": title,
+                "message": description,
+                "timestamp": datetime.utcnow().isoformat(),
+            }
+            if fields:
+                payload["fields"] = fields
+            resp = requests.post(url, json=payload, timeout=10)
+            if resp.status_code in [200, 201, 202, 204]:
+                return True, "Webhook 通知發送成功！"
+            else:
+                return False, f"Webhook 回傳狀態碼 {resp.status_code}: {resp.text[:120]}"
+
+    except Exception as e:
+        return False, f"發送 Webhook 異常: {str(e)}"
+
 def load_pipeline_data(tools: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """Loads CRM pipeline data from src/data/affiliate_pipeline.json."""
     target = SRC_PIPELINE_PATH if SRC_PIPELINE_PATH.exists() else DATA_PIPELINE_PATH
@@ -573,6 +658,7 @@ affiliate_pct = (affiliate_count / total_tools * 100) if total_tools > 0 else 0
 
 gsc_creds = get_gsc_credentials()
 is_gsc_connected = gsc_creds is not None and gsc_creds.valid
+webhook_url = os.getenv("ALERT_WEBHOOK_URL") or os.getenv("DISCORD_WEBHOOK_URL") or ""
 
 # Sidebar: Compact Telemetry & Collapsible Settings
 with st.sidebar:
@@ -635,6 +721,27 @@ with st.sidebar:
             help="自動自專案 .env 讀取，亦可手動填寫覆寫。",
         )
         model = st.selectbox("模型選擇", model_options, index=0)
+
+        st.markdown("---")
+        st.markdown("##### 📢 收益警報通知 (Webhook)")
+        default_webhook = os.getenv("ALERT_WEBHOOK_URL") or os.getenv("DISCORD_WEBHOOK_URL") or ""
+        webhook_url = st.text_input(
+            "Discord / Telegram Webhook URL",
+            value=default_webhook,
+            type="password",
+            help="支援 Discord、Telegram 或一般 Webhook URL。當流量出水未變現時可推送離線警報。",
+        )
+        if webhook_url:
+            if st.button("🧪 測試 Webhook 發送", key="btn_test_webhook", use_container_width=True):
+                ok, w_msg = send_webhook_alert(
+                    webhook_url,
+                    "🔔 StackDiff Webhook 測試通知",
+                    "您的通訊軟體 Webhook 已成功綁定！未來搜尋流量暴增但未配置分潤碼時將自動發送警報。",
+                )
+                if ok:
+                    st.success("✅ 測試通知發送成功！請檢查通訊軟體頻道。")
+                else:
+                    st.error(f"❌ 發送失敗: {w_msg}")
 
     if st.button("🔒 鎖定後台 (登出)", key="sidebar_logout_btn", use_container_width=True):
         st.session_state["authenticated"] = False
@@ -902,18 +1009,17 @@ Return ONLY raw JSON.
                             use_container_width=True,
                         ):
                             with st.spinner(f"正在將 {staged['name']} 寫入 tools.json 並自動 Git Push..."):
-                                # 1. Write to tools.json
-                                existing_ids = [t["id"] for t in tools_list]
-                                if staged["id"] in existing_ids:
-                                    for i, t in enumerate(tools_list):
-                                        if t["id"] == staged["id"]:
-                                            tools_list[i] = staged
+                                # 1. Deduplication Guard Check
+                                updated_tools, is_new, dedupe_msg = upsert_tool(tools_list, staged)
+                                if not is_new:
+                                    st.warning(dedupe_msg)
                                 else:
-                                    tools_list.append(staged)
+                                    st.info(dedupe_msg)
 
-                                if save_tools_data(tools_list):
+                                if save_tools_data(updated_tools):
                                     # 2. Automated Git Push
-                                    commit_msg = f"Auto-publish {staged['name']} via Mobile Ops Dashboard"
+                                    commit_action = "Auto-publish" if is_new else "Auto-update"
+                                    commit_msg = f"{commit_action} {staged['name']} via Mobile Ops Dashboard"
                                     success, message = git_auto_push(commit_msg)
                                     if success:
                                         st.success(message)
@@ -1174,6 +1280,39 @@ with tabs[2]:
             unsafe_allow_html=True,
         )
 
+        # Webhook Broadcast Action
+        if webhook_url:
+            col_wh_info, col_wh_act = st.columns([3, 1])
+            with col_wh_info:
+                st.info(f"📢 已配置 Webhook，可將這 {len(surge_alerts)} 則未變現出水警報即時推播至 Discord / Telegram 頻道。")
+            with col_wh_act:
+                if st.button("🔔 一鍵發送推播警報", key="btn_send_all_surge_webhook", use_container_width=True):
+                    sent_cnt = 0
+                    for sa in surge_alerts:
+                        st_tool = sa["tool"]
+                        loss = int(sa["clicks"] * 0.05 * 20)
+                        fields = [
+                            {"name": "類別", "value": st_tool.get("category", "General"), "inline": True},
+                            {"name": "GSC 曝光", "value": f"{sa['impressions']:,}", "inline": True},
+                            {"name": "自然點擊", "value": f"{sa['clicks']:,}", "inline": True},
+                            {"name": "預估月損失", "value": f"~${loss:,}/mo", "inline": True},
+                            {"name": "目前網址", "value": sa['current_url'], "inline": False},
+                        ]
+                        ok, _ = send_webhook_alert(
+                            webhook_url,
+                            f"🚨 [StackDiff 流量出水] {st_tool['name']} 尚未配置推薦碼！",
+                            f"**{st_tool['name']}** 在過去 28 天獲得 **{sa['impressions']:,}** 次曝光與 **{sa['clicks']:,}** 次點擊！\n"
+                            f"預估未變現損失約 **${loss:,}/月**。\n"
+                            f"👉 請盡速進入 StackDiff Ops 後台配置推薦代碼！",
+                            fields=fields,
+                        )
+                        if ok:
+                            sent_cnt += 1
+                    if sent_cnt > 0:
+                        st.success(f"🎉 成功推播 {sent_cnt} 則出水警報至 Webhook 頻道！")
+                    else:
+                        st.error("Webhook 發送失敗，請確認網址正確。")
+
         for a in surge_alerts:
             t = a["tool"]
             est_loss = int(a["clicks"] * 0.05 * 20)
@@ -1204,7 +1343,7 @@ with tabs[2]:
 
                 st.markdown(f"<p style='font-size: 12px; color: #71717a;'>熱門關鍵字: {', '.join([f'<code>{q}</code>' for q in a['top_queries'][:3]])}</p>", unsafe_allow_html=True)
 
-                col_in, col_sv = st.columns([3, 1])
+                col_in, col_sv, col_wh_btn = st.columns([2, 1, 1])
                 with col_in:
                     quick_aff = st.text_input("配置推薦連結", value=f"{a['current_url']}?via=stackdiff", key=f"aff_in_{t['id']}", label_visibility="collapsed")
                 with col_sv:
@@ -1215,6 +1354,24 @@ with tabs[2]:
                         git_auto_push(f"Update affiliate URL for {t['name']}")
                         st.success(f"已為 {t['name']} 配置推薦連結並自動推送！")
                         st.rerun()
+                with col_wh_btn:
+                    if webhook_url and st.button("📢 推播警報", key=f"btn_wh_single_{t['id']}", use_container_width=True):
+                        fields = [
+                            {"name": "類別", "value": t.get("category", "General"), "inline": True},
+                            {"name": "GSC 曝光", "value": f"{a['impressions']:,}", "inline": True},
+                            {"name": "自然點擊", "value": f"{a['clicks']:,}", "inline": True},
+                            {"name": "預估月損失", "value": f"~${est_loss:,}/mo", "inline": True},
+                        ]
+                        ok, msg = send_webhook_alert(
+                            webhook_url,
+                            f"🚨 [StackDiff 流量出水] {t['name']} 未配置分潤碼！",
+                            f"**{t['name']}** 在過去 28 天獲得 **{a['impressions']:,}** 次曝光與 **{a['clicks']:,}** 次點擊！\n預估未變現損失約 **${est_loss:,}/月**。",
+                            fields=fields,
+                        )
+                        if ok:
+                            st.success("✅ 已推播！")
+                        else:
+                            st.error(f"❌ {msg}")
     else:
         if is_gsc_connected:
             st.success("✅ 目前所有高流量檢索工具皆已綁定推薦代碼，無被動收益流失。")
