@@ -44,6 +44,56 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# -----------------------------------------------------------------------------
+# Password Gatekeeper (Access Control)
+# -----------------------------------------------------------------------------
+ADMIN_PASSWORD = "8888"
+
+if "authenticated" not in st.session_state:
+    st.session_state["authenticated"] = False
+
+if not st.session_state["authenticated"]:
+    st.markdown(
+        """
+        <style>
+        .stApp {
+            background-color: #09090b !important;
+            color: #d4d4d8 !important;
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 60px auto 10px auto;
+            background-color: #121215;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            padding: 24px;
+            text-align: center;
+        }
+        </style>
+        <div class="login-box">
+            <div style="font-size: 28px; font-weight: 800; color: #ffffff;">± StackDiff</div>
+            <div style="font-size: 12px; color: #71717a; font-family: monospace; margin-top: 4px;">Operations Gatekeeper</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        with st.form("gatekeeper_form"):
+            entered_password = st.text_input("輸入管理密碼", type="password", placeholder="請輸入 4 位數密碼")
+            submit_login = st.form_submit_button("解鎖並進入後台 →", use_container_width=True)
+
+            if submit_login:
+                if entered_password == ADMIN_PASSWORD:
+                    st.session_state["authenticated"] = True
+                    st.rerun()
+                else:
+                    st.error("密碼錯誤，請重新輸入。")
+
+    # Halt all execution to protect data and backend resources
+    st.stop()
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 SRC_TOOLS_PATH = PROJECT_ROOT / "src" / "data" / "tools.json"
 DATA_TOOLS_PATH = PROJECT_ROOT / "data" / "tools.json"
@@ -585,6 +635,10 @@ with st.sidebar:
             help="自動自專案 .env 讀取，亦可手動填寫覆寫。",
         )
         model = st.selectbox("模型選擇", model_options, index=0)
+
+    if st.button("🔒 鎖定後台 (登出)", key="sidebar_logout_btn", use_container_width=True):
+        st.session_state["authenticated"] = False
+        st.rerun()
 
     st.markdown(
         """
