@@ -1,0 +1,43 @@
+name: Monday Ops Sentinel Reminder
+
+on:
+  schedule:
+    # Runs every Monday at 01:00 UTC (09:00 AM Taiwan Time, UTC+8)
+    - cron: '0 1 * * 1'
+  workflow_dispatch:
+
+jobs:
+  send-discord-reminder:
+    name: Send Weekly Ops Reminder
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord Webhook Notification
+        run: |
+          cat << 'EOF' > payload.json
+          {
+            "content": "📅 **[StackDiff 週一營運巡檢提醒]**",
+            "embeds": [
+              {
+                "title": "📅【StackDiff】週一例行營運巡檢提醒",
+                "description": "新的一週開始！請花 2 分鐘透過手機連線 Streamlit 後台進行例行巡視：\n\n1. 🔍 **查看 GSC 流量雷達**：確認有無長尾對比詞曝光出水\n2. 🚀 **掃描 2026 AI 缺口**：順手收割 1~2 款新工具擴充對比\n3. 🛡️ **假消息巡邏**：檢查是否有工具大改版需同步修正",
+                "color": 3899894,
+                "footer": {
+                  "text": "StackDiff Automated Ops • 雲端自動推播"
+                }
+              }
+            ]
+          }
+          EOF
+
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            "https://discord.com/api/webhooks/1544664132404383744/Kr6ZeLCY-NG1_lqoQSf6e00bWVwor87QxMVxjvTAL-jmaiGVRXYjPIDSmDdCOE6FFc8G")
+
+          echo "Discord Webhook HTTP Status: $HTTP_STATUS"
+
+          if [ "$HTTP_STATUS" -ne 200 ] && [ "$HTTP_STATUS" -ne 204 ]; then
+            echo "Error: Failed to post to Discord. HTTP Status: $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Successfully sent Monday reminder to Discord!"
