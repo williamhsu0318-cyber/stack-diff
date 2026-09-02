@@ -691,15 +691,23 @@ discord_webhook = os.getenv("DISCORD_WEBHOOK_URL") or os.getenv("ALERT_WEBHOOK_U
 webhook_url = discord_webhook
 
 # Portal Target Host & URL calculation
-portal_host = os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
+portal_host = os.getenv("PORTAL_HOST") or os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
 clip_studio_url = os.getenv("CLIP_STUDIO_URL") or f"http://{portal_host}:8501"
+pipi_duck_url = os.getenv("PIPI_DUCK_URL") or f"http://{portal_host}:8503"
 
-# 1. Portal Quick Switch Button at the Very Top of Sidebar
+# 1. Portal Quick Switch Buttons at the Very Top of Sidebar
 st.sidebar.link_button(
     "🎬 切換至：實況精華自動剪輯 (8501)",
     url=clip_studio_url,
     use_container_width=True,
     help=f"點擊開新分頁跳轉至同一主機的 8501 剪輯工作台: {clip_studio_url}",
+)
+
+st.sidebar.link_button(
+    "📺 切換至：Pipi Duck TV (8503)",
+    url=pipi_duck_url,
+    use_container_width=True,
+    help=f"點擊開新分頁跳轉至同一主機的 8503 Pipi Duck TV: {pipi_duck_url}",
 )
 
 # Sidebar: Compact Telemetry & Collapsible Settings
@@ -803,15 +811,16 @@ with st.sidebar:
 
         st.markdown("---")
         st.markdown("##### 🌐 跨專案傳送門設定")
-        saved_clip_host = os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
-        custom_clip_host = st.text_input(
-            "傳送門目標主機 IP / Host (Port 8501)",
-            value=saved_clip_host,
+        saved_portal_host = os.getenv("PORTAL_HOST") or os.getenv("CLIP_STUDIO_HOST") or os.getenv("TAILSCALE_IP") or LAN_IP
+        custom_portal_host = st.text_input(
+            "傳送門目標主機 IP / Host (Port 8501 / 8503)",
+            value=saved_portal_host,
             placeholder="例如 100.xx.xx.xx (Tailscale IP) 或 localhost",
-            help="填入 Tailscale IP 或主機網址，系統會自動儲存至專案 .env 檔案中 (CLIP_STUDIO_HOST)。",
+            help="填入 Tailscale IP 或主機網址，系統會自動儲存至專案 .env 檔案中 (PORTAL_HOST)。",
         )
-        if custom_clip_host != saved_clip_host and custom_clip_host.strip():
-            save_env_var("CLIP_STUDIO_HOST", custom_clip_host.strip())
+        if custom_portal_host != saved_portal_host and custom_portal_host.strip():
+            save_env_var("PORTAL_HOST", custom_portal_host.strip())
+            save_env_var("CLIP_STUDIO_HOST", custom_portal_host.strip())
             st.toast("💾 傳送門目標主機已更新至 .env！", icon="✅")
 
     if st.button("🔒 鎖定後台 (登出)", key="sidebar_logout_btn", use_container_width=True):
