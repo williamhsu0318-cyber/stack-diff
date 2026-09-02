@@ -1926,7 +1926,7 @@
     "slug": "openai-o3-mini",
     "category": "LLM",
     "pricing_model": "Freemium",
-    "starting_price": "$20/mo",
+    "starting_price": "$0",
     "free_tier": true,
     "primary_audience": "Software engineers, data scientists, and enterprise developers building automated agentic workflows and complex reasoning applications.",
     "best_for": "High-throughput algorithmic coding, mathematical problem solving, and structured agentic execution requiring high accuracy at minimal latency and operational cost.",
