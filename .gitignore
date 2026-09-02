@@ -3,10 +3,14 @@ node_modules/
 dist/
 .astro/
 
-# Environment variables
+# Environment variables & OAuth tokens
 .env
 .env.*
 !.env.example
+token.json
+scripts/token.json
+client_secret*.json
+scripts/client_secret*.json
 
 # Python cache & virtual environments
 __pycache__/

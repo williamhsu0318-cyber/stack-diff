@@ -2,13 +2,13 @@
 scripts/ops_dashboard.py
 ------------------------
 StackDiff Autonomous pSEO & Affiliate Operations Dashboard
-Mobile-first RWD, Native Google Gemini integration, GSC radar, and CRM.
+Mobile-first RWD, Native Google Gemini integration, Local OAuth 2.0 GSC, and CRM.
 """
 
 import json
 import os
 import subprocess
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -16,12 +16,22 @@ import pandas as pd
 import requests
 import streamlit as st
 
-# Attempt to import google.generativeai
+# Google Generative AI (Gemini)
 try:
     import google.generativeai as genai
     HAS_GENAI = True
 except ImportError:
     HAS_GENAI = False
+
+# Google OAuth 2.0 & Search Console API
+try:
+    from google.auth.transport.requests import Request
+    from google.oauth2.credentials import Credentials
+    from google_auth_oauthlib.flow import InstalledAppFlow
+    from googleapiclient.discovery import build
+    HAS_GSC_OAUTH = True
+except ImportError:
+    HAS_GSC_OAUTH = False
 
 # -----------------------------------------------------------------------------
 # Configuration & Paths
@@ -38,6 +48,11 @@ SRC_TOOLS_PATH = PROJECT_ROOT / "src" / "data" / "tools.json"
 DATA_TOOLS_PATH = PROJECT_ROOT / "data" / "tools.json"
 SRC_PIPELINE_PATH = PROJECT_ROOT / "src" / "data" / "affiliate_pipeline.json"
 DATA_PIPELINE_PATH = PROJECT_ROOT / "data" / "affiliate_pipeline.json"
+
+# GSC OAuth 2.0 Configuration Paths
+GSC_TOKEN_PATH = PROJECT_ROOT / "scripts" / "token.json"
+GSC_CLIENT_SECRETS_PATH = PROJECT_ROOT / "scripts" / "client_secret.json"
+GSC_SCOPES = ["https://www.googleapis.com/auth/webmasters.readonly"]
 
 # Auto-load .env configuration if present
 ENV_PATH = PROJECT_ROOT / ".env"
@@ -129,31 +144,31 @@ st.markdown(
     }
 
     /* High-contrast status badges */
-    .badge-sim {
-        background-color: #451a03;
-        color: #fb923c;
-        border: 1px solid #9a3412;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 11px;
-        font-family: "JetBrains Mono", monospace;
-        font-weight: 600;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-    }
     .badge-live {
         background-color: #052e16;
         color: #4ade80;
         border: 1px solid #166534;
-        padding: 2px 8px;
+        padding: 4px 10px;
         border-radius: 4px;
-        font-size: 11px;
+        font-size: 12px;
         font-family: "JetBrains Mono", monospace;
         font-weight: 600;
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
+    }
+    .badge-warn {
+        background-color: #451a03;
+        color: #fb923c;
+        border: 1px solid #9a3412;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
     }
     .badge-cat {
         background-color: #18181b;
@@ -202,7 +217,6 @@ st.markdown(
             flex-shrink: 0 !important;
         }
 
-        /* Metric cards stacking */
         .metric-pill {
             margin-bottom: 8px !important;
         }
@@ -311,6 +325,101 @@ def calculate_matrix_combinations(tools: List[Dict[str, Any]]) -> int:
     return total
 
 # -----------------------------------------------------------------------------
+# Google Search Console Local OAuth 2.0 Core
+# -----------------------------------------------------------------------------
+def get_gsc_credentials() -> Optional[Credentials]:
+    """Loads and automatically refreshes OAuth2 credentials from scripts/token.json."""
+    if not GSC_TOKEN_PATH.exists():
+        return None
+    try:
+        creds = Credentials.from_authorized_user_file(str(GSC_TOKEN_PATH), GSC_SCOPES)
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+            with open(GSC_TOKEN_PATH, "w", encoding="utf-8") as f:
+                f.write(creds.to_json())
+        if creds and creds.valid:
+            return creds
+        return None
+    except Exception:
+        return None
+
+def start_oauth_flow(
+    client_config: Optional[Dict[str, Any]] = None,
+    client_secrets_file: Optional[Path] = None,
+) -> Optional[Credentials]:
+    """
+    Launches local OAuth server on port 8080 and pops open the default browser.
+    Saves token to scripts/token.json on authorization.
+    """
+    if not HAS_GSC_OAUTH:
+        st.error("請安裝必要套件: `pip install google-auth-oauthlib google-api-python-client`")
+        return None
+
+    try:
+        if client_secrets_file and Path(client_secrets_file).exists():
+            flow = InstalledAppFlow.from_client_secrets_file(str(client_secrets_file), scopes=GSC_SCOPES)
+        elif client_config:
+            flow = InstalledAppFlow.from_client_config(client_config, scopes=GSC_SCOPES)
+        elif GSC_CLIENT_SECRETS_PATH.exists():
+            flow = InstalledAppFlow.from_client_secrets_file(str(GSC_CLIENT_SECRETS_PATH), scopes=GSC_SCOPES)
+        else:
+            st.error("找不到 OAuth 用戶端密鑰配置 (client_secret.json)。請在下方設定。")
+            return None
+
+        # Launch local server on port 8080
+        creds = flow.run_local_server(port=8080, prompt="consent")
+        GSC_TOKEN_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with open(GSC_TOKEN_PATH, "w", encoding="utf-8") as f:
+            f.write(creds.to_json())
+        return creds
+    except Exception as e:
+        st.error(f"Google 帳號授權失敗: {e}")
+        return None
+
+def get_gsc_verified_sites(creds: Credentials) -> List[str]:
+    """Lists verified sites for the authorized Google account."""
+    try:
+        service = build("searchconsole", "v1", credentials=creds)
+        site_list = service.sites().list().execute()
+        entries = site_list.get("siteEntry", [])
+        return [s["siteUrl"] for s in entries if s.get("permissionLevel") != "siteUnverifiedUser"]
+    except Exception as e:
+        st.warning(f"讀取 GSC 物業失敗: {e}")
+        return []
+
+def fetch_gsc_search_data(creds: Credentials, site_url: str) -> List[Dict[str, Any]]:
+    """Fetches authentic 28-day query analytics from Search Console API."""
+    try:
+        service = build("searchconsole", "v1", credentials=creds)
+        start_date = (datetime.now() - timedelta(days=28)).strftime("%Y-%m-%d")
+        end_date = (datetime.now() - timedelta(days=2)).strftime("%Y-%m-%d")
+        body = {
+            "startDate": start_date,
+            "endDate": end_date,
+            "dimensions": ["query", "page"],
+            "rowLimit": 500,
+        }
+        res = service.searchanalytics().query(siteUrl=site_url, body=body).execute()
+        rows = res.get("rows", [])
+        formatted = []
+        for r in rows:
+            keys = r.get("keys", ["", ""])
+            q = keys[0] if len(keys) > 0 else ""
+            p = keys[1] if len(keys) > 1 else ""
+            formatted.append({
+                "query": q,
+                "page": p,
+                "impressions": int(r.get("impressions", 0)),
+                "clicks": int(r.get("clicks", 0)),
+                "ctr": f"{r.get('ctr', 0)*100:.1f}%",
+                "position": round(r.get("position", 0.0), 1),
+            })
+        return formatted
+    except Exception as e:
+        st.warning(f"查詢 GSC API 數據失敗: {e}")
+        return []
+
+# -----------------------------------------------------------------------------
 # Unified AI Execution Engine (Native Gemini + OpenAI-Compatible REST)
 # -----------------------------------------------------------------------------
 def call_ai_engine(
@@ -335,7 +444,6 @@ def call_ai_engine(
         try:
             genai.configure(api_key=api_key)
             generation_config = genai.types.GenerationConfig(temperature=0.3)
-            # Try specified model, fallback to gemini-3.6-flash if 404
             try:
                 model_instance = genai.GenerativeModel(
                     model_name=model,
@@ -397,6 +505,10 @@ total_matrices = calculate_matrix_combinations(tools_list)
 affiliate_count = sum(1 for t in tools_list if is_affiliate_url(t.get("url", "") or t.get("affiliate_url", "")))
 affiliate_pct = (affiliate_count / total_tools * 100) if total_tools > 0 else 0
 
+# Check GSC connection state
+gsc_creds = get_gsc_credentials()
+is_gsc_connected = gsc_creds is not None and gsc_creds.valid
+
 with st.sidebar:
     st.markdown("### ± StackDiff Ops Deck")
     st.markdown("<p style='color: #71717a; font-size: 11px; margin-top: -8px;'>Autonomous pSEO & Affiliate Command</p>", unsafe_allow_html=True)
@@ -442,7 +554,7 @@ with st.sidebar:
     model = st.selectbox("Selected Model", model_options, index=0)
 
     if provider == "Google Gemini":
-        st.markdown("<span style='color: #4ade80; font-size: 11px; font-family: monospace;'>✓ 原生 Gemini 1.5 Flash 引擎已就緒</span>", unsafe_allow_html=True)
+        st.markdown("<span style='color: #4ade80; font-size: 11px; font-family: monospace;'>✓ 原生 Gemini 1.5/3.6 Flash 已就緒</span>", unsafe_allow_html=True)
 
     st.divider()
 
@@ -480,6 +592,18 @@ with st.sidebar:
     )
     st.progress(affiliate_pct / 100.0)
 
+    st.markdown(
+        f"""
+        <div class="metric-pill" style="margin-top: 8px;">
+            <div class="metric-pill-val" style="font-size: 14px; color: {'#4ade80' if is_gsc_connected else '#fb923c'};">
+                {'🟢 OAuth 已連線' if is_gsc_connected else '🔴 尚未授權 GSC'}
+            </div>
+            <div class="metric-pill-lbl">Google Search Console</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
     st.divider()
     st.markdown(
         """
@@ -507,62 +631,150 @@ tabs = st.tabs([
 ])
 
 # =============================================================================
-# TAB 1: 🚨 GSC Traffic Radar & Monetization Alerts
+# TAB 1: 🚨 GSC Traffic Radar & Monetization Alerts (OAuth 2.0 Local Browser Flow)
 # =============================================================================
 with tabs[0]:
-    st.subheader("🚨 GSC Search Radar & Monetization Surge Alerts")
-    st.markdown("自動偵測高流量出水關鍵字，杜絕無商業代碼的漏斗損失。")
+    st.subheader("🚨 GSC Search Radar & Monetization Alerts (OAuth 2.0)")
+    st.markdown("透過本地 OAuth 2.0 瀏覽器驗證直接連接官方 Google Search Console，自動偵測流量出水並告警未變現漏洞。")
 
-    # Mode Selector
-    col_mode, col_thresh = st.columns([1, 1])
-    with col_mode:
-        data_source = st.radio(
-            "數據來源模式",
-            ["🔴 模擬展示模式 (Simulated Radar)", "🟢 真實 GSC 數據 (Service Account JSON)"],
-            horizontal=True,
-        )
-    with col_thresh:
-        surge_threshold = st.slider("出水警報觸發門檻 (30天曝光數)", min_value=10, max_value=300, value=50, step=10)
+    # Check GSC OAuth State
+    if not is_gsc_connected:
+        with st.container(border=True):
+            st.markdown(
+                """
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <span class="badge-warn">⚠️ 尚未授權</span>
+                    <span style="font-weight: 700; color: #f4f4f5; font-size: 15px;">尚未授權 Google Search Console，請點擊下方按鈕一鍵綁定 Google 帳號</span>
+                </div>
+                <p style="font-size: 12px; color: #a1a1aa; line-height: 1.6;">
+                    點擊後將自動啟動本地授權伺服器（Port 8080）並在預設瀏覽器彈出 Google 官方登入授權視窗。<br/>
+                    通過授權後，憑證將自動持久化儲存在 <code>scripts/token.json</code>，未來進入後台將全自動在背景無感更新。
+                </p>
+                """,
+                unsafe_allow_html=True,
+            )
 
-    is_simulated = "模擬展示模式" in data_source
+            col_auth_btn, col_auth_cfg = st.columns([1, 1])
+            with col_auth_btn:
+                if st.button("🔗 一鍵登入授權 Google Search Console", type="primary", use_container_width=True):
+                    with st.spinner("正在啟動本地驗證伺服器 (Port 8080) 並開啟瀏覽器進行 Google 授權..."):
+                        # Check if client_secret.json exists
+                        if GSC_CLIENT_SECRETS_PATH.exists():
+                            new_creds = start_oauth_flow(client_secrets_file=GSC_CLIENT_SECRETS_PATH)
+                            if new_creds and new_creds.valid:
+                                st.success("🎉 Google Search Console 授權成功！已持久化保存至 scripts/token.json。")
+                                st.rerun()
+                        else:
+                            st.error("尚未配置 Google OAuth Client 憑證。請展開右側或下方配置 Client ID 與 Secret。")
 
-    if not is_simulated:
-        uploaded_json = st.file_uploader("上傳 Google Search Console Service Account JSON 憑證", type=["json"])
-        if uploaded_json:
-            st.success("已連線至 Google Search Console API。分析物業: `https://stackdiff.pages.dev`")
-        else:
-            st.info("尚未上傳 GSC 憑證，系統自動以雷達快照模式監控。")
+            with col_auth_cfg:
+                with st.expander("⚙️ 首次設定：配置 Google OAuth 憑證 (Client Secret)"):
+                    st.markdown(
+                        """
+                        <div style="font-size: 12px; color: #a1a1aa;">
+                            前往 <a href="https://console.cloud.google.com/apis/credentials" target="_blank" style="color: #60a5fa;">Google Cloud Console</a>：<br/>
+                            1. 啟用 <b>Google Search Console API</b>。<br/>
+                            2. 建立憑證 -> <b>OAuth 2.0 用戶端 ID</b>（應用程式類型選擇 <b>桌面應用程式 Desktop App</b>）。<br/>
+                            3. 下載 <code>client_secret.json</code> 或複製 Client ID 與 Client Secret。
+                        </div>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                    uploaded_secret = st.file_uploader("上傳 client_secret.json", type=["json"], key="upload_secret_json")
+                    if uploaded_secret:
+                        GSC_CLIENT_SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
+                        with open(GSC_CLIENT_SECRETS_PATH, "wb") as f:
+                            f.write(uploaded_secret.read())
+                        st.success("已成功保存 `scripts/client_secret.json`！現在可以點擊上方授權按鈕。")
 
-    # High-intent simulated GSC search queries
-    radar_queries = [
-        {"query": "cursor vs windsurf", "tool_id": "windsurf", "impressions": 1450, "clicks": 210, "ctr": "14.5%", "position": 1.8},
-        {"query": "windsurf ide pricing", "tool_id": "windsurf", "impressions": 680, "clicks": 95, "ctr": "13.9%", "position": 2.1},
-        {"query": "flux 1 vs midjourney v6", "tool_id": "flux-1", "impressions": 1820, "clicks": 230, "ctr": "12.6%", "position": 2.4},
-        {"query": "hailuo ai video vs runway", "tool_id": "hailuo-ai", "impressions": 940, "clicks": 140, "ctr": "14.8%", "position": 1.7},
-        {"query": "deepseek r1 vs chatgpt plus", "tool_id": "deepseek", "impressions": 3400, "clicks": 490, "ctr": "14.4%", "position": 1.4},
-        {"query": "cartesia sonic latency vs elevenlabs", "tool_id": "cartesia-sonic", "impressions": 580, "clicks": 74, "ctr": "12.7%", "position": 3.1},
-        {"query": "supermaven vs github copilot", "tool_id": "supermaven", "impressions": 490, "clicks": 62, "ctr": "12.6%", "position": 2.2},
-        {"query": "v0 by vercel vs cursor composer", "tool_id": "v0-by-vercel", "impressions": 820, "clicks": 115, "ctr": "14.0%", "position": 2.0},
-        {"query": "ideogram 2 vs midjourney typography", "tool_id": "ideogram", "impressions": 410, "clicks": 51, "ctr": "12.4%", "position": 3.0},
-        {"query": "pika 2.0 vs kling ai", "tool_id": "pika", "impressions": 760, "clicks": 98, "ctr": "12.8%", "position": 2.5},
-        {"query": "recraft svg vs illustrator", "tool_id": "recraft", "impressions": 330, "clicks": 42, "ctr": "12.7%", "position": 3.4},
-        {"query": "elevenlabs alternatives 2026", "tool_id": "elevenlabs", "impressions": 1250, "clicks": 180, "ctr": "14.4%", "position": 1.9},
-    ]
+                    st.markdown("<p style='font-size: 11px; text-align: center; color: #71717a;'>— 或直接貼上金鑰 —</p>", unsafe_allow_html=True)
+                    cid_input = st.text_input("OAuth Client ID", placeholder="xxxx.apps.googleusercontent.com", key="input_cid")
+                    csec_input = st.text_input("OAuth Client Secret", type="password", key="input_csec")
+                    if st.button("💾 儲存 Client 憑證設定", key="btn_save_client_secret"):
+                        if cid_input.strip() and csec_input.strip():
+                            config_data = {
+                                "installed": {
+                                    "client_id": cid_input.strip(),
+                                    "client_secret": csec_input.strip(),
+                                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                                    "token_uri": "https://oauth2.googleapis.com/token",
+                                    "redirect_uris": ["http://localhost:8080/"],
+                                }
+                            }
+                            GSC_CLIENT_SECRETS_PATH.parent.mkdir(parents=True, exist_ok=True)
+                            with open(GSC_CLIENT_SECRETS_PATH, "w", encoding="utf-8") as f:
+                                json.dump(config_data, f, indent=2)
+                            st.success("已成功寫入 `scripts/client_secret.json`！請點擊上方按鈕進行授權。")
 
+        st.info("💡 提示：若您尚未完成 OAuth 授權，下方將暫時維持就緒狀態。")
+        verified_sites = []
+        gsc_queries = []
+    else:
+        # User is authenticated via OAuth 2.0!
+        with st.container(border=True):
+            col_stat1, col_stat2 = st.columns([3, 1])
+            with col_stat1:
+                st.markdown(
+                    """
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                        <span class="badge-live">🟢 已完成 OAuth 2.0 綁定</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #f4f4f5;">已連線至 Google 帳號 (token.json 自動更新中)</span>
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
+            with col_stat2:
+                if st.button("🚪 解除授權 (登出)", key="btn_gsc_logout", use_container_width=True):
+                    if GSC_TOKEN_PATH.exists():
+                        GSC_TOKEN_PATH.unlink()
+                    st.success("已清除本地 token.json 憑證。")
+                    st.rerun()
+
+        # Fetch Verified GSC Sites
+        with st.spinner("正在同步 Google Search Console 物業清單..."):
+            verified_sites = get_gsc_verified_sites(gsc_creds)
+
+        default_site = "https://stackdiff.pages.dev/"
+        if default_site not in verified_sites and verified_sites:
+            default_site = verified_sites[0]
+
+        col_site_sel, col_thresh = st.columns([2, 1])
+        with col_site_sel:
+            if verified_sites:
+                site_url = st.selectbox("選擇 GSC 物業 (Site Property)", verified_sites, index=0)
+            else:
+                site_url = st.text_input("GSC 物業網址", value=default_site)
+        with col_thresh:
+            surge_threshold = st.slider("出水警報觸發門檻 (曝光數)", min_value=10, max_value=300, value=50, step=10)
+
+        # Fetch search data
+        with st.spinner(f"正在從 Google Search Console API 抓取 `{site_url}` 最近 28 天真實搜尋表現..."):
+            gsc_queries = fetch_gsc_search_data(gsc_creds, site_url)
+
+        if not gsc_queries:
+            st.info(f"物業 `{site_url}` 目前尚無足夠檢索資料（新站物業 Googlebot 建立索引中），系統已就緒隨時監控。")
+
+    # Map search queries to indexed tools
     tool_map = {t["id"]: t for t in tools_list}
-    aggregated_stats: Dict[str, Dict[str, Any]] = {}
+    matched_tool_stats: Dict[str, Dict[str, Any]] = {}
 
-    for item in radar_queries:
-        tid = item["tool_id"]
-        if tid not in aggregated_stats:
-            aggregated_stats[tid] = {"impressions": 0, "clicks": 0, "queries": []}
-        aggregated_stats[tid]["impressions"] += item["impressions"]
-        aggregated_stats[tid]["clicks"] += item["clicks"]
-        aggregated_stats[tid]["queries"].append(item["query"])
+    for item in gsc_queries:
+        q_text = item.get("query", "").lower()
+        # Find which tool this query belongs to
+        for tid, t in tool_map.items():
+            t_name = t["name"].lower()
+            t_slug = t["slug"].lower()
+            if t_name in q_text or t_slug in q_text:
+                if tid not in matched_tool_stats:
+                    matched_tool_stats[tid] = {"impressions": 0, "clicks": 0, "queries": []}
+                matched_tool_stats[tid]["impressions"] += item["impressions"]
+                matched_tool_stats[tid]["clicks"] += item["clicks"]
+                if item["query"] not in matched_tool_stats[tid]["queries"]:
+                    matched_tool_stats[tid]["queries"].append(item["query"])
 
     # Detect surge alerts: Impressions >= threshold and url has no affiliate tag
     alerts = []
-    for tid, stats in aggregated_stats.items():
+    for tid, stats in matched_tool_stats.items():
         tool = tool_map.get(tid)
         if not tool:
             continue
@@ -578,15 +790,15 @@ with tabs[0]:
 
     alerts.sort(key=lambda x: x["impressions"], reverse=True)
 
+    # Render alerts
     if alerts:
-        status_badge = '<span class="badge-sim">🔴 模擬展示模式</span>' if is_simulated else '<span class="badge-live">🟢 真實 GSC 數據</span>'
         st.markdown(
             f"""
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 10px; margin-bottom: 12px;">
                 <span style="color: #f87171; font-weight: 700; font-size: 16px;">
                     🔥 流量出水警報：發現 {len(alerts)} 款工具正在爆發搜尋，尚未配置商業推薦碼！
                 </span>
-                {status_badge}
+                <span class="badge-live">🟢 GSC 即時數據</span>
             </div>
             """,
             unsafe_allow_html=True,
@@ -594,7 +806,7 @@ with tabs[0]:
 
         for alert in alerts:
             t = alert["tool"]
-            est_loss = int(alert["clicks"] * 0.05 * 20)  # 5% conversion at $20 starting price
+            est_loss = int(alert["clicks"] * 0.05 * 20)
 
             with st.container(border=True):
                 # 1. Header: Tool Name, Category Badge, Mode Badge
@@ -605,7 +817,7 @@ with tabs[0]:
                         <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                             <span style="font-size: 18px; font-weight: 700; color: #ffffff;">{t['name']}</span>
                             <span class="badge-cat">{t.get('category', 'AI Tool')}</span>
-                            {status_badge}
+                            <span class="badge-live">🟢 GSC 即時</span>
                         </div>
                         """,
                         unsafe_allow_html=True,
@@ -622,14 +834,14 @@ with tabs[0]:
 
                 st.markdown("<div style='height: 6px;'></div>", unsafe_allow_html=True)
 
-                # 2. Key Metrics Row (High Contrast, Clean Pills)
+                # 2. Key Metrics Row
                 col_m1, col_m2, col_m3 = st.columns(3)
                 with col_m1:
                     st.markdown(
                         f"""
                         <div class="metric-pill">
                             <div class="metric-pill-val" style="color: #60a5fa;">{alert['impressions']:,}</div>
-                            <div class="metric-pill-lbl">30天搜尋曝光數</div>
+                            <div class="metric-pill-lbl">GSC 搜尋曝光數</div>
                         </div>
                         """,
                         unsafe_allow_html=True,
@@ -639,7 +851,7 @@ with tabs[0]:
                         f"""
                         <div class="metric-pill">
                             <div class="metric-pill-val" style="color: #34d399;">{alert['clicks']:,}</div>
-                            <div class="metric-pill-lbl">自然搜尋點擊數</div>
+                            <div class="metric-pill-lbl">GSC 自然點擊數</div>
                         </div>
                         """,
                         unsafe_allow_html=True,
@@ -660,7 +872,7 @@ with tabs[0]:
                     unsafe_allow_html=True,
                 )
 
-                # 3. Bottom Action Row: Quick Affiliate Input + Update Button (Stacked nicely on mobile)
+                # 3. Quick Affiliate Input
                 col_inp, col_btn = st.columns([3, 1])
                 with col_inp:
                     new_url = st.text_input(
@@ -678,14 +890,14 @@ with tabs[0]:
                             st.success(f"已為 {t['name']} 綁定商業推薦碼！")
                             st.rerun()
 
-                # 4. Generate Pitch Application Letter
+                # 4. Pitch Generator
                 with st.expander(f"📝 生成 {t['name']} 官方商業審核申請說帖"):
                     if st.button(f"⚡ 調用 {provider} 起草專業申請信", key=f"pitch_ai_{t['id']}"):
                         pitch_prompt = f"""
 Write an executive, high-converting affiliate partnership application letter to the partnerships team at {t['name']}.
 Context:
 - Platform: StackDiff (https://stackdiff.pages.dev), an objective, developer-focused AI tool comparison directory.
-- Monthly Search Impressions for {t['name']}: {alert['impressions']:,}
+- Verified GSC Search Impressions for {t['name']}: {alert['impressions']:,}
 - High-intent developer clicks: {alert['clicks']:,} across search queries: {alert['top_queries']}
 - Highlight: We showcase {t['name']}'s key features in technical pairwise diff matrices.
 - Request: Expedited review and an official referral/affiliate link to place on our high-contrast matrix CTAs.
@@ -695,13 +907,13 @@ Tone: Concise, data-driven, engineering-friendly (under 180 words).
                         with st.spinner(f"Gemini / {provider} 正在生成申請信草稿..."):
                             letter_content = call_ai_engine(pitch_prompt, sys_p, provider, api_key, model, base_url)
                             if not letter_content:
-                                letter_content = f"""Subject: Partnership Inquiry: Featuring {t['name']} on StackDiff ({alert['impressions']:,} monthly search impressions)
+                                letter_content = f"""Subject: Partnership Inquiry: Featuring {t['name']} on StackDiff ({alert['impressions']:,} GSC search impressions)
 
 Hi {t['name']} Partnerships Team,
 
 I lead technical growth at StackDiff (https://stackdiff.pages.dev), an objective, data-driven AI tool specification and pairwise comparison directory.
 
-Our technical comparison matrices for {t['name']} are currently generating over {alert['impressions']:,} monthly search impressions and {alert['clicks']:,} organic clicks from software engineers and creators ranking for queries like "{alert['top_queries'][0]}".
+Our technical comparison matrices for {t['name']} are currently generating over {alert['impressions']:,} verified search impressions from software engineers and AI creators ranking for queries like "{alert['top_queries'][0]}".
 
 We showcase {t['name']}'s architectural capabilities and would love to integrate your official affiliate tracking link into our high-contrast CTA matrix buttons.
 
@@ -713,12 +925,14 @@ partnerships@stackdiff.pages.dev | https://stackdiff.pages.dev"""
 
                             st.text_area("生成的合作申請說帖草稿:", value=letter_content, height=200, key=f"text_pitch_{t['id']}")
     else:
-        st.success("✅ 流量雷達正常：目前所有高流量工具皆已綁定推薦代碼，無被動收益流失。")
+        if is_gsc_connected:
+            st.success("✅ 流量雷達正常：目前所有高流量工具皆已綁定推薦代碼，無被動收益流失。")
 
-    st.markdown("---")
-    st.markdown("#### 📈 GSC 關鍵字全域監控表")
-    st.caption("💡 提示：手機端可橫向滑動查看完整指標。")
-    st.dataframe(pd.DataFrame(radar_queries), use_container_width=True, hide_index=True)
+    if gsc_queries:
+        st.markdown("---")
+        st.markdown("#### 📈 GSC 關鍵字全域監控表 (最近 28 天真實記錄)")
+        st.caption("💡 提示：手機端可橫向滑動查看完整指標。")
+        st.dataframe(pd.DataFrame(gsc_queries), use_container_width=True, hide_index=True)
 
 # =============================================================================
 # TAB 2: 🛠️ Database & Link Manager
@@ -741,7 +955,6 @@ with tabs[1]:
         sq = search_query.strip().lower()
         view_tools = [t for t in view_tools if sq in t.get("name", "").lower() or sq in t.get("id", "").lower()]
 
-    # Format table for st.data_editor
     editor_rows = []
     for t in view_tools:
         editor_rows.append({
@@ -995,7 +1208,6 @@ with tabs[3]:
 
     pipeline_items = load_pipeline_data(tools_list)
 
-    # CRM Stage Counters
     counts_by_stage = {
         "未申請 (Not Applied)": 0,
         "審核中 (Under Review)": 0,
@@ -1009,7 +1221,6 @@ with tabs[3]:
         counts_by_stage[s] = counts_by_stage.get(s, 0) + 1
         est_total_monthly += float(p.get("est_monthly_revenue", 0.0) or 0.0)
 
-    # Modern Compact Metric Badges
     crm_c1, crm_c2, crm_c3, crm_c4, crm_c5 = st.columns(5)
     with crm_c1:
         st.markdown(
@@ -1124,7 +1335,6 @@ Tone: High-density, data-driven, strategic, engineering-focused. Answer in Tradi
             }
         ]
 
-    # Quick Prompts Row (Stacked on Mobile)
     st.markdown("##### ⚡ 快速決策諮詢")
     qc1, qc2, qc3 = st.columns(3)
     quick_prompt = None
@@ -1138,12 +1348,10 @@ Tone: High-density, data-driven, strategic, engineering-focused. Answer in Tradi
         if st.button("💰 哪 5 款工具獲利潛力最高？", use_container_width=True):
             quick_prompt = "分析現有 31 款工具中，哪 5 款工具的聯盟導購獲利潛力最高？（考量付費轉換率、定價門檻與開箱剛需）"
 
-    # Display chat history
     for msg in st.session_state.chat_messages:
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
 
-    # Chat input
     user_prompt = st.chat_input("請輸入您對 StackDiff 的 SEO 佈局、類別擴充或聯盟行銷提問...") or quick_prompt
 
     if user_prompt:
@@ -1155,7 +1363,6 @@ Tone: High-density, data-driven, strategic, engineering-focused. Answer in Tradi
             with st.spinner(f"{provider} 正在深度運算決策戰略..."):
                 reply_text = call_ai_engine(user_prompt, chat_system_instruction, provider, api_key, model, base_url)
 
-                # Fallback rule-based strategy if API key is not configured
                 if not reply_text:
                     if "類別" in user_prompt or "少" in user_prompt:
                         reply_text = f"""### 📊 類別深度分佈診斷與擴張策略
