@@ -39,6 +39,22 @@ DATA_TOOLS_PATH = PROJECT_ROOT / "data" / "tools.json"
 SRC_PIPELINE_PATH = PROJECT_ROOT / "src" / "data" / "affiliate_pipeline.json"
 DATA_PIPELINE_PATH = PROJECT_ROOT / "data" / "affiliate_pipeline.json"
 
+# Auto-load .env configuration if present
+ENV_PATH = PROJECT_ROOT / ".env"
+if ENV_PATH.exists():
+    try:
+        with open(ENV_PATH, "r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    k, v = line.split("=", 1)
+                    k = k.strip()
+                    v = v.strip().strip("'\"")
+                    if k not in os.environ:
+                        os.environ[k] = v
+    except Exception:
+        pass
+
 # -----------------------------------------------------------------------------
 # Mobile-First RWD & Dark Engineering Aesthetic Styling
 # -----------------------------------------------------------------------------
@@ -318,16 +334,28 @@ def call_ai_engine(
             return None
         try:
             genai.configure(api_key=api_key)
-            # Configure model with system instruction
             generation_config = genai.types.GenerationConfig(temperature=0.3)
-            model_instance = genai.GenerativeModel(
-                model_name=model,
-                system_instruction=system_prompt,
-                generation_config=generation_config,
-            )
-            response = model_instance.generate_content(prompt)
-            if response and response.text:
-                return response.text
+            # Try specified model, fallback to gemini-3.6-flash if 404
+            try:
+                model_instance = genai.GenerativeModel(
+                    model_name=model,
+                    system_instruction=system_prompt,
+                    generation_config=generation_config,
+                )
+                response = model_instance.generate_content(prompt)
+                if response and response.text:
+                    return response.text
+            except Exception as model_err:
+                if "404" in str(model_err) and model != "gemini-3.6-flash":
+                    model_instance = genai.GenerativeModel(
+                        model_name="gemini-3.6-flash",
+                        system_instruction=system_prompt,
+                        generation_config=generation_config,
+                    )
+                    response = model_instance.generate_content(prompt)
+                    if response and response.text:
+                        return response.text
+                raise model_err
             return None
         except Exception as e:
             st.warning(f"Google Gemini API 呼叫異常: {e}")
@@ -385,7 +413,7 @@ with st.sidebar:
     # Pre-populate API key from relevant environment variables
     if provider == "Google Gemini":
         default_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or ""
-        model_options = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"]
+        model_options = ["gemini-3.6-flash", "gemini-3.5-flash", "gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash"]
         base_url = "https://generativelanguage.googleapis.com"
     elif provider == "OpenAI":
         default_key = os.getenv("OPENAI_API_KEY") or ""
