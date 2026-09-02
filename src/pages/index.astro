@@ -1,6 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import toolsData from '../../data/tools.json';
+import toolsData from '../data/tools.json';
 
 interface ToolItem {
   id: string;
@@ -98,7 +98,7 @@ const pageDescription = "Objective, data-driven AI tool specifications and pairw
       <!-- Quick Metrics Strip -->
       <div class="flex items-center justify-center sm:justify-end gap-2.5 text-left font-mono shrink-0">
         <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
-          <div class="text-xs font-bold text-white">20 Tools</div>
+          <div class="text-xs font-bold text-white">{tools.length} Tools</div>
           <div class="text-[10px] text-zinc-500">Indexed</div>
         </div>
         <div class="px-3 py-1.5 rounded bg-[#121215] border border-zinc-800">
