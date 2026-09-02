@@ -1809,5 +1809,59 @@
     ],
     "verdict_context": "Top-tier solution for Businesses, marketing teams, and non-technical staff needing instant, no-code integrations across SaaS tools",
     "url": "https://zapier.com"
+  },
+  {
+    "id": "lovable",
+    "name": "Lovable",
+    "slug": "lovable",
+    "category": "Coding AI",
+    "pricing_model": "Freemium",
+    "starting_price": "$20/mo",
+    "free_tier": true,
+    "primary_audience": "Full-stack developers, product managers, and software engineers rapid-prototyping web applications.",
+    "best_for": "Building, deploying, and exporting full-stack React, TypeScript, and Supabase web applications from natural language prompts.",
+    "platforms": [
+      "Web",
+      "API"
+    ],
+    "supported_platforms": [
+      "Web",
+      "API"
+    ],
+    "core_positioning": "Autonomous AI web application engineer generating production-ready React, Tailwind, and Supabase codebases with continuous GitHub integration.",
+    "tagline": "Autonomous AI web application engineer generating production-ready React, Tailwind, and Supabase codebases with continuous GitHub integration.",
+    "key_capabilities": [
+      "Prompt-to-app full-stack generation with live browser execution environments",
+      "Deep native Supabase integration for relational schema design, auth, and database persistence",
+      "Bi-directional GitHub repository synchronization for complete code ownership and local IDE editing",
+      "Visual component inspection and fine-grained natural language code modification"
+    ],
+    "key_features": [
+      "Prompt-to-app full-stack generation with live browser execution environments",
+      "Deep native Supabase integration for relational schema design, auth, and database persistence",
+      "Bi-directional GitHub repository synchronization for complete code ownership and local IDE editing",
+      "Visual component inspection and fine-grained natural language code modification"
+    ],
+    "strengths": [
+      "Produces standard TypeScript/React code without proprietary runtime locks or abstract DSLs",
+      "Instant database provision and edge backend wiring via native Supabase tooling",
+      "Seamless developer off-ramp through direct continuous integration with GitHub repos"
+    ],
+    "pros": [
+      "Produces standard TypeScript/React code without proprietary runtime locks or abstract DSLs",
+      "Instant database provision and edge backend wiring via native Supabase tooling",
+      "Seamless developer off-ramp through direct continuous integration with GitHub repos"
+    ],
+    "trade_offs": [
+      "High message credit consumption during large refactoring operations on complex codebases",
+      "Architecture optimized primarily for modern web stacks, lacking deep support for legacy systems or native mobile"
+    ],
+    "cons": [
+      "High message credit consumption during large refactoring operations on complex codebases",
+      "Architecture optimized primarily for modern web stacks, lacking deep support for legacy systems or native mobile"
+    ],
+    "verdict_context": "Lovable is best-in-class for software teams looking to eliminate frontend boilerplate and rapidly deploy production-grade React web applications with connected Supabase backends while retaining 100% source code control.",
+    "url": "https://lovable.dev",
+    "affiliate_url": "https://lovable.dev"
   }
 ]
