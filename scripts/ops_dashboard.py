@@ -972,9 +972,23 @@ Schema format:
   "name": "{item['name']}",
   "slug": "{t_slug}",
   "category": "{item['category']}",
-  "pricing_model": "Freemium",
+  "pricing_model": "Freemium / Seat-based",
   "starting_price": "$20/mo",
   "free_tier": true,
+  "free_tier_details": "Free plan quota or trial duration",
+  "byok_support": true,
+  "open_source": false,
+  "context_or_model": "Underlying frontier model and context window size",
+  "team_collab": true,
+  "api_available": true,
+  "ideal_for_bullets": [
+    "You require specific capability 1 (e.g. BYOK API keys or self-hosting)",
+    "You need killer differentiator 2 (e.g. zero-friction team multiplayer)"
+  ],
+  "pricing_gotchas": [
+    "Specific pricing pitfall 1 (e.g. Fast request quota cliff or token overage)",
+    "Specific pricing pitfall 2 (e.g. Annual billing required for advertised rate)"
+  ],
   "primary_audience": "Clear ICP definition",
   "best_for": "Clear ICP definition",
   "platforms": ["Web", "API"],
@@ -1024,6 +1038,20 @@ Return ONLY raw JSON.
                                 "pricing_model": "Freemium",
                                 "starting_price": "$20/mo",
                                 "free_tier": True,
+                                "free_tier_details": "Free tier available for initial evaluation",
+                                "byok_support": item["category"] in ["Coding AI", "Workflow AI"],
+                                "open_source": False,
+                                "context_or_model": "Frontier AI model orchestration",
+                                "team_collab": True,
+                                "api_available": True,
+                                "ideal_for_bullets": [
+                                    f"Developers and creators wanting streamlined {item['category']} execution",
+                                    "Teams requiring reliable commercial uptime and active updates"
+                                ],
+                                "pricing_gotchas": [
+                                    "Advertised starting price may require annual commitment",
+                                    "Usage overages apply beyond base monthly quota"
+                                ],
                                 "primary_audience": f"Developers and creators automating workflows in {item['category']}",
                                 "best_for": f"Developers and creators automating workflows in {item['category']}",
                                 "platforms": ["Web", "API"],

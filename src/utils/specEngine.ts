@@ -403,23 +403,23 @@ export function normalizeToolSpec(raw: any): ToolSpec {
   const billingModel = curated.billingModel || raw.pricing_model || 'Subscription';
   const affiliateUrl = raw.affiliate_url || raw.url || '#';
 
-  // Killer differentiators: prefer curated bullets, fallback to strengths/best_for
-  const idealForBullets: string[] = curated.idealForBullets || [
+  // Killer differentiators: prefer explicit ideal_for_bullets, then curated bullets, then strengths/best_for
+  const idealForBullets: string[] = raw.ideal_for_bullets || curated.idealForBullets || [
     raw.best_for ? `Best fit for ${raw.best_for.toLowerCase()}` : `Engineered specifically for modern ${raw.category} workflows`,
     (raw.strengths && raw.strengths[0]) || (raw.pros && raw.pros[0]) || 'Offers verified commercial reliability and active community support',
   ];
 
   // Specs
-  const freeTier = curated.specs?.freeTier || (raw.free_tier ? 'Free tier / trial available' : 'Paid only (No permanent free tier)');
-  const byokSupport = curated.specs?.byokSupport ?? (raw.category === 'Coding AI' || raw.category === 'Workflow AI' || id.includes('deepseek'));
-  const openSource = curated.specs?.openSource ?? (id.includes('flux') || id.includes('stable-diffusion') || id.includes('n8n') || id.includes('deepseek') || id.includes('whisper') || id.includes('edge-tts'));
-  const contextOrModel = curated.specs?.contextOrModel || (raw.key_capabilities && raw.key_capabilities[0]) || (raw.key_features && raw.key_features[0]) || 'Frontier AI orchestration';
-  const teamCollab = curated.specs?.teamCollab ?? true;
-  const apiAvailable = curated.specs?.apiAvailable ?? (raw.category !== 'Music AI' || id.includes('suno'));
+  const freeTier = raw.free_tier_details || curated.specs?.freeTier || (raw.free_tier ? 'Free tier / trial available' : 'Paid only (No permanent free tier)');
+  const byokSupport = raw.byok_support ?? curated.specs?.byokSupport ?? (raw.category === 'Coding AI' || raw.category === 'Workflow AI' || id.includes('deepseek'));
+  const openSource = raw.open_source ?? curated.specs?.openSource ?? (id.includes('flux') || id.includes('stable-diffusion') || id.includes('n8n') || id.includes('deepseek') || id.includes('whisper') || id.includes('edge-tts'));
+  const contextOrModel = raw.context_or_model || curated.specs?.contextOrModel || (raw.key_capabilities && raw.key_capabilities[0]) || (raw.key_features && raw.key_features[0]) || 'Frontier AI orchestration';
+  const teamCollab = raw.team_collab ?? curated.specs?.teamCollab ?? true;
+  const apiAvailable = raw.api_available ?? curated.specs?.apiAvailable ?? (raw.category !== 'Music AI' || id.includes('suno'));
 
-  // Gotchas: prefer curated gotchas, fallback to trade_offs/cons
+  // Gotchas: prefer explicit pricing_gotchas, then curated gotchas, fallback to trade_offs/cons
   const rawGotchas = (raw.trade_offs || raw.cons || []).slice(0, 2);
-  const gotchas: string[] = curated.gotchas || [
+  const gotchas: string[] = raw.pricing_gotchas || curated.gotchas || [
     ...rawGotchas,
     `Advertised ${startingPrice} base pricing may scale upward depending on team seat tiers and heavy monthly usage.`,
   ];
