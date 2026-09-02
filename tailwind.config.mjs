@@ -5,26 +5,19 @@ export default {
   theme: {
     extend: {
       colors: {
-        dark: {
-          950: '#07090e',
-          900: '#0b0f17',
-          850: '#101520',
-          800: '#161c2b',
-          700: '#232b3e',
-          600: '#344059',
-          500: '#4f5e7f',
-          400: '#8392b2',
-          300: '#b2bed4',
-          200: '#dce3f0',
-          100: '#f1f5f9',
-        },
-        brand: {
-          cyan: '#06b6d4',
-          indigo: '#6366f1',
-          violet: '#8b5cf6',
-          emerald: '#10b981',
-          rose: '#f43f5e',
-          amber: '#f59e0b',
+        zinc: {
+          950: '#09090b',
+          900: '#121215',
+          850: '#18181b',
+          800: '#27272a',
+          750: '#323238',
+          700: '#3f3f46',
+          600: '#52525b',
+          500: '#71717a',
+          400: '#a1a1aa',
+          300: '#d4d4d8',
+          200: '#e4e4e7',
+          100: '#f4f4f5',
         },
       },
       fontFamily: {
@@ -45,10 +38,6 @@ export default {
           'Consolas',
           'monospace',
         ],
-      },
-      backgroundImage: {
-        'grid-pattern': "radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px)",
-        'hero-gradient': "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.25), rgba(6, 182, 212, 0.08), transparent)",
       },
     },
   },
