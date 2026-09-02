@@ -8,7 +8,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "ops": "streamlit run scripts/ops_dashboard.py --server.address 0.0.0.0"
+    "ops": "streamlit run scripts/ops_dashboard.py"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.1.6",
