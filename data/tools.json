@@ -1919,5 +1919,59 @@
     "verdict_context": "n8n is the industry-standard workflow engine for technical teams bridging traditional integration middleware with modern LLM agent orchestration. Its hybrid self-hostable design bypasses strict enterprise data-privacy bottlenecks while delivering full Node.js/Python extensibility.",
     "url": "https://n8n.io",
     "affiliate_url": "https://n8n.io"
+  },
+  {
+    "id": "openai-o3-mini",
+    "name": "OpenAI o3-mini",
+    "slug": "openai-o3-mini",
+    "category": "LLM",
+    "pricing_model": "Freemium",
+    "starting_price": "$20/mo",
+    "free_tier": true,
+    "primary_audience": "Software engineers, data scientists, and enterprise developers building automated agentic workflows and complex reasoning applications.",
+    "best_for": "High-throughput algorithmic coding, mathematical problem solving, and structured agentic execution requiring high accuracy at minimal latency and operational cost.",
+    "platforms": [
+      "Web",
+      "API"
+    ],
+    "supported_platforms": [
+      "Web",
+      "API"
+    ],
+    "core_positioning": "Cost-efficient small reasoning model engineered with adjustable chain-of-thought processing to deliver elite STEM, coding, and tool-use capabilities.",
+    "tagline": "High-speed, low-cost reasoning model engineered for complex coding, STEM analysis, and agentic execution.",
+    "key_capabilities": [
+      "Configurable reasoning effort parameters (low, medium, high) to programmatically calibrate token usage and response latency.",
+      "Native support for developer messages, Structured Outputs, and function calling within chain-of-thought loops.",
+      "High-throughput code synthesis and competitive programming capabilities matching larger frontier reasoning models.",
+      "Fast time-to-first-token performance optimized for interactive developer tools and high-concurrency API integrations."
+    ],
+    "key_features": [
+      "Configurable reasoning effort parameters (low, medium, high) to programmatically calibrate token usage and response latency.",
+      "Native support for developer messages, Structured Outputs, and function calling within chain-of-thought loops.",
+      "High-throughput code synthesis and competitive programming capabilities matching larger frontier reasoning models.",
+      "Fast time-to-first-token performance optimized for interactive developer tools and high-concurrency API integrations."
+    ],
+    "strengths": [
+      "Industry-leading intelligence-to-cost ratio for complex logical reasoning and coding benchmarks.",
+      "Native Integration with platform features like Batch API, Structured Outputs, and system/developer instructions.",
+      "Substantially lower latency than full-scale reasoning models while maintaining high precision on STEM workloads."
+    ],
+    "pros": [
+      "Industry-leading intelligence-to-cost ratio for complex logical reasoning and coding benchmarks.",
+      "Native Integration with platform features like Batch API, Structured Outputs, and system/developer instructions.",
+      "Substantially lower latency than full-scale reasoning models while maintaining high precision on STEM workloads."
+    ],
+    "trade_offs": [
+      "Text-only modality lacking vision, audio, or native file parsing capabilities.",
+      "Increased output token expenditure caused by internal reasoning tokens consumed during thinking phases."
+    ],
+    "cons": [
+      "Text-only modality lacking vision, audio, or native file parsing capabilities.",
+      "Increased output token expenditure caused by internal reasoning tokens consumed during thinking phases."
+    ],
+    "verdict_context": "OpenAI o3-mini is the industry standard budget reasoning LLM for production backend infrastructure, autonomous code generation, and multi-step logic pipelines where full-size reasoning models are cost-prohibitive.",
+    "url": "https://openai.com",
+    "affiliate_url": "https://openai.com"
   }
 ]
