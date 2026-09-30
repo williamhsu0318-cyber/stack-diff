@@ -100,6 +100,18 @@ SRC_TOOLS_PATH = PROJECT_ROOT / "src" / "data" / "tools.json"
 DATA_TOOLS_PATH = PROJECT_ROOT / "data" / "tools.json"
 SRC_PIPELINE_PATH = PROJECT_ROOT / "src" / "data" / "affiliate_pipeline.json"
 DATA_PIPELINE_PATH = PROJECT_ROOT / "data" / "affiliate_pipeline.json"
+KPI_METRICS_PATH = PROJECT_ROOT / "data" / "kpi_metrics.json"
+
+# Import Discord KPI Sentinel
+try:
+    from send_discord_kpi import build_discord_payload, send_to_discord, load_kpi_metrics
+except ImportError:
+    try:
+        from scripts.send_discord_kpi import build_discord_payload, send_to_discord, load_kpi_metrics
+    except ImportError:
+        build_discord_payload = None
+        send_to_discord = None
+        load_kpi_metrics = None
 
 # GSC OAuth 2.0 Paths
 GSC_TOKEN_PATH = PROJECT_ROOT / "scripts" / "token.json"
@@ -861,6 +873,7 @@ st.markdown(
 # Application Tabs
 # -----------------------------------------------------------------------------
 tabs = st.tabs([
+    "📊 30天觀測期 (10大 KPI & Discord)",
     "🚀 趨勢探索與發布",
     "🛡️ 假消息巡邏 (Auditor)",
     "🚨 流量獲利雷達",
@@ -869,9 +882,140 @@ tabs = st.tabs([
 ])
 
 # =============================================================================
-# TAB 1: 🚀 AI 趨勢探索與「一鍵無人發布」
+# TAB 0: 📊 30天數據觀測期 (10大核心 KPI & Discord 隨時看)
 # =============================================================================
 with tabs[0]:
+    st.subheader("📊 30 天數據觀測期：10 大核心 KPI 與 Master Sheet")
+    st.markdown(
+        """
+        > **🎯 觀測期鐵律 (Scope Freeze)**：當前鎖定 **23 款旗艦工具 / 36 組同類深度對決**，暫不盲目擴張頁面。
+        > 核心任務為回答 4 個問題：
+        > 1. Google 是否開始理解/曝光對比頁？ 2. 哪些對比詞有搜尋需求？ 3. 進站訪客是否產生 CTA 點擊？ 4. 哪一類工具值得下一波擴張？
+        """
+    )
+
+    kpi_data = load_kpi_metrics() if load_kpi_metrics else None
+    if not kpi_data:
+        st.warning("尚未找到 data/kpi_metrics.json 資料檔。")
+    else:
+        summary = kpi_data.get("summary", {})
+        phase = kpi_data.get("observation_phase", {})
+
+        # Top Metrics Funnel Strip
+        c1, c2, c3, c4, c5 = st.columns(5)
+        with c1:
+            st.metric("📈 1. 曝光數 (Impressions)", f"{summary.get('total_impressions', 0):,}")
+        with c2:
+            st.metric("🖱️ 2. 搜尋點擊 (Clicks)", f"{summary.get('total_clicks', 0):,}", help=f"整體 CTR: {summary.get('overall_ctr', '0.0%')}")
+        with c3:
+            st.metric("📄 3. 出水頁面數", f"{summary.get('pages_with_clicks', 0)} / 36")
+        with c4:
+            st.metric("🎯 4. CTA 商業點擊", f"{summary.get('total_cta_clicks', 0):,}", help=f"CTA 轉換率: {summary.get('overall_cta_ctr', '0.0%')} (目標: 5%~15%)")
+        with c5:
+            st.metric("💰 5. 累積營收 (Revenue)", f"${summary.get('total_revenue', 0.0):,.2f}", help=f"推薦註冊數: {summary.get('total_signups', 0)}")
+
+        st.markdown("---")
+
+        # Discord Broadcast Control
+        st.markdown("##### 📲 手機 Discord 即時推播中心")
+        st.caption("隨時點擊推播，將當前 10 大 KPI、5 大數字漏斗與分類表現發送至您的手機 Discord。")
+        disc_col1, disc_col2 = st.columns([3, 1])
+        with disc_col1:
+            push_mode = st.radio(
+                "選擇推播內容形式",
+                ["summary", "weekly"],
+                format_func=lambda x: "即時 KPI 監控看板 (Summary)" if x == "summary" else "週一例行週報 (Weekly 包含檢核 Checklist)",
+                horizontal=True,
+                key="radio_kpi_push_mode"
+            )
+        with disc_col2:
+            if st.button("📲 立即推播至 Discord", type="primary", use_container_width=True, key="btn_push_kpi_discord"):
+                if build_discord_payload and send_to_discord:
+                    payload = build_discord_payload(kpi_data, mode=push_mode)
+                    ok, msg = send_to_discord(payload, discord_webhook)
+                    if ok:
+                        st.toast("✅ 已成功推播 10 大 KPI 卡片至您的 Discord！", icon="📲")
+                        st.success("✅ Discord 推播已送達！請查看您的手機或桌面 Discord。")
+                    else:
+                        st.error(f"❌ 推播失敗: {msg}")
+                else:
+                    st.error("send_discord_kpi 模組未就緒。")
+
+        # Two column analysis: Category Rollup & Top Queries
+        st.markdown("---")
+        col_cat, col_qry = st.columns([1, 1])
+
+        with col_cat:
+            st.markdown("##### 🏆 6 大分類訊號分布 (Category Rollup)")
+            st.caption("30 天後根據各分類的 Impressions 與 CTA Clicks 決定下一波擴充重點。")
+            cats = kpi_data.get("categories", {})
+            cat_rows = []
+            for cat_name, cd in cats.items():
+                cat_rows.append({
+                    "分類 (Category)": cat_name,
+                    "對決數": cd.get("pairs_count", 0),
+                    "曝光 (Imp)": cd.get("impressions", 0),
+                    "點擊 (Clicks)": cd.get("clicks", 0),
+                    "CTA 點擊": cd.get("cta_clicks", 0),
+                    "營收 ($)": f"${cd.get('revenue', 0.0):.2f}"
+                })
+            st.dataframe(pd.DataFrame(cat_rows), use_container_width=True, hide_index=True)
+
+        with col_qry:
+            st.markdown("##### 🔍 GSC 搜尋詞意圖洞察 (Top Emerging Queries)")
+            st.caption("最珍貴的訊號：Google 把 StackDiff 哪些詞當成答案？（例如 cursor vs copilot pricing 2026）")
+            top_q = kpi_data.get("top_queries", [])
+            if top_q:
+                st.dataframe(pd.DataFrame(top_q), use_container_width=True, hide_index=True)
+            else:
+                st.info("尚無記錄的新興關鍵字。新頁面上線後約 7~14 天於 GSC 出水。")
+
+            # Quick Add Query Form
+            with st.expander("➕ 手動記錄 GSC 發現的新搜尋詞"):
+                with st.form("form_add_query"):
+                    new_q = st.text_input("搜尋詞 (Query)", placeholder="例如 cursor vs copilot byok")
+                    q_imp = st.number_input("曝光數 (Impressions)", min_value=0, value=10)
+                    q_clk = st.number_input("點擊數 (Clicks)", min_value=0, value=1)
+                    submit_q = st.form_submit_button("儲存關鍵字")
+                    if submit_q and new_q.strip():
+                        kpi_data.setdefault("top_queries", []).append({
+                            "query": new_q.strip(),
+                            "impressions": q_imp,
+                            "clicks": q_clk
+                        })
+                        with open(KPI_METRICS_PATH, "w", encoding="utf-8") as f:
+                            json.dump(kpi_data, f, indent=2, ensure_ascii=False)
+                        st.success(f"已記錄關鍵字: {new_q.strip()}")
+                        st.rerun()
+
+        # 36 Comparisons Master Sheet
+        st.markdown("---")
+        st.markdown("##### 📋 StackDiff 36 組對決 Master Sheet 總表")
+        st.caption("每週檢驗各頁面表現，找出「產生訊號的 5 個核心比較頁」。")
+        comparisons = kpi_data.get("comparisons", [])
+        if comparisons:
+            comp_df = pd.DataFrame(comparisons)
+            cols_order = ["slug", "category", "impressions", "clicks", "ctr", "avg_position", "cta_clicks", "cta_ctr", "signups", "revenue"]
+            existing_cols = [c for c in cols_order if c in comp_df.columns]
+            comp_df = comp_df[existing_cols]
+            comp_df.rename(columns={
+                "slug": "對決 Slug",
+                "category": "分類",
+                "impressions": "曝光 (Imp)",
+                "clicks": "自然點擊",
+                "ctr": "CTR",
+                "avg_position": "平均排名",
+                "cta_clicks": "CTA 點擊",
+                "cta_ctr": "CTA CTR",
+                "signups": "註冊",
+                "revenue": "營收 ($)"
+            }, inplace=True)
+            st.dataframe(comp_df, use_container_width=True, hide_index=True)
+
+# =============================================================================
+# TAB 1: 🚀 AI 趨勢探索與「一鍵無人發布」
+# =============================================================================
+with tabs[1]:
     st.subheader("🚀 最新熱門 AI 趨勢雷達與「一鍵無人發布」")
     st.markdown("自動比對全網最新搜尋爆發點，由 Gemini 萃取客觀規格並一鍵背景 Git Push 部署，完全無需終端機。")
 
@@ -1139,7 +1283,7 @@ Return ONLY raw JSON.
 # =============================================================================
 # TAB 2: 🛡️ 假消息與過期規格自動巡邏 (Spec Drift Auditor)
 # =============================================================================
-with tabs[1]:
+with tabs[2]:
     st.subheader("🛡️ 假消息與過期規格自動巡邏 (Spec Drift Auditor)")
     st.markdown("自動比對真實市場最新現狀，防止定價改版、免費額度取消或描述過時損害網站公信力。")
 
@@ -1257,7 +1401,7 @@ Return ONLY JSON.
 # =============================================================================
 # TAB 3: 🚨 流量獲利雷達 (OAuth 2.0 Real GSC)
 # =============================================================================
-with tabs[2]:
+with tabs[3]:
     st.subheader("🚨 GSC 搜尋表現與出水獲利雷達")
     st.markdown("透過本地 OAuth 2.0 自動監聽真實搜尋曝光，主動警報高流量但未配置推薦代碼的漏斗。")
 
@@ -1525,7 +1669,7 @@ with tabs[2]:
 # =============================================================================
 # TAB 4: 💼 聯盟 CRM 看板
 # =============================================================================
-with tabs[3]:
+with tabs[4]:
     st.subheader("💼 聯盟夥伴商務 CRM 看板")
     st.markdown("管理每款工具的聯盟夥伴申請階段、抽成條款與收益紀錄（資料自動持久化保存）。")
 
@@ -1592,7 +1736,7 @@ with tabs[3]:
 # =============================================================================
 # TAB 5: 🛠️ 資料庫快速維護 & 部署
 # =============================================================================
-with tabs[4]:
+with tabs[5]:
     st.subheader("🛠️ 資料庫快速維護 & 一鍵部署")
     st.markdown("線上編輯 `src/data/tools.json` 中的各工具規格與商務推薦網址，並一鍵推送到 Cloudflare Pages。")
 
