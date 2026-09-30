@@ -93,7 +93,7 @@ for (const sib of allCategoryTools) {
   }
 }
 
-// Structured JSON-LD with Product, FAQPage, and BreadcrumbList schemas
+// Structured JSON-LD with Product and BreadcrumbList schemas
 const numericPriceA = specA.startingPrice.replace(/[^0-9.]/g, '') || '0';
 const numericPriceB = specB.startingPrice.replace(/[^0-9.]/g, '') || '0';
 
@@ -189,19 +189,11 @@ const jsonLd = {
         <span class="text-zinc-300 font-medium">{specA.name} vs {specB.name}</span>
       </nav>
 
-      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-2">
+      <div class="mb-2">
         <!-- Minimalist Title -->
         <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-white">
           {specA.name} <span class="text-zinc-500 font-light px-1 text-xl sm:text-2xl md:text-3xl">vs</span> {specB.name}
         </h1>
-
-        <!-- Objective Data Status & Freshness -->
-        <div class="shrink-0 flex items-center gap-2">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium bg-zinc-900 text-zinc-400 border border-zinc-800 shadow-sm">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>Pricing Data Checked: {lastCheckedDate}</span>
-          </span>
-        </div>
       </div>
 
       <!-- Subtitle -->
