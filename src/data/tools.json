@@ -431,7 +431,7 @@
     "free_tier": true,
     "best_for": "Knowledge workers, researchers, and developers wanting reasoning models and execution tools",
     "key_features": [
-      "Frontier reasoning with OpenAI o1 and o3-mini alongside versatile GPT-4o multimodal engine",
+      "Frontier reasoning with OpenAI o3 and o4-mini alongside versatile GPT-6 Astra multimodal engine",
       "Advanced Voice Mode with real-time natural conversational interruptions and inflection",
       "Canvas collaborative workspace for inline text drafting and code iteration",
       "Integrated web search, sandboxed Python code analysis, and DALL-E image generation",
@@ -443,7 +443,7 @@
       "Fast, reliable mobile and desktop native client apps"
     ],
     "cons": [
-      "Usage message caps on flagship reasoning models (o1 and GPT-4o)",
+      "Usage message caps on flagship reasoning models (o3 and GPT-6 Astra)",
       "Standard conversational tone can feel boilerplate without custom instructions"
     ],
     "supported_platforms": [
@@ -460,9 +460,9 @@
       "Web",
       "API"
     ],
-    "core_positioning": "OpenAI's flagship subscription offering priority access to o1 reasoning models, GPT-4o, and Advanced Voice",
+    "core_positioning": "OpenAI flagship subscription offering priority access to GPT-6 Astra, o3 reasoning models, and Advanced Voice",
     "key_capabilities": [
-      "Access to OpenAI o1 reasoning model, o3-mini, and GPT-4o multimodal engine",
+      "Access to OpenAI o3 reasoning model, o4-mini, and GPT-6 Astra multimodal engine",
       "Real-time Advanced Voice Mode with conversational interruptions",
       "Sandboxed Python code execution and Advanced Data Analysis",
       "Custom GPT marketplace, memory persistence, and Canvas collaborative workspace"
@@ -473,7 +473,7 @@
       "Continuous access to OpenAI's latest frontier reasoning architectures"
     ],
     "trade_offs": [
-      "Usage message caps on flagship reasoning models (o1 and o1-mini)",
+      "Usage message caps on flagship reasoning models (o3 and GPT-6 Astra)",
       "Strict automated guardrails can occasionally refuse benign technical prompts"
     ],
     "verdict_context": "The benchmark all-in-one assistant for general productivity, multimodal voice, and frontier reasoning",
@@ -485,7 +485,7 @@
     "pricing": {
       "starting_price": "$20/mo",
       "billing_model": "Seat-based",
-      "free_tier_details": "Free tier includes GPT-4o mini and standard GPT-4o access limits",
+      "free_tier_details": "Free tier includes access to GPT-6 Auto and o4-mini with dynamic rate limits; Advanced Voice and o3 require Plus ($20/mo).",
       "tiers_summary": "Free / Plus $20/mo / Pro $200/mo / Team $25/user/mo (min 2 seats) / Enterprise"
     },
     "technical_specs": {
@@ -572,15 +572,15 @@
     "pricing": {
       "starting_price": "$19.99/mo",
       "billing_model": "Subscription",
-      "free_tier_details": "Free tier includes web access to Gemini 2.0 Flash and 1.5 Flash with standard rate limits",
+      "free_tier_details": "Free tier includes web access to Gemini 3.8 Flash and 3.5 Flash-Lite with standard rate limits; Gemini 3.1 Pro requires Google One AI Premium ($19.99/mo).",
       "tiers_summary": "Google One AI Premium $19.99/mo (Includes 2TB storage) / Free Gemini"
     },
     "technical_specs": {
       "current_models": [
-        "Gemini 3.1 Pro (進階推論)",
-        "Gemini 3.8 Flash (全方位協助)",
-        "Gemini 3.5 Flash-Lite (回覆最快)",
-        "延伸思考 (Extended Thinking)"
+        "Gemini 3.1 Pro (Advanced Reasoning)",
+        "Gemini 3.8 Flash (General Intelligence)",
+        "Gemini 3.5 Flash-Lite (Fast Response)",
+        "Extended Thinking (Reasoning Mode)"
       ],
       "context_window": "2M",
       "byok_support": false,
@@ -591,7 +591,7 @@
     "best_for": "Researchers, Google Workspace users, and engineers ingesting massive documents or entire code repos",
     "key_features": [
       "Massive 2,000,000 token context window for ingesting full codebases, hours of audio, and dense video",
-      "Powered by Gemini 2.0 Flash and Gemini 1.5 Pro multimodal architectures",
+      "Powered by Gemini 3.1 Pro and Gemini 3.8 Flash multimodal architectures with Extended Thinking",
       "Deep Google Workspace integration (Docs, Gmail, Sheets, Drive) for instant contextual drafting",
       "Includes 2TB Google One cloud storage and priority access to Google AI Studio features",
       "Native execution of Python code and live multimodal audio/visual understanding"
@@ -1078,11 +1078,10 @@
     },
     "best_for": "Filmmakers and VFX artists needing cinematic video generation and camera steering",
     "key_features": [
-      "Gen-3 Alpha and Gen-3 Alpha Turbo high-fidelity video synthesis from text, image, and video prompts",
-      "Act-One facial performance capture transferring real actor expressions onto stylized characters",
-      "Director Mode camera controls with precise pan, tilt, zoom, and multi-motion brush masks",
-      "4K video upscaling, lip-sync dubbing, and integrated generative audio sound effects",
-      "Fast generation mode via Gen-3 Alpha Turbo delivering 7x speedups for storyboarding"
+      "Cinematic AI video generation powered by Gen-4.5 and Gen-4 architectures",
+      "Act-Two camera control and facial performance capture",
+      "Motion Brush for directional control over specific video elements",
+      "Text-to-video, image-to-video, and video-to-video style transfer"
     ],
     "gotchas": [
       "Standard plan ($15/mo) provides 625 credits/mo (Gen-3 Alpha consumes 10 credits per second of video).",

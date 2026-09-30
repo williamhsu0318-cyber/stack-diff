@@ -46,12 +46,13 @@ VERIFIED_FLAGSHIP_SPECS = {
     "gemini": {
         "name": "Gemini Advanced",
         "current_models": [
-            "Gemini 3.1 Pro (進階推論)",
-            "Gemini 3.8 Flash (全方位協助)",
-            "Gemini 3.5 Flash-Lite (回覆最快)",
-            "延伸思考 (Extended Thinking)"
+            "Gemini 3.1 Pro (Advanced Reasoning)",
+            "Gemini 3.8 Flash (General Intelligence)",
+            "Gemini 3.5 Flash-Lite (Fast Response)",
+            "Extended Thinking (Reasoning Mode)"
         ],
-        "context_or_model": "Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, 延伸思考 (Thinking)",
+        "context_or_model": "Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, Extended Thinking",
+        "free_tier_details": "Free tier includes web access to Gemini 3.8 Flash and 3.5 Flash-Lite with standard rate limits; Gemini 3.1 Pro requires Google One AI Premium ($19.99/mo).",
         "tagline": "Google's frontier assistant with native multimodal comprehension, Gemini 3.1 Pro deep reasoning, 3.8 Flash agentic speed, and 2M token context",
         "source_url": "https://gemini.google.com",
         "last_checked_at": "2026-09-30"
@@ -60,6 +61,7 @@ VERIFIED_FLAGSHIP_SPECS = {
         "name": "ChatGPT Plus / Pro",
         "current_models": ["GPT-6 Astra", "GPT-6.1 Sol", "GPT-6 Luna", "o3", "o4-mini"],
         "context_or_model": "GPT-6 Astra, GPT-6.1 Sol, OpenAI o3, o4-mini",
+        "free_tier_details": "Free tier includes access to GPT-6 Auto and o4-mini with dynamic rate limits; Advanced Voice and o3 require Plus ($20/mo).",
         "tagline": "OpenAI's premier reasoning platform powered by GPT-6 Astra, o3 deep mathematical logic, and Advanced Voice",
         "source_url": "https://openai.com/index",
         "last_checked_at": "2026-09-30"
@@ -255,6 +257,12 @@ def sync_tools_json():
             if "technical_specs" not in t:
                 t["technical_specs"] = {}
             t["technical_specs"]["current_models"] = spec["current_models"]
+
+            if "free_tier_details" in spec:
+                if "pricing" not in t:
+                    t["pricing"] = {}
+                t["pricing"]["free_tier_details"] = spec["free_tier_details"]
+
             updated_count += 1
 
     with open(SRC_TOOLS_PATH, "w", encoding="utf-8") as f:

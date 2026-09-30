@@ -88,7 +88,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       freeTier: 'Copilot Free: 2,000 completions and 50 chat messages/mo; 30-day individual trial',
       byokSupport: false,
       openSource: false,
-      contextOrModel: 'Grok 4.7, Composer 2.5, Claude Opus 5, GPT-5.6 Sol',
+      contextOrModel: 'Claude Sonnet 5.5, GPT-6.1 Sol, Gemini 3.8 Flash, OpenAI o3',
       teamCollab: true,
       apiAvailable: true,
     },
@@ -165,11 +165,11 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     billingModel: 'Seat-based ($20/mo Plus / $200/mo Pro)',
     officialPricingUrl: 'https://openai.com/chatgpt/pricing',
     idealForBullets: [
-      'You need access to OpenAI\'s frontier reasoning models (o1, o3-mini) and Advanced Voice Mode',
+      'You need access to OpenAI\'s frontier reasoning models (o3, o4-mini) and Advanced Voice Mode',
       'You want built-in web browsing, Canvas interactive code workspace, and custom GPTs',
     ],
     specs: {
-      freeTier: 'Free tier with GPT-4o mini and dynamic GPT-4o rate limits',
+      freeTier: 'Free tier includes access to GPT-6 Auto and o4-mini with dynamic rate limits',
       byokSupport: false,
       openSource: false,
       contextOrModel: 'GPT-6 Astra, GPT-6.1 Sol, OpenAI o3, o4-mini',
@@ -177,7 +177,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       apiAvailable: true,
     },
     gotchas: [
-      'Plus ($20/mo) enforces dynamic usage caps on frontier reasoning models (o1/o3-mini).',
+      'Plus ($20/mo) enforces dynamic usage caps on frontier reasoning models (o3/o4-mini).',
       'Web interface and mobile app do not support BYOK (requires separate API platform billing).',
       'Team plan enforces a minimum commitment of 2 seats billed monthly or annually.',
     ],
@@ -211,10 +211,10 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       'You want deep Google Workspace integration (Docs, Gmail, Drive) and 2TB cloud storage included',
     ],
     specs: {
-      freeTier: 'Free Gemini tier powered by Gemini 3.5 Flash-Lite and 3.8 Flash',
+      freeTier: 'Free tier includes web access to Gemini 3.8 Flash and 3.5 Flash-Lite with standard rate limits; 3.1 Pro requires Google One AI Premium ($19.99/mo)',
       byokSupport: false,
       openSource: false,
-      contextOrModel: 'Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, 延伸思考 (Thinking)',
+      contextOrModel: 'Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, Extended Thinking',
       teamCollab: true,
       apiAvailable: true,
     },
@@ -354,8 +354,8 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     billingModel: 'Credit-based ($15/mo Standard)',
     officialPricingUrl: 'https://runwayml.com/pricing',
     idealForBullets: [
-      'You need cinematic AI video generation powered by Gen-3 Alpha and Gen-3 Alpha Turbo',
-      'You want Act-One facial performance capture transferring real expressions onto characters',
+      'You need cinematic AI video generation powered by Gen-4.5 and Gen-4 Turbo',
+      'You want Act-Two facial performance capture transferring real expressions onto characters',
     ],
     specs: {
       freeTier: 'Free plan includes one-time 125 non-renewable generation credits',
@@ -367,7 +367,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     },
     gotchas: [
       'Standard plan credits (625/mo) do not roll over past subscription billing cycle caps.',
-      'Gen-3 Alpha consumes 10 credits per second of generated video ($0.50/sec equivalent on Standard).',
+      'Gen-4.5 consumes credits per second of generated video with no rollover on Standard ($15/mo).',
       'Watermarking is removed only on paid Standard ($15/mo) and higher tiers.',
     ],
   },
