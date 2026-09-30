@@ -47,7 +47,7 @@ const {
 
 // Build structured BOFU comparison data
 const comparisonData: ComparisonData = buildComparisonData(toolA, toolB, category);
-const { toolA: specA, toolB: specB, statusLabel, lastCheckedDate } = comparisonData;
+const { toolA: specA, toolB: specB, statusLabel, lastCheckedDate, differentiator } = comparisonData;
 
 
 const categoryAnchor = category.toLowerCase().replace(/[^a-z0-9]+/g, '-');
@@ -243,7 +243,7 @@ const jsonLd = {
                     <span>Official Pricing</span>
                     <span>↗</span>
                   </a>
-                  <span class="text-[9px] font-mono text-zinc-500">Checked: {specA.lastCheckedAt}</span>
+                  <span class="text-[9px] font-mono text-zinc-500">Pricing Checked: {specA.lastCheckedAt}</span>
                 </div>
               </div>
             </div>
@@ -314,7 +314,7 @@ const jsonLd = {
                     <span>Official Pricing</span>
                     <span>↗</span>
                   </a>
-                  <span class="text-[9px] font-mono text-zinc-500">Checked: {specB.lastCheckedAt}</span>
+                  <span class="text-[9px] font-mono text-zinc-500">Pricing Checked: {specB.lastCheckedAt}</span>
                 </div>
               </div>
             </div>
@@ -350,6 +350,63 @@ const jsonLd = {
           </a>
         </article>
 
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- BLOCK 2.5: The Verdict & Why the Difference Matters (Pair Differentiator) -->
+    <!-- ===================================================================== -->
+    <section class="mb-12" aria-label="Key Differentiators & Why It Matters">
+      <div class="p-5 sm:p-7 rounded-xl bg-[#121215] border border-zinc-800 shadow-sm relative overflow-hidden">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-zinc-800/80">
+          <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <h2 class="text-xs font-mono uppercase font-bold text-white tracking-wider">
+              Why the Difference Matters (Core Differentiators)
+            </h2>
+          </div>
+          <span class="text-[10px] font-mono text-zinc-500 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">
+            Decision MOAT
+          </span>
+        </div>
+
+        <div class="mb-5">
+          <h3 class="text-base sm:text-lg font-bold text-zinc-100 mb-1.5">
+            {differentiator.coreBattle}
+          </h3>
+          <p class="text-xs text-zinc-400 font-mono">
+            Key architectural, commercial, and workflow trade-offs you encounter in real-world deployment:
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+          {differentiator.whyItMatters.map((item, idx) => (
+            <div class="p-4 rounded-lg bg-zinc-900/60 border border-zinc-800/70 flex flex-col justify-between">
+              <div>
+                <div class="text-[11px] font-mono font-semibold text-emerald-400 mb-1.5 flex items-center gap-1.5">
+                  <span class="text-zinc-500">0{idx + 1}.</span>
+                  <span>{item.title}</span>
+                </div>
+                <p class="text-xs text-zinc-300 leading-relaxed font-sans">
+                  {item.description}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <!-- The 5-Second Decisive Verdict Question -->
+        <div class="p-3.5 sm:p-4 rounded-lg bg-zinc-950 border border-zinc-800/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="flex items-start gap-2.5">
+            <span class="text-amber-400 font-mono text-sm shrink-0">⚡</span>
+            <div>
+              <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider block mb-0.5">The Decisive Decision Test:</span>
+              <p class="text-xs font-medium text-zinc-200">
+                {differentiator.decisiveQuestion}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -427,7 +484,7 @@ const jsonLd = {
                     >
                       Official Pricing ↗
                     </a>
-                    <span class="text-[9px] font-mono text-zinc-500">Checked: {specA.lastCheckedAt}</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Pricing Checked: {specA.lastCheckedAt}</span>
                   </div>
                 </td>
                 <td class="p-3.5 sm:p-4 pr-4 border-l border-zinc-800 align-top">
@@ -449,7 +506,7 @@ const jsonLd = {
                     >
                       Official Pricing ↗
                     </a>
-                    <span class="text-[9px] font-mono text-zinc-500">Checked: {specB.lastCheckedAt}</span>
+                    <span class="text-[9px] font-mono text-zinc-500">Pricing Checked: {specB.lastCheckedAt}</span>
                   </div>
                 </td>
               </tr>
@@ -531,10 +588,12 @@ const jsonLd = {
                   Context / Model Specs
                 </td>
                 <td class="p-3.5 sm:p-4 border-l border-zinc-800 align-top text-zinc-200">
-                  <span class="font-mono text-xs leading-relaxed">{specA.specs.contextOrModel}</span>
+                  <span class="font-mono text-xs leading-relaxed block">{specA.specs.contextOrModel}</span>
+                  <span class="text-[9px] font-mono text-zinc-500 block mt-1">Specs Checked: {specA.lastCheckedAt}</span>
                 </td>
                 <td class="p-3.5 sm:p-4 pr-4 border-l border-zinc-800 align-top text-zinc-200">
-                  <span class="font-mono text-xs leading-relaxed">{specB.specs.contextOrModel}</span>
+                  <span class="font-mono text-xs leading-relaxed block">{specB.specs.contextOrModel}</span>
+                  <span class="text-[9px] font-mono text-zinc-500 block mt-1">Specs Checked: {specB.lastCheckedAt}</span>
                 </td>
               </tr>
 

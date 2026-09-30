@@ -52,7 +52,9 @@ for (const [category, groupTools] of categoryMap.entries()) {
       const slug = `${toolA.slug}-vs-${toolB.slug}`;
       
       // Search index string for instant client-side matching
-      const searchText = `${toolA.name} ${toolB.name} ${toolA.slug} ${toolB.slug} ${category} ${toolA.tagline} ${toolB.tagline} ${toolA.best_for} ${toolB.best_for} ${toolA.pricing_model} ${toolB.pricing_model} ${toolA.supported_platforms.join(' ')} ${toolB.supported_platforms.join(' ')}`.toLowerCase();
+      const platsA = (toolA.supported_platforms || toolA.platforms || []).join(' ');
+      const platsB = (toolB.supported_platforms || toolB.platforms || []).join(' ');
+      const searchText = `${toolA.name} ${toolB.name} ${toolA.slug} ${toolB.slug} ${category} ${toolA.tagline || ''} ${toolB.tagline || ''} ${toolA.best_for || ''} ${toolB.best_for || ''} ${toolA.pricing_model || ''} ${toolB.pricing_model || ''} ${platsA} ${platsB}`.toLowerCase();
 
       allComparisons.push({
         slug,

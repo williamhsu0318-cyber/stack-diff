@@ -13,7 +13,7 @@
       "Composer 2.5 multi-file autonomous generation and automatic diff application",
       "Full codebase semantic indexing with symbol-aware contextual retrieval (@codebase)",
       "Copilot++ intelligent multi-line autocomplete predicting next edit locations",
-      "Seamless model switching across Claude 3.5/3.7 Sonnet, GPT-4o, Grok-2, and DeepSeek-V3",
+      "Seamless model switching across Claude 3.7/3.5 Sonnet, GPT-4o, and DeepSeek-V3",
       "1-click migration importing all VS Code extensions, themes, and keybindings"
     ],
     "pros": [
@@ -67,11 +67,10 @@
     },
     "technical_specs": {
       "current_models": [
-        "Claude 3.5 Sonnet",
         "Claude 3.7 Sonnet",
+        "Claude 3.5 Sonnet",
         "GPT-4o",
         "OpenAI o1",
-        "Grok-2",
         "Cursor Composer 2.5",
         "DeepSeek-V3"
       ],
@@ -98,7 +97,7 @@
     "free_tier": true,
     "best_for": "Developers wanting native multi-IDE inline completions with seamless switching between Claude and OpenAI models",
     "key_features": [
-      "Seamless multi-model switching between Claude 3.5/3.7 Sonnet, GPT-4o, OpenAI o1, and Gemini 2.0 Flash",
+      "Seamless multi-model switching between Claude 3.7/3.5 Sonnet, GPT-4o, OpenAI o1, and Gemini 2.0 Flash",
       "Real-time inline ghost-text code completions embedded directly into your editor cursor",
       "Copilot Chat with workspace symbol awareness and Pull Request generation on GitHub.com",
       "Native cross-IDE plugin support across VS Code, JetBrains, Visual Studio, and Neovim",
@@ -123,11 +122,9 @@
     "affiliate_url": "https://github.com/features/copilot",
     "primary_audience": "Enterprise development teams requiring strict IP indemnity and existing IDE compatibility",
     "platforms": [
-      "VS Code",
-      "JetBrains",
-      "Visual Studio",
-      "Neovim",
-      "CLI"
+      "Mac",
+      "Windows",
+      "Linux"
     ],
     "core_positioning": "The enterprise-standard AI pair programmer integrated across VS Code, JetBrains, and Visual Studio",
     "key_capabilities": [
@@ -159,8 +156,8 @@
     },
     "technical_specs": {
       "current_models": [
-        "Claude 3.5 Sonnet",
         "Claude 3.7 Sonnet",
+        "Claude 3.5 Sonnet",
         "GPT-4o",
         "OpenAI o1",
         "Gemini 2.0 Flash"
@@ -246,6 +243,7 @@
     "technical_specs": {
       "current_models": [
         "Cascade Flow Engine",
+        "Claude 3.7 Sonnet",
         "Claude 3.5 Sonnet",
         "GPT-4o",
         "DeepSeek-V3"
@@ -273,8 +271,7 @@
     "primary_audience": "Frontend engineers, product designers, and full-stack builders rapidly scaffolding React UI layouts",
     "platforms": [
       "Web",
-      "CLI",
-      "Next.js"
+      "API"
     ],
     "core_positioning": "Generative UI system by Vercel converting natural language prompts into production-ready React and Tailwind components",
     "key_capabilities": [
@@ -331,7 +328,7 @@
     "technical_specs": {
       "current_models": [
         "v0 Component Synthesis Engine",
-        "Claude 3.5 Sonnet",
+        "Claude 3.7 Sonnet",
         "Specialized Tailwind LLM"
       ],
       "context_window": "128K",
@@ -413,7 +410,7 @@
     "technical_specs": {
       "current_models": [
         "Lovable Architect Engine",
-        "Claude 3.5 Sonnet",
+        "Claude 3.7 Sonnet",
         "GPT-4o"
       ],
       "context_window": "128K",
@@ -466,10 +463,6 @@
     "primary_audience": "Knowledge workers, researchers, and developers wanting the most versatile multimodal AI assistant",
     "platforms": [
       "Web",
-      "iOS",
-      "Android",
-      "Mac",
-      "Windows",
       "API"
     ],
     "core_positioning": "OpenAI's flagship subscription offering priority access to o1 reasoning models, GPT-4o, and Advanced Voice",
@@ -503,10 +496,10 @@
     "technical_specs": {
       "current_models": [
         "GPT-4o",
-        "GPT-4o mini",
         "OpenAI o1",
         "OpenAI o3-mini",
-        "Sora Video (Pro)"
+        "GPT-4o mini",
+        "Advanced Voice Mode"
       ],
       "context_window": "128K",
       "byok_support": false,
@@ -521,67 +514,11 @@
     ]
   },
   {
-    "id": "claude-3-5-sonnet",
+    "id": "claude",
     "name": "Claude Pro",
-    "slug": "claude-3-5-sonnet",
+    "slug": "claude",
     "category": "LLM",
-    "tagline": "Anthropic's frontier AI ecosystem offering elite reasoning, nuanced prose, and live Artifacts prototyping",
-    "pricing_model": "Seat-based",
-    "starting_price": "$20/mo",
-    "free_tier": true,
-    "best_for": "Software engineers, analysts, and writers demanding natural prose and benchmark-leading coding intelligence",
-    "key_features": [
-      "Access to flagship Claude 3.7 Sonnet, Sonnet 5.5, and Claude 3.5 Haiku",
-      "Artifacts interactive workspace for live React, HTML, SVG, and diagram rendering",
-      "200,000 token context window for ingesting full codebases, logs, and technical manuscripts",
-      "Projects workspace for persistent team wikis, brand voice guidelines, and file stores",
-      "Visual reasoning for dense architectural diagrams, UI mockups, and financial statements"
-    ],
-    "pros": [
-      "Exceptional natural writing cadence and unmatched coding precision",
-      "Interactive Artifacts UI revolutionizes front-end and component prototyping",
-      "Superior long-context adherence with minimal needle-in-haystack hallucination"
-    ],
-    "cons": [
-      "Free tier enforces strict dynamic hourly message volume limits",
-      "Lacks native image generation and real-time web browsing in standard UI"
-    ],
-    "supported_platforms": [
-      "Web",
-      "iOS",
-      "Android",
-      "Mac",
-      "Windows",
-      "API"
-    ],
-    "affiliate_url": "https://claude.ai",
-    "primary_audience": "Software engineers, analytical writers, and researchers requiring elite reasoning and coding accuracy",
-    "platforms": [
-      "Web",
-      "iOS",
-      "Android",
-      "Mac",
-      "Windows",
-      "API"
-    ],
-    "core_positioning": "Anthropic's premium subscription providing 5x higher usage of Claude 3.5 Sonnet and interactive Artifacts",
-    "key_capabilities": [
-      "200,000 token context window for ingesting full codebases, logs, and books",
-      "Artifacts interactive workspace for live React, SVG, HTML, and diagram rendering",
-      "State-of-the-art coding benchmarks across Claude 3.7 Sonnet and Sonnet 5.5",
-      "Projects feature for organizing team wikis and contextual documentation"
-    ],
-    "strengths": [
-      "Industry benchmark code generation quality with minimal need for manual refactoring",
-      "Interactive Artifacts drastically accelerate front-end component prototyping",
-      "Nuanced, natural prose that avoids formulaic AI clichés"
-    ],
-    "trade_offs": [
-      "Enforces rolling dynamic message volume limits during high-traffic windows",
-      "Lacks native image generation and sandboxed Python code execution in UI"
-    ],
-    "verdict_context": "The reigning champion for coding accuracy, complex reasoning, and natural literary writing tone",
-    "url": "https://claude.ai",
+    "tagline": "Anthropic's frontier AI ecosystem offering elite hybrid reasoning, nuanced prose, and live Artifacts prototyping",
     "official_website": "https://claude.ai",
     "official_pricing_url": "https://www.anthropic.com/pricing",
     "source_url": "https://www.anthropic.com/pricing",
@@ -594,11 +531,9 @@
     },
     "technical_specs": {
       "current_models": [
+        "Claude 3.7 Sonnet (Hybrid Reasoning)",
         "Claude 3.5 Sonnet",
-        "Claude 3.7 Sonnet",
-        "Claude Sonnet 5.5",
-        "Claude 3.5 Haiku",
-        "Claude 3 Opus"
+        "Claude 3.5 Haiku"
       ],
       "context_window": "200K",
       "byok_support": true,
@@ -606,70 +541,35 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
+    "best_for": "Software engineers, analysts, and writers demanding natural prose and benchmark-leading coding intelligence",
+    "key_features": [
+      "Access to flagship Claude 3.7 Sonnet with toggleable extended reasoning alongside Claude 3.5 Haiku",
+      "Artifacts interactive workspace for live React, HTML, SVG, and diagram rendering",
+      "200,000 token context window for ingesting full codebases, logs, and technical manuscripts",
+      "Projects workspace for persistent team wikis, brand voice guidelines, and file stores",
+      "Visual reasoning for dense architectural diagrams, UI mockups, and financial statements"
+    ],
     "gotchas": [
       "Pro subscription enforces rolling 5-hour message limits that throttle dynamically during peak global usage.",
       "Does not offer native sandboxed Python terminal execution or image generation in the standard chat UI.",
       "Team plan requires a mandatory 5-user minimum commitment ($125/mo)."
+    ],
+    "affiliate_url": "https://claude.ai",
+    "url": "https://claude.ai",
+    "starting_price": "$20/mo",
+    "pricing_model": "Seat-based",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
-    "id": "gemini-advanced",
+    "id": "gemini",
     "name": "Gemini Advanced",
-    "slug": "gemini-advanced",
+    "slug": "gemini",
     "category": "LLM",
-    "pricing_model": "Subscription",
-    "starting_price": "$19.99/mo",
-    "free_tier": true,
-    "primary_audience": "Researchers and Google Workspace power users needing immense context windows and native Google integration",
-    "platforms": [
-      "Web",
-      "Android",
-      "iOS",
-      "API"
-    ],
-    "core_positioning": "Google's flagship multimodal AI suite powered by Gemini 1.5 Pro with an industry-leading 2-million-token context",
-    "key_capabilities": [
-      "Industry-leading 2,000,000 token context window handling massive codebases and long video streams",
-      "Gemini 2.0 Flash and 1.5 Pro multimodal reasoning across text, code, audio, and visual frames",
-      "Deep Google Workspace integration with direct Gmail, Drive, and Docs synthesis",
-      "Includes 2TB Google One cloud storage alongside Gemini Advanced subscription"
-    ],
-    "strengths": [
-      "Unrivaled context length handles 1-hour videos and 50,000 lines of code without chunking",
-      "Bundled 2TB Google One storage provides exceptional ecosystem consumer value",
-      "Superior native multimodal processing of raw video and audio files"
-    ],
-    "trade_offs": [
-      "Coding benchmark adherence can occasionally lag behind Claude 3.5 Sonnet on intricate edge cases",
-      "Workspace extensions can occasionally experience retrieval latency on large shared drives"
-    ],
-    "verdict_context": "The undisputed king of long-context document and video ingestion, paired with unmatched Google Workspace synergy",
-    "url": "https://gemini.google.com/advanced",
-    "best_for": "Researchers, Google Workspace users, and engineers ingesting massive documents, long video, or entire code repos",
-    "supported_platforms": [
-      "Web",
-      "Android",
-      "iOS",
-      "API"
-    ],
     "tagline": "Google's 2M-token frontier assistant with native multimodal comprehension, Gemini 2.0 Flash, and Workspace integration",
-    "key_features": [
-      "Massive 2,000,000 token context window for ingesting full codebases, hours of audio, and dense video",
-      "Powered by Gemini 2.0 Flash and Gemini 1.5 Pro multimodal architectures",
-      "Deep Google Workspace integration (Docs, Gmail, Sheets, Drive) for instant contextual drafting",
-      "Includes 2TB Google One cloud storage and priority access to Google AI Studio features",
-      "Native execution of Python code and live multimodal audio/visual understanding"
-    ],
-    "pros": [
-      "Unrivaled context length handles 1-hour videos and 50,000 lines of code without chunking",
-      "Bundled 2TB Google One storage provides exceptional ecosystem consumer value",
-      "Superior native multimodal processing of raw video and audio files"
-    ],
-    "cons": [
-      "Coding benchmark adherence can occasionally lag behind Claude 3.5 Sonnet on intricate edge cases",
-      "Workspace extensions can occasionally experience retrieval latency on large shared drives"
-    ],
-    "affiliate_url": "https://gemini.google.com/advanced",
     "official_website": "https://gemini.google.com/advanced",
     "official_pricing_url": "https://one.google.com/about/plans",
     "source_url": "https://one.google.com/about/plans",
@@ -684,8 +584,7 @@
       "current_models": [
         "Gemini 2.0 Flash",
         "Gemini 1.5 Pro (2M context)",
-        "Gemini 1.5 Flash",
-        "Gemini Ultra"
+        "Gemini 1.5 Flash"
       ],
       "context_window": "2M",
       "byok_support": false,
@@ -693,10 +592,27 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
+    "best_for": "Researchers, Google Workspace users, and engineers ingesting massive documents, long video, or entire code repos",
+    "key_features": [
+      "Massive 2,000,000 token context window for ingesting full codebases, hours of audio, and dense video",
+      "Powered by Gemini 2.0 Flash and Gemini 1.5 Pro multimodal architectures",
+      "Deep Google Workspace integration (Docs, Gmail, Sheets, Drive) for instant contextual drafting",
+      "Includes 2TB Google One cloud storage and priority access to Google AI Studio features",
+      "Native execution of Python code and live multimodal audio/visual understanding"
+    ],
     "gotchas": [
       "Tied directly to personal Google One storage accounts; cannot easily separate business and personal quotas.",
       "Developer API credits are NOT included in the Google One AI Premium $19.99/mo bundle.",
       "Advanced reasoning responses can lean conservative on ambiguous non-technical creative queries."
+    ],
+    "affiliate_url": "https://gemini.google.com/advanced",
+    "url": "https://gemini.google.com/advanced",
+    "starting_price": "$19.99/mo",
+    "pricing_model": "Subscription",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
@@ -710,10 +626,7 @@
     "primary_audience": "Developers, AI researchers, and enterprises seeking open-weights reasoning parity at ultra-low inference costs",
     "platforms": [
       "Web",
-      "iOS",
-      "Android",
-      "API",
-      "Local Hardware"
+      "API"
     ],
     "core_positioning": "Open-weight frontier model family (DeepSeek-V3 / DeepSeek-R1) delivering parity with top proprietary LLMs at 95% lower cost",
     "key_capabilities": [
@@ -772,8 +685,7 @@
     "technical_specs": {
       "current_models": [
         "DeepSeek-R1 (Reasoning)",
-        "DeepSeek-V3 (Base 671B MoE)",
-        "DeepSeek-Coder-V2"
+        "DeepSeek-V3 (Base 671B MoE)"
       ],
       "context_window": "64K",
       "byok_support": true,
@@ -788,67 +700,11 @@
     ]
   },
   {
-    "id": "perplexity-ai",
+    "id": "perplexity",
     "name": "Perplexity Pro",
-    "slug": "perplexity-ai",
+    "slug": "perplexity",
     "category": "LLM",
     "tagline": "Conversational answer engine combining verified live web search with multi-model switching (Claude, GPT-4o, Sonar)",
-    "pricing_model": "Subscription",
-    "starting_price": "$20/mo",
-    "free_tier": true,
-    "best_for": "Researchers, financial analysts, and knowledge workers requiring real-time web citations without SEO spam",
-    "key_features": [
-      "Pro Search synthesizing 30+ web sources into structured, citation-backed analytical briefs",
-      "Instant model switcher between Claude 3.5/3.7 Sonnet, GPT-4o, and Sonar Reasoning",
-      "Spaces collaborative knowledge hub with custom system prompts and file attachments",
-      "Includes $5/mo in API platform credits for building search-augmented developer agents",
-      "Pages publishing engine turning research threads into shareable SEO-optimized articles"
-    ],
-    "pros": [
-      "Drastically reduces web search time by synthesizing answers instead of blue links",
-      "Every statement is backed by verifiable clickable citations to curb hallucinations",
-      "Flexible model routing allows leveraging the best LLM for specific research tasks"
-    ],
-    "cons": [
-      "Pro Search queries are restricted on the free tier with a rolling reset",
-      "Not optimized for iterative code authoring or sandbox execution"
-    ],
-    "supported_platforms": [
-      "Web",
-      "iOS",
-      "Android",
-      "Mac",
-      "Chrome Extension",
-      "API"
-    ],
-    "affiliate_url": "https://perplexity.ai",
-    "primary_audience": "Market analysts, investigative researchers, and students seeking cited, real-time factual synthesis",
-    "platforms": [
-      "Web",
-      "iOS",
-      "Android",
-      "Mac",
-      "Chrome Extension",
-      "API"
-    ],
-    "core_positioning": "Premium AI answer engine combining real-time multi-source web synthesis with flexible frontier model routing",
-    "key_capabilities": [
-      "Pro Search performing multi-step query decomposition and deep web synthesis",
-      "Flexible model switching (Claude 3.5 Sonnet, GPT-4o, Sonar Large 32k)",
-      "Interactive Collections workspace with document upload and citation tracking",
-      "Generates verified inline clickable citations for every factual claim"
-    ],
-    "strengths": [
-      "Eliminates blue-link search browsing with structured, cited executive summaries",
-      "Verifiable citations drastically reduce hallucination risk for enterprise research",
-      "Includes $5/mo API credits and access to third-party frontier models in one plan"
-    ],
-    "trade_offs": [
-      "Pro search query rate limits apply on heavy continuous research sessions",
-      "Not designed for autonomous multi-file software engineering or artifact compilation"
-    ],
-    "verdict_context": "The most reliable tool for factual online research, completely replacing traditional search engines with synthesized answers",
-    "url": "https://perplexity.ai",
     "official_website": "https://perplexity.ai",
     "official_pricing_url": "https://www.perplexity.ai/pro",
     "source_url": "https://www.perplexity.ai/pro",
@@ -856,15 +712,15 @@
     "pricing": {
       "starting_price": "$20/mo",
       "billing_model": "Subscription",
-      "free_tier_details": "Free unlimited standard searches plus 5 Pro searches daily",
-      "tiers_summary": "Free / Pro $20/mo ($200/yr) / Enterprise Pro $40/user/mo"
+      "free_tier_details": "Free plan includes unlimited Quick search queries and 5 Pro searches per day",
+      "tiers_summary": "Free / Pro $20/mo ($200/yr) / Enterprise Pro $40/seat/mo"
     },
     "technical_specs": {
       "current_models": [
-        "Sonar Reasoning (DeepSeek-R1 based)",
-        "Sonar Large",
-        "Claude 3.5/3.7 Sonnet",
-        "GPT-4o"
+        "Perplexity Sonar Reasoning",
+        "Claude 3.7 Sonnet",
+        "GPT-4o",
+        "DeepSeek-R1"
       ],
       "context_window": "128K",
       "byok_support": false,
@@ -872,10 +728,27 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
+    "best_for": "Researchers, financial analysts, and knowledge workers requiring real-time web citations without SEO spam",
+    "key_features": [
+      "Pro Search with multi-step search query decomposition and cross-source verification",
+      "Instant model switching across Sonar, Claude 3.7 Sonnet, GPT-4o, and DeepSeek-R1",
+      "Inline numbered citations linked directly to live web sources and academic papers",
+      "Collections workspace for organizing research threads and sharing knowledge hubs",
+      "Upload files (PDFs, CSVs, code) for deep contextual search and data extraction"
+    ],
     "gotchas": [
-      "Engineered primarily for information discovery and research synthesis rather than multi-file code editing.",
-      "Included $5/mo API credits expire at the end of each billing cycle without rollover.",
-      "Occasionally filters paywalled academic journals unless user uploads PDFs directly."
+      "Pro plan includes 300+ Pro queries per day; heavy enterprise users may hit daily throttles.",
+      "Not optimized for standalone multi-file code editing or whole-project scaffolding.",
+      "Enterprise features like SOC2 compliance and single sign-on require Enterprise Pro tier."
+    ],
+    "affiliate_url": "https://perplexity.ai",
+    "url": "https://perplexity.ai",
+    "starting_price": "$20/mo",
+    "pricing_model": "Subscription",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
@@ -883,17 +756,17 @@
     "name": "Midjourney",
     "slug": "midjourney",
     "category": "Image AI",
-    "tagline": "Industry-standard aesthetic image synthesis offering cinematic lighting, photorealism, and native Web UI",
-    "pricing_model": "Subscription",
+    "tagline": "Industry-benchmark image synthesis engine offering photorealism, artistic coherence, and web canvas editor",
+    "pricing_model": "GPU Hour Subscription",
     "starting_price": "$10/mo",
-    "free_tier": false,
-    "best_for": "Designers, art directors, and creative professionals requiring benchmark photorealism and stylistic coherence",
+    "free_tier": true,
+    "best_for": "Art directors, concept artists, and creative professionals demanding maximum aesthetic quality and cinematic lighting",
     "key_features": [
-      "Midjourney v6.1 and v7 Alpha image models delivering benchmark texture fidelity and lighting",
-      "Native standalone Web UI creation workspace alongside legacy Discord bot commands",
-      "Vary (Region) inpainting, Pan / Zoom outpainting, and multi-prompt stylistic weight tuning",
-      "Niji 6 specialized aesthetic anime and illustrative render pipeline",
-      "Stealth generation mode on Pro ($60/mo) and Mega plans to protect proprietary creative assets"
+      "Benchmark cinematic aesthetic quality, photorealistic skin textures, and atmospheric lighting",
+      "Dedicated web canvas UI featuring inpainting, pan, zoom out, and region repainting",
+      "Style Reference (--sref) and Character Reference (--cref) for consistent visual identity",
+      "Unlimited Relax GPU mode on Standard ($30/mo) tier for budget-free background rendering",
+      "Niji 6 specialized tuning for anime, illustrative concept art, and comic styling"
     ],
     "pros": [
       "Unrivaled aesthetic quality, lighting composition, and artistic flair",
@@ -911,8 +784,9 @@
     "affiliate_url": "https://midjourney.com",
     "primary_audience": "Concept artists, creative directors, and digital marketers demanding broadcast-ready visual aesthetics",
     "platforms": [
-      "Web",
-      "Discord"
+      "Mac",
+      "Windows",
+      "Linux"
     ],
     "core_positioning": "State-of-the-art AI image generator renowned for distinct artistic aesthetics, cinematic lighting, and fine prompt fidelity",
     "key_capabilities": [
@@ -938,15 +812,15 @@
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$10/mo",
-      "billing_model": "Subscription",
-      "free_tier_details": "Paid only (No permanent free tier; requires active subscription)",
-      "tiers_summary": "Basic $10/mo (3.3h GPU) / Standard $30/mo (15h + unlimited relax) / Pro $60/mo / Mega $120/mo"
+      "billing_model": "GPU Hour Subscription",
+      "free_tier_details": "No permanent free tier; periodic free trials during major model updates",
+      "tiers_summary": "Basic $10/mo (3.3 GPU hrs) / Standard $30/mo (15 fast hrs + unlimited relax) / Pro $60/mo / Mega $120/mo"
     },
     "technical_specs": {
       "current_models": [
         "Midjourney v6.1",
         "Midjourney v7 Alpha",
-        "Niji 6"
+        "Niji 6 (Anime)"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -955,85 +829,32 @@
       "offline_support": false
     },
     "gotchas": [
-      "Basic tier ($10/mo) does not include unlimited Relaxed generation; stops when 3.3 Fast GPU hours deplete.",
-      "All generated images are publicly visible in community gallery unless subscribed to Pro ($60/mo) with Stealth Mode.",
-      "Does not offer an official public REST API for programmatic automation."
+      "Basic tier ($10/mo) has hard 3.3 GPU hour cap with zero unlimited relax mode.",
+      "Generations are public by default; Stealth mode requires Pro tier ($60/mo).",
+      "No official first-party developer API (must use third-party scraping services or manual UI)."
     ]
   },
   {
-    "id": "flux-1",
-    "name": "FLUX.1 [dev/pro]",
-    "slug": "flux-1",
+    "id": "flux",
+    "name": "FLUX",
+    "slug": "flux",
     "category": "Image AI",
-    "pricing_model": "Usage-based",
-    "starting_price": "Open weights Free / $0.03/img API",
-    "free_tier": true,
-    "primary_audience": "Technical artists, developers, and studios wanting open-weight control with commercial-grade fidelity",
-    "platforms": [
-      "Web",
-      "API",
-      "ComfyUI",
-      "Local GPU"
-    ],
-    "core_positioning": "12-billion-parameter open-weight rectified flow transformer setting the open-source image synthesis standard",
-    "key_capabilities": [
-      "12B parameter hybrid flow-transformer architecture developed by the original Stable Diffusion creators",
-      "State-of-the-art anatomy rendering with flawless 5-finger hands and complex poses",
-      "Exceptional typography and text rendering inside generated images",
-      "Available across Schnell (open fast), Dev (non-commercial open), and Pro (commercial API) tiers"
-    ],
-    "strengths": [
-      "Flawless text generation and complex spatial prompt adherence",
-      "Open weights available for local execution with extensive ComfyUI LoRA ecosystem",
-      "Matches or surpasses Midjourney v6 in anatomical realism and realistic skin textures"
-    ],
-    "trade_offs": [
-      "Dev model requires significant GPU VRAM (16GB+ for optimal quantization)",
-      "Official Pro API pricing can add up for high-volume commercial batch generation"
-    ],
-    "verdict_context": "The new open-weight standard, rivaling proprietary studio generators in photorealism and typographic precision",
-    "url": "https://blackforestlabs.ai",
-    "best_for": "Developers, technical artists, and brands needing accurate text rendering in images with zero proprietary lock-in",
-    "supported_platforms": [
-      "Web",
-      "API",
-      "ComfyUI",
-      "Local GPU"
-    ],
-    "tagline": "Open-weight 12B parameter visual model by Black Forest Labs renowned for crisp typography and anatomical precision",
-    "key_features": [
-      "12-billion parameter rectified flow transformer architecture delivering state-of-the-art prompt fidelity",
-      "World-class typographic rendering synthesizing crisp, legible text inside complex graphics",
-      "Flawless human anatomy reproduction (hands, fingers, eyes) without distorted artifacts",
-      "High-speed serverless API deployment available across Fal.ai, Together AI, and Replicate",
-      "FLUX.1 [schnell] Apache 2.0 licensed for commercial on-premise hardware deployments"
-    ],
-    "pros": [
-      "Flawless text generation and complex spatial prompt adherence",
-      "Open weights available for local execution with extensive ComfyUI LoRA ecosystem",
-      "Matches or surpasses Midjourney v6 in anatomical realism and realistic skin textures"
-    ],
-    "cons": [
-      "Dev model requires significant GPU VRAM (16GB+ for optimal quantization)",
-      "Official Pro API pricing can add up for high-volume commercial batch generation"
-    ],
-    "affiliate_url": "https://blackforestlabs.ai",
+    "tagline": "Open-weight generative image suite by Black Forest Labs delivering typography rendering and photorealism",
     "official_website": "https://blackforestlabs.ai",
     "official_pricing_url": "https://blackforestlabs.ai",
     "source_url": "https://blackforestlabs.ai",
     "last_checked_at": "2026-09-30",
     "pricing": {
-      "starting_price": "Open weights Free / $0.03/img API",
+      "starting_price": "Free / API pay-per-image",
       "billing_model": "Usage-based",
-      "free_tier_details": "FLUX.1 [schnell] is 100% Apache 2.0 open source and free for self-hosting",
-      "tiers_summary": "Schnell Free (Open Source) / Dev Non-Commercial / Pro API ~$0.03-$0.05/img"
+      "free_tier_details": "FLUX.1 [schnell] is Apache 2.0 open source and 100% free for local hardware",
+      "tiers_summary": "FLUX.1 [schnell] Free Open Source / [dev] Non-commercial / [pro] API ~$0.03-$0.05/image"
     },
     "technical_specs": {
       "current_models": [
         "FLUX.1 [pro]",
         "FLUX.1 [dev]",
-        "FLUX.1 [schnell]",
-        "FLUX.1 Fill & Redux"
+        "FLUX.1 [schnell]"
       ],
       "context_window": "N/A",
       "byok_support": true,
@@ -1041,10 +862,27 @@
       "telemetry_privacy": true,
       "offline_support": true
     },
+    "best_for": "AI engineers, technical designers, and enterprises requiring commercial open weights or accurate in-image text",
+    "key_features": [
+      "World-class in-image typography and text spelling accuracy inside generated posters and signs",
+      "FLUX.1 [schnell] 4-step distilled model available under Apache 2.0 for unrestricted local use",
+      "ComfyUI and Diffusers native integration for granular LoRA and ControlNet pipelines",
+      "State-of-the-art anatomy rendering (complex hand gestures, multiple subjects, exact prompt adherence)",
+      "Commercial API endpoints available across Replicate, Fal.ai, and Together.ai"
+    ],
     "gotchas": [
-      "FLUX.1 [dev] license restricts commercial revenue generation without custom enterprise licensing.",
-      "Local execution requires substantial GPU VRAM (minimum 16GB–24GB for full precision).",
-      "No official consumer chat portal; requires using API platforms or WebUI tools like ComfyUI."
+      "Local execution of FLUX.1 [dev] requires minimum 16GB-24GB VRAM GPU (RTX 3090/4090).",
+      "FLUX.1 [dev] license is strictly non-commercial; commercial usage requires [pro] API or custom licensing.",
+      "Official platform does not offer an all-in-one web UI as polished as Midjourney web."
+    ],
+    "affiliate_url": "https://blackforestlabs.ai",
+    "url": "https://blackforestlabs.ai",
+    "starting_price": "Free / API pay-per-image",
+    "pricing_model": "Usage-based",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
@@ -1058,7 +896,6 @@
     "primary_audience": "UI/UX designers, brand managers, and vector illustrators needing editable SVGs and icon systems",
     "platforms": [
       "Web",
-      "Mac",
       "API"
     ],
     "core_positioning": "Professional AI design canvas generating native vector art (SVG), 3D graphics, and brand-consistent design sets",
@@ -1078,20 +915,20 @@
       "Vector generation requires paid tiers for high-resolution commercial vector downloads"
     ],
     "verdict_context": "The indispensable design studio tool for native vector (SVG) generation and brand-consistent digital asset systems",
-    "url": "https://recraft.ai",
-    "best_for": "Graphic designers, branding agencies, and UI creators needing editable vector SVGs and strict color palette consistency",
+    "url": "https://www.recraft.ai",
+    "best_for": "Graphic designers, brand managers, and marketing teams needing true clean SVGs, 3D icons, and vector brand kits",
     "supported_platforms": [
       "Web",
       "Mac",
       "API"
     ],
-    "tagline": "AI design studio purpose-built for commercial graphic designers generating brand-consistent vector SVG, 3D, and illustrations",
+    "tagline": "Design-first AI platform generating infinite canvas vector art (SVG), 3D graphics, and brand palettes",
     "key_features": [
-      "Native vector SVG generation producing fully scalable and clean vector paths for Figma and Illustrator",
-      "Brand color palette locking ensuring all outputs strictly obey company hex color codes",
-      "Recraft 20B image model holding top positions on image generation leaderboards",
-      "Infinite visual canvas workspace allowing multi-asset brand kit creation in one document",
-      "Full commercial usage rights on all paid plan outputs with background removal tools"
+      "Native vector graphics generation outputting clean, editable SVGs with minimal anchor points",
+      "Recraft V3 model benchmarked #1 on Artificial Analysis image generation leaderboard",
+      "Brand kit synchronization enforcing exact HEX color palettes and visual styles across assets",
+      "Infinite 2D canvas with integrated vector editing, background removal, and vectorizer tools",
+      "Commercial REST API for programmatic vector and raster asset synthesis"
     ],
     "pros": [
       "Generates clean, production-ready SVG files that can be edited in Figma or Illustrator",
@@ -1102,22 +939,21 @@
       "Not optimized for cinematic photorealism compared to Midjourney or FLUX.1",
       "Vector generation requires paid tiers for high-resolution commercial vector downloads"
     ],
-    "affiliate_url": "https://recraft.ai",
-    "official_website": "https://recraft.ai",
+    "affiliate_url": "https://www.recraft.ai",
+    "official_website": "https://www.recraft.ai",
     "official_pricing_url": "https://www.recraft.ai/pricing",
     "source_url": "https://www.recraft.ai/pricing",
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$20/mo",
       "billing_model": "Credit-based",
-      "free_tier_details": "Free plan includes 50 daily credits with public image library sharing",
-      "tiers_summary": "Free (50 credits/day) / Basic $20/mo (1k fast credits) / Pro $48/mo / Enterprise"
+      "free_tier_details": "Free plan includes 50 daily credits with public generations",
+      "tiers_summary": "Free (50 credits/day) / Basic $20/mo (1,000 fast credits) / Pro $48/mo / Enterprise"
     },
     "technical_specs": {
       "current_models": [
-        "Recraft 20B (Red)",
-        "Vector SVG Generator",
-        "3D & Icon Synthesizer"
+        "Recraft V3 (Red_Panda)",
+        "Recraft 20B Vector Engine"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1126,24 +962,22 @@
       "offline_support": false
     },
     "gotchas": [
-      "Free tier images are automatically published to community search gallery.",
-      "Fast generation credits do not roll over between subscription billing periods.",
-      "Specialized for design/graphic assets rather than ultra-photorealistic cinematic photography."
+      "Free tier assets are public and cannot be kept private without a paid subscription.",
+      "Fast generation credits deplete quickly when conducting extensive vector path refinements.",
+      "High-resolution raster photorealism is specialized for commercial design rather than fantasy surrealism."
     ]
   },
   {
     "id": "ideogram",
-    "name": "Ideogram 2.0",
+    "name": "Ideogram",
     "slug": "ideogram",
     "category": "Image AI",
-    "pricing_model": "Subscription",
+    "pricing_model": "Subscription / Priority Credits",
     "starting_price": "$8/mo",
     "free_tier": true,
     "primary_audience": "Graphic designers, print-on-demand sellers, and marketers creating logos, typography, and promotional posters",
     "platforms": [
       "Web",
-      "iOS",
-      "Android",
       "API"
     ],
     "core_positioning": "Industry benchmark image generator for typographic accuracy, graphic design, and T-shirt/logo creation",
@@ -1164,20 +998,20 @@
     ],
     "verdict_context": "Unbeatable for typography, graphic posters, and apparel designs where text legibility is non-negotiable",
     "url": "https://ideogram.ai",
-    "best_for": "Marketers, apparel creators, and poster designers requiring complex typography embedded in visuals",
+    "best_for": "Marketing designers, print-on-demand creators, and social media managers requiring lettering and graphic layouts",
     "supported_platforms": [
       "Web",
       "iOS",
       "Android",
       "API"
     ],
-    "tagline": "State-of-the-art graphic and typography AI model specialized in precise text layout, posters, and logo design",
+    "tagline": "AI image generator specializing in typography, graphic design layouts, and marketing banners",
     "key_features": [
-      "Ideogram 2.0 benchmark text-in-image generation rendering long slogans and sentences accurately",
-      "Magic Prompt feature automatically expanding user ideas into detailed stylistic prompts",
-      "Dedicated Graphic, Typography, and Realistic style render presets",
-      "Color palette control matching exact hexadecimal brand themes",
-      "Developer REST API for programmatic t-shirt design and banner generation"
+      "Pioneering graphic text rendering with accurate spelling inside complex typography layouts",
+      "Magic Prompt feature automatically expanding shorthand prompts into detailed visual briefs",
+      "Canvas workspace with Magic Fill (inpainting) and Extend (outpainting) tools",
+      "Color Palette controls allowing users to define exact HEX color schemes for consistent brand assets",
+      "Ideogram 2.0 Turbo model offering high-speed generations at 50% lower credit consumption"
     ],
     "pros": [
       "Best-in-class text and typography rendering inside posters, merchandise, and logos",
@@ -1195,15 +1029,15 @@
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$8/mo",
-      "billing_model": "Subscription",
-      "free_tier_details": "Free tier includes 10 slow credits daily (40 images/day)",
-      "tiers_summary": "Free (10 credits/day) / Basic $8/mo (400 credits) / Plus $20/mo / Pro $60/mo"
+      "billing_model": "Subscription / Priority Credits",
+      "free_tier_details": "Free plan includes 10 slow credits per day (40 images/day)",
+      "tiers_summary": "Free (10 credits/day) / Basic $8/mo (400 priority credits) / Plus $20/mo (1,000 credits) / Pro $60/mo"
     },
     "technical_specs": {
       "current_models": [
         "Ideogram 2.0",
         "Ideogram 2.0 Turbo",
-        "Graphic Design & Logo Engine"
+        "Magic Fill"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1212,20 +1046,39 @@
       "offline_support": false
     },
     "gotchas": [
-      "Free plan creations are publicly accessible in the community feed.",
-      "Photorealism on human skin textures is slightly less cinematic than Midjourney v6.1.",
-      "Daily free credits do not accumulate if unused."
+      "Basic tier ($8/mo) generations remain public in community feed; private generations require Plus ($20/mo).",
+      "Photorealism on complex cinematic environmental scenes trails Midjourney v6.1 slightly.",
+      "Free credits expire daily and do not accumulate if unused."
     ]
   },
   {
-    "id": "runway-gen3",
-    "name": "Runway Gen-3 Alpha",
-    "slug": "runway-gen3",
+    "id": "runway",
+    "name": "Runway",
+    "slug": "runway",
     "category": "Video AI",
     "tagline": "Cinematic AI video generation platform powered by Gen-3 Alpha, Gen-3 Turbo, and Act-One facial performance capture",
-    "pricing_model": "Usage-based",
-    "starting_price": "$12/mo",
-    "free_tier": true,
+    "official_website": "https://runwayml.com",
+    "official_pricing_url": "https://runwayml.com/pricing",
+    "source_url": "https://runwayml.com/pricing",
+    "last_checked_at": "2026-09-30",
+    "pricing": {
+      "starting_price": "$15/mo",
+      "billing_model": "Credit-based",
+      "free_tier_details": "Free plan includes 125 one-time credits with standard generation queues",
+      "tiers_summary": "Basic Free (125 credits) / Standard $15/mo (625 credits) / Pro $35/mo (2,250 credits) / Unlimited $95/mo"
+    },
+    "technical_specs": {
+      "current_models": [
+        "Gen-3 Alpha",
+        "Gen-3 Alpha Turbo",
+        "Act-One"
+      ],
+      "context_window": "N/A",
+      "byok_support": false,
+      "open_source": false,
+      "telemetry_privacy": true,
+      "offline_support": false
+    },
     "best_for": "Filmmakers, VFX artists, and creative directors needing high-fidelity video generation and precise camera motion",
     "key_features": [
       "Gen-3 Alpha and Gen-3 Alpha Turbo high-fidelity video synthesis from text, image, and video prompts",
@@ -1234,127 +1087,27 @@
       "4K video upscaling, lip-sync dubbing, and integrated generative audio sound effects",
       "Fast generation mode via Gen-3 Alpha Turbo delivering 7x speedups for storyboarding"
     ],
-    "pros": [
-      "Industry-leading temporal consistency and cinematic lighting fidelity",
-      "Comprehensive creative suite including inpainting and motion tracking",
-      "Precise camera and brush-guided motion steering"
-    ],
-    "cons": [
-      "High credit consumption per second of high-resolution video",
-      "Short duration limits per single generation clip"
-    ],
-    "supported_platforms": [
-      "Web",
-      "iOS",
-      "API"
+    "gotchas": [
+      "Credits deplete quickly (Gen-3 Alpha costs 10 credits/sec; 5s video = 50 credits).",
+      "Standard plan ($15/mo) credits do not roll over past billing caps.",
+      "Watermarking is removed only on paid Standard ($15/mo) and Pro ($35/mo) tiers."
     ],
     "affiliate_url": "https://runwayml.com",
-    "primary_audience": "Filmmakers, VFX artists, and creative agencies producing broadcast-ready cinematic video assets",
+    "url": "https://runwayml.com",
+    "starting_price": "$15/mo",
+    "pricing_model": "Credit-based",
+    "free_tier": true,
     "platforms": [
       "Web",
-      "iOS",
       "API"
-    ],
-    "core_positioning": "Pioneering generative video model delivering photorealistic cinematic text-to-video and image-to-video",
-    "key_capabilities": [
-      "Gen-3 Alpha cinematic video generation with temporal consistency and realistic physical lighting",
-      "Act-One facial performance motion transfer from simple webcam/mobile video recordings",
-      "Camera controls (Pan, Tilt, Zoom, Roll) and Motion Brush for targeted element animation",
-      "Fast generation mode via Gen-3 Alpha Turbo delivering 7x speedups for iterative storyboarding"
-    ],
-    "strengths": [
-      "Industry-leading temporal consistency and cinematic lighting fidelity",
-      "Comprehensive creative suite including inpainting and motion tracking",
-      "Precise camera and brush-guided motion steering"
-    ],
-    "trade_offs": [
-      "High credit consumption per second of high-resolution video",
-      "Short duration limits per single generation clip"
-    ],
-    "verdict_context": "Top-tier solution for Filmmakers, VFX artists, and creative agencies producing broadcast-ready cinematic video assets",
-    "url": "https://runwayml.com",
-    "official_website": "https://runwayml.com",
-    "official_pricing_url": "https://runwayml.com/pricing",
-    "source_url": "https://runwayml.com/pricing",
-    "last_checked_at": "2026-09-30",
-    "pricing": {
-      "starting_price": "$12/mo",
-      "billing_model": "Usage-based",
-      "free_tier_details": "Free plan includes one-time 125 non-renewable generation credits",
-      "tiers_summary": "Basic Free (125 credits) / Standard $12/mo (625 credits) / Pro $28/mo / Unlimited $76/mo"
-    },
-    "technical_specs": {
-      "current_models": [
-        "Gen-3 Alpha",
-        "Gen-3 Alpha Turbo",
-        "Act-One (Facial Animation)"
-      ],
-      "context_window": "N/A",
-      "byok_support": false,
-      "open_source": false,
-      "telemetry_privacy": true,
-      "offline_support": false
-    },
-    "gotchas": [
-      "Standard plan credits (625/mo) deplete quickly (Gen-3 Alpha costs 10 credits/sec of generated video).",
-      "Unlimited generation mode is strictly restricted to the Unlimited tier ($76/mo) and uses relaxed queue.",
-      "Credits do not roll over between subscription billing cycles."
     ]
   },
   {
-    "id": "kling-ai",
+    "id": "kling",
     "name": "Kling AI",
-    "slug": "kling-ai",
+    "slug": "kling",
     "category": "Video AI",
-    "tagline": "Next-gen AI video generator by Kuaishou delivering 1080p video outputs up to 2 minutes with realistic physics",
-    "pricing_model": "Credit-based",
-    "starting_price": "$10/mo",
-    "free_tier": true,
-    "best_for": "Content creators and 3D animators needing long video clips (up to 2 minutes) with accurate physical object motion",
-    "key_features": [
-      "Kling 1.5 model generating high-definition 1080p video with accurate real-world physics simulation",
-      "Extended clip duration: generate continuous coherent video scenes up to 2-3 minutes long",
-      "End frame specification: designate both starting and ending image anchors for seamless video transitions",
-      "Multi-element motion brush controlling trajectories of multiple characters independently",
-      "Text-to-video and image-to-video synthesis with granular camera movement settings"
-    ],
-    "pros": [
-      "Superb physical dynamics and complex motion simulation without warping",
-      "Supports significantly longer continuous generation than western rivals",
-      "Generous daily check-in free credits for regular experimentation"
-    ],
-    "cons": [
-      "Server rendering queues can experience delays during peak hours",
-      "International payment processing can occasionally require specific cards"
-    ],
-    "supported_platforms": [
-      "Web",
-      "API"
-    ],
-    "affiliate_url": "https://klingai.com",
-    "primary_audience": "Video editors, digital marketers, and narrative filmmakers needing longer cinematic shots and physical realism",
-    "platforms": [
-      "Web",
-      "API"
-    ],
-    "core_positioning": "Cinematic video model capable of generating continuous 2-minute clips with complex physical simulation",
-    "key_capabilities": [
-      "Generates continuous video clips up to 2 minutes with strong narrative coherence",
-      "1080p rendering at smooth 30fps with 3D Spatiotemporal Attention",
-      "Camera trajectory control, motion brush, and start/end keyframe interpolation",
-      "Lip-sync avatar generation and custom motion trajectory steering"
-    ],
-    "strengths": [
-      "Industry-leading continuous clip length (up to 2 minutes vs 5-10s industry norm)",
-      "Superior physical simulation handling complex object collisions and fluid dynamics",
-      "Daily free check-in credits enable continuous experimentation"
-    ],
-    "trade_offs": [
-      "High render queue times on free tier during peak hours",
-      "Western payment methods can occasionally require specific card processors"
-    ],
-    "verdict_context": "The best choice for filmmakers requiring longer continuous scenes and realistic physical interaction",
-    "url": "https://klingai.com",
+    "tagline": "High-motion generative video platform engineered by Kuaishou offering 1080p outputs and realistic physics",
     "official_website": "https://klingai.com",
     "official_pricing_url": "https://klingai.com/pricing",
     "source_url": "https://klingai.com/pricing",
@@ -1362,14 +1115,13 @@
     "pricing": {
       "starting_price": "$10/mo",
       "billing_model": "Credit-based",
-      "free_tier_details": "Free daily login credits (approx. 66 credits daily for non-commercial generations)",
-      "tiers_summary": "Free (Daily credits) / Standard $10/mo (660 credits) / Pro $37/mo (3k credits) / Premier $92/mo"
+      "free_tier_details": "Free plan provides 66 daily credits allowing ~6 short video generations per day",
+      "tiers_summary": "Free (66 credits/day) / Standard $10/mo (660 credits) / Pro $37/mo (3,000 credits) / Premier $92/mo"
     },
     "technical_specs": {
       "current_models": [
-        "Kling 1.5",
-        "Kling 1.0",
-        "Motion Brush & Camera 3D"
+        "Kling 1.5 Pro",
+        "Kling 1.0 High-Performance"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1377,82 +1129,49 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
-    "gotchas": [
-      "High-demand server queues can cause generation delays on the free plan during peak Asian timezones.",
-      "Commercial rights and watermark removal require an active paid Standard ($10/mo) plan.",
-      "Professional mode consumes roughly 3x more credits per generated clip than standard mode."
-    ]
-  },
-  {
-    "id": "luma-dream-machine",
-    "name": "Luma Dream Machine",
-    "slug": "luma-dream-machine",
-    "category": "Video AI",
-    "tagline": "Universal generative video model by Luma AI producing rapid 5-second cinematic shots with spatial realism",
-    "pricing_model": "Subscription",
-    "starting_price": "$9.99/mo",
-    "free_tier": true,
-    "best_for": "Social media creators, advertising agencies, and filmmakers prototyping rapid 3D camera fly-throughs",
+    "best_for": "Motion designers, advertising creators, and creators needing complex human movement and high-motion adherence",
     "key_features": [
-      "Generates 5-second high-resolution video shots in approximately 120 seconds",
-      "Superior 3D spatial consistency derived from Luma's NeRF and Gaussian Splatting heritage",
-      "Keyframe extension: seamlessly extend video forward or backward in time",
-      "Camera motion controls executing smooth cranes, orbit shots, and fast pans",
-      "Image-to-video synthesis maintaining subject identity and character facial structures"
+      "Kling 1.5 model delivering 1080p HD video resolution with physics simulation",
+      "Generates long video clips up to 10 seconds in a single generation prompt",
+      "Camera Control module with multi-angle rotational, horizontal, and vertical motion trajectories",
+      "Motion Brush feature allowing localized animation of up to 6 distinct video regions",
+      "Generous free tier offering 66 renewable credits every day without credit card requirement"
     ],
-    "pros": [
-      "Extremely fast generation speed compared to legacy diffusion architectures",
-      "Smooth natural lighting and realistic physical object interactions",
-      "Intuitive prompting without requiring complex technical syntax"
+    "gotchas": [
+      "Professional Mode generations take 3-8 minutes during peak global server queues.",
+      "Free tier renders with watermark and limits video exports to 720p.",
+      "Lip-sync audio synchronization requires separate paid credit deduction."
     ],
-    "cons": [
-      "Rapid character morphing can occasionally occur in chaotic scenes",
-      "Higher tier subscription pricing is steep for casual creators"
-    ],
-    "supported_platforms": [
-      "Web",
-      "API"
-    ],
-    "affiliate_url": "https://lumalabs.ai/dream-machine",
-    "primary_audience": "Storytellers, animators, and social video creators who prioritize rapid turnaround and fluid motion",
+    "affiliate_url": "https://klingai.com",
+    "url": "https://klingai.com",
+    "starting_price": "$10/mo",
+    "pricing_model": "Credit-based",
+    "free_tier": true,
     "platforms": [
       "Web",
       "API"
-    ],
-    "core_positioning": "Ultra-fast generative video model producing physics-accurate, high-frame-rate cinematic shots",
-    "key_capabilities": [
-      "Rapid 120-frame synthesis in approximately 120 seconds",
-      "Direct transformer architecture trained on multimodal video tokens",
-      "Keyframe extension for smooth video looping and continuous scene building",
-      "Character and object consistency across dynamic camera movements",
-      "Custom camera path trajectory prompts and Image-to-Video start frames"
-    ],
-    "strengths": [
-      "Extremely fast generation speed compared to legacy diffusion architectures",
-      "Smooth natural lighting and realistic physical object interactions",
-      "Intuitive prompting without requiring complex technical syntax"
-    ],
-    "trade_offs": [
-      "Rapid character morphing can occasionally occur in chaotic scenes",
-      "Higher tier subscription pricing is steep for casual creators"
-    ],
-    "verdict_context": "Top-tier solution for Storytellers, animators, and social video creators who prioritize rapid turnaround and fluid motion",
-    "url": "https://lumalabs.ai/dream-machine",
+    ]
+  },
+  {
+    "id": "luma",
+    "name": "Luma Dream Machine",
+    "slug": "luma",
+    "category": "Video AI",
+    "tagline": "High-speed generative video engine by Luma AI delivering realistic camera dynamics and 3D spatial awareness",
     "official_website": "https://lumalabs.ai/dream-machine",
-    "official_pricing_url": "https://lumalabs.ai/dream-machine",
-    "source_url": "https://lumalabs.ai/dream-machine",
+    "official_pricing_url": "https://lumalabs.ai/dream-machine/pricing",
+    "source_url": "https://lumalabs.ai/dream-machine/pricing",
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$9.99/mo",
-      "billing_model": "Subscription",
-      "free_tier_details": "Free tier provides 30 generations per month with standard queue",
-      "tiers_summary": "Free (30 generations/mo) / Standard $9.99/mo (120 gens) / Pro $29.99/mo / Premier $99.99/mo"
+      "billing_model": "Credit-based",
+      "free_tier_details": "Free plan provides 30 monthly generations with standard queue priority",
+      "tiers_summary": "Free (30 gens/mo) / Standard $9.99/mo (120 gens) / Pro $29.99/mo (400 gens) / Premier $99.99/mo"
     },
     "technical_specs": {
       "current_models": [
         "Dream Machine 1.5",
-        "Luma Camera Dynamics",
-        "Photon Video Transformer"
+        "Photon Spatial Engine"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1460,10 +1179,27 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
+    "best_for": "Visual artists, game developers, and creators requiring dynamic 3D camera sweeps and physical lighting realism",
+    "key_features": [
+      "Dream Machine 1.5 transformer architecture predicting consistent camera movements and lighting",
+      "Sub-120 second video generation speed for rapid concept iteration",
+      "Keyframe-to-Keyframe interpolation smoothly joining start and end frame images",
+      "Camera motion paths including 360-degree orbit, crane, dolly, and tracking shots",
+      "Native developer API endpoints for programmatic batch video generation"
+    ],
     "gotchas": [
-      "Free tier generations have lower priority during peak traffic hours.",
-      "Fast dynamic action sequences can occasionally suffer minor physics warping.",
-      "Generations on basic plans cannot be used for commercial client delivery without subscription."
+      "Free tier generations enter shared public queues that can experience latency during peak periods.",
+      "Complex hand interactions and object morphing can occasionally show minor temporal artifacts.",
+      "Commercial rights and unwatermarked exports require paid Standard ($9.99/mo) tier or higher."
+    ],
+    "affiliate_url": "https://lumalabs.ai/dream-machine",
+    "url": "https://lumalabs.ai/dream-machine",
+    "starting_price": "$9.99/mo",
+    "pricing_model": "Credit-based",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
@@ -1471,17 +1207,17 @@
     "name": "HeyGen",
     "slug": "heygen",
     "category": "Video AI",
-    "tagline": "Enterprise AI video communications platform featuring Avatar 3.0, Interactive Avatars, and multilingual voice cloning",
-    "pricing_model": "Usage-based",
+    "tagline": "AI avatar and video localization platform creating studio-quality talking presenter videos from text",
+    "pricing_model": "Credit-based",
     "starting_price": "$29/mo",
     "free_tier": true,
-    "best_for": "Corporate trainers, marketing teams, and sales reps creating scalable personalized avatar videos and interactive agents",
+    "best_for": "Corporate sales, training teams, and marketing agencies creating localized presenter videos and tutorials",
     "key_features": [
-      "Avatar 3.0 studio-grade digital humans with natural body language and micro-expressions",
-      "Interactive Avatar platform enabling real-time, two-way conversational video agents via WebSockets",
-      "Video Translate with automatic voice cloning, translation, and lip-sync alignment across 70+ languages",
-      "Instant Avatar creation from a short 2-minute smartphone video clip",
-      "API integration for programmatic personalized bulk video generation (CRM integration)"
+      "100+ photorealistic AI avatars delivering natural speech inflections and eye contact",
+      "Instant Video Translation automatically dubbing videos into 175+ languages with matching lip-sync",
+      "Custom Instant Avatar generation from simple 2-minute webcam recording clips",
+      "Voice cloning technology matching pitch, tone, and accent across international translations",
+      "Enterprise API for automated video personalization at scale"
     ],
     "pros": [
       "Natural facial expressions and lip-sync accuracy across multiple languages",
@@ -1501,8 +1237,7 @@
     "primary_audience": "Sales teams, corporate trainers, and global marketers creating personalized avatar presentations at scale",
     "platforms": [
       "Web",
-      "API",
-      "Zapier Integration"
+      "API"
     ],
     "core_positioning": "AI video generation platform for producing studio-quality talking avatar videos with automated localization",
     "key_capabilities": [
@@ -1523,21 +1258,20 @@
     "verdict_context": "Top-tier solution for Sales teams, corporate trainers, and global marketers creating personalized avatar presentations at scale",
     "url": "https://heygen.com",
     "official_website": "https://heygen.com",
-    "official_pricing_url": "https://www.heygen.com/pricing",
-    "source_url": "https://www.heygen.com/pricing",
+    "official_pricing_url": "https://heygen.com/pricing",
+    "source_url": "https://heygen.com/pricing",
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$29/mo",
-      "billing_model": "Usage-based",
-      "free_tier_details": "Free trial includes 1 credit and watermark on exported video",
-      "tiers_summary": "Free (1 credit trial) / Creator $29/mo (15 credits) / Team $89/mo (30 credits) / Enterprise"
+      "billing_model": "Credit-based",
+      "free_tier_details": "Free plan includes 1 free credit (1 minute of video) with HeyGen branding",
+      "tiers_summary": "Free (1 credit) / Creator $29/mo (15 credits) / Team $89/mo (30 credits) / Enterprise"
     },
     "technical_specs": {
       "current_models": [
-        "Avatar 3.0",
-        "Interactive Avatar (Real-time Video)",
-        "Instant Avatar v2",
-        "Voice Translation Engine"
+        "HeyGen Avatar 3.0",
+        "Video Translate Engine",
+        "Interactive Avatar API"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1546,9 +1280,9 @@
       "offline_support": false
     },
     "gotchas": [
-      "Credits cost roughly $2 per minute on Creator plan; video heavy pipelines require Enterprise contracts.",
-      "Free trial videos carry a visible watermark and are restricted to 720p resolution.",
-      "Interactive Avatar live WebSocket sessions consume distinct session minutes beyond video credits."
+      "Creator plan ($29/mo) allocates only 15 minutes of total video per month ($1.93 per minute).",
+      "Studio-quality Custom Avatars require additional one-time setup fee ($99-$1,000).",
+      "Unused monthly credits on Creator tier do not roll over to subsequent months."
     ]
   },
   {
@@ -1556,17 +1290,17 @@
     "name": "ElevenLabs",
     "slug": "elevenlabs",
     "category": "Voice AI",
-    "tagline": "Industry-leading voice AI platform offering Conversational AI agents, emotional voice cloning, and audio Reader",
-    "pricing_model": "Usage-based",
+    "tagline": "Industry-standard voice synthesis platform delivering emotive speech, voice cloning, and dubbing",
+    "pricing_model": "Character-based",
     "starting_price": "$5/mo",
     "free_tier": true,
-    "best_for": "Developers, podcasters, game studios, and product teams needing emotional TTS, real-time voice agents, and dubbing",
+    "best_for": "Audiobook narrators, game studios, and developers requiring emotionally nuanced voice acting and voice cloning",
     "key_features": [
-      "Conversational AI platform for building ultra-low latency interactive voice agents via direct WebSockets",
-      "Multilingual v2 and Turbo v2.5 models supporting 32+ languages with realistic human prosody and emotion",
-      "Professional Voice Cloning replicating precise human vocal timbre from audio samples",
-      "Voice Isolator tool removing background studio noise and hiss from audio tracks",
-      "ElevenLabs Reader mobile app and AI dubbing studio with automatic multi-speaker alignment"
+      "Industry-leading emotional inflection, pause pacing, and conversational realism in 32+ languages",
+      "Instant Voice Cloning from 1-minute audio sample and Professional Voice Cloning for studio narrators",
+      "Eleven Flash v2.5 delivering sub-75ms latency for conversational agents and live voicebots",
+      "AI Dubbing Studio translating video and audio tracks while preserving speaker original voice timbre",
+      "Robust REST and WebSocket APIs with pre-built SDKs in Python, Node, and Go"
     ],
     "pros": [
       "Unrivaled emotional depth, pacing nuance, and vocal naturalness",
@@ -1588,10 +1322,7 @@
     "primary_audience": "Creators, game studios, and developers requiring emotionally rich, hyper-realistic voiceovers",
     "platforms": [
       "Web",
-      "API",
-      "iOS",
-      "Android",
-      "Python SDK"
+      "API"
     ],
     "core_positioning": "Industry-leading AI voice generator, voice cloning, and multilingual speech synthesis platform",
     "key_capabilities": [
@@ -1617,16 +1348,15 @@
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$5/mo",
-      "billing_model": "Usage-based",
-      "free_tier_details": "Free tier with 10,000 characters/mo (non-commercial use, attribution required)",
-      "tiers_summary": "Free (10k chars/mo) / Starter $5/mo (30k chars) / Creator $22/mo (100k chars) / Pro $99/mo (500k chars)"
+      "billing_model": "Character-based",
+      "free_tier_details": "Free plan includes 10,000 characters/mo (approx. 10 mins of audio) with attribution required",
+      "tiers_summary": "Free (10k chars) / Starter $5/mo (30k chars) / Creator $22/mo (100k chars) / Pro $99/mo (500k chars)"
     },
     "technical_specs": {
       "current_models": [
-        "Multilingual v2",
-        "Turbo v2.5",
-        "Flash v2",
-        "Conversational AI WebSocket"
+        "Eleven Multilingual v2",
+        "Eleven Flash v2.5 (Sub-75ms)",
+        "Conversational AI 2.0"
       ],
       "context_window": "N/A",
       "byok_support": false,
@@ -1635,84 +1365,32 @@
       "offline_support": false
     },
     "gotchas": [
-      "Free tier strictly forbids commercial monetization and mandates attribution.",
-      "Conversational AI agents consume character quotas based on bidirectional stream duration.",
-      "Unused monthly character credits do not roll over to subsequent billing cycles."
+      "Character usage counts spaces and punctuation; long scripts consume monthly allowances quickly.",
+      "Free tier strictly mandates ElevenLabs attribution in published commercial projects.",
+      "Commercial usage license requires Starter ($5/mo) or higher tier."
     ]
   },
   {
-    "id": "cartesia-sonic",
+    "id": "cartesia",
     "name": "Cartesia Sonic",
-    "slug": "cartesia-sonic",
+    "slug": "cartesia",
     "category": "Voice AI",
-    "pricing_model": "Usage-based",
-    "starting_price": "$5/mo / Pay-per-character API",
-    "free_tier": true,
-    "primary_audience": "Developers and enterprise engineering teams building real-time conversational voice agents and low-latency phone bots",
-    "platforms": [
-      "Web",
-      "API",
-      "WebSocket",
-      "Python SDK"
-    ],
-    "core_positioning": "Ultra-low-latency state-space voice synthesis model delivering sub-100ms streaming text-to-speech",
-    "key_capabilities": [
-      "Proprietary State Space Model (SSM) architecture delivering ultra-fast ~100ms time-to-first-audio",
-      "Multilingual natural voice generation across English, Spanish, French, German, and Japanese",
-      "Low-latency WebSocket streaming API tailored for real-time conversational voice agents",
-      "Instant voice cloning from clean audio samples under 10 seconds"
-    ],
-    "strengths": [
-      "Sub-100ms latency makes it the fastest voice model for interactive AI call centers and agents",
-      "Significantly lower compute overhead and streaming bandwidth than traditional diffusion voice models",
-      "High emotional consistency and natural cadence during conversational interruptions"
-    ],
-    "trade_offs": [
-      "Community voice library is more curated and smaller than ElevenLabs' massive marketplace",
-      "Specialized voice acting and dramatic whispering effects are less extensive than ElevenLabs PVC"
-    ],
-    "verdict_context": "The fastest speech synthesis model on the market, engineered specifically for real-time conversational agents",
-    "url": "https://cartesia.ai",
-    "best_for": "Engineers building real-time phone agents, conversational NPCs, and low-latency voice applications",
-    "supported_platforms": [
-      "Web",
-      "API",
-      "WebSocket",
-      "Python SDK"
-    ],
-    "tagline": "Ultra-low latency State Space Model (SSM) voice engine generating human speech in under 90ms for live agents",
-    "key_features": [
-      "Sub-90ms Time-to-First-Audio (TTFA) latency powered by State Space Models (Mamba-based)",
-      "WebSocket bidirectional streaming delivering uninterrupted audio chunks",
-      "Fine-grained vocal emotion and cadence tuning via structured generation parameters",
-      "Cross-lingual voice transfer preserving speaker accent and inflection",
-      "Direct SDK integration for Python, TypeScript, and telephony WebRTC platforms"
-    ],
-    "pros": [
-      "Sub-100ms latency makes it the fastest voice model for interactive AI call centers and agents",
-      "Significantly lower compute overhead and streaming bandwidth than traditional diffusion voice models",
-      "High emotional consistency and natural cadence during conversational interruptions"
-    ],
-    "cons": [
-      "Community voice library is more curated and smaller than ElevenLabs' massive marketplace",
-      "Specialized voice acting and dramatic whispering effects are less extensive than ElevenLabs PVC"
-    ],
-    "affiliate_url": "https://cartesia.ai",
+    "tagline": "State space architecture voice synthesis engine delivering sub-100ms streaming latency for voicebots",
     "official_website": "https://cartesia.ai",
     "official_pricing_url": "https://cartesia.ai/pricing",
     "source_url": "https://cartesia.ai/pricing",
     "last_checked_at": "2026-09-30",
     "pricing": {
-      "starting_price": "$5/mo / Pay-per-character API",
-      "billing_model": "Usage-based",
-      "free_tier_details": "Free tier includes $5 in API credits to test low-latency streaming",
-      "tiers_summary": "Pay-as-you-go (~$0.075 per 1,000 characters) / Custom Enterprise"
+      "starting_price": "$5/mo",
+      "billing_model": "Usage / Audio Seconds",
+      "free_tier_details": "Free tier includes $5 free API credits for sandbox development",
+      "tiers_summary": "Free Sandbox ($5 credits) / Pro $5/mo base + $0.075 per audio minute / Enterprise"
     },
     "technical_specs": {
       "current_models": [
-        "Sonic (State Space Model Architecture)",
+        "Sonic (State Space Model)",
         "Sonic Multilingual",
-        "Voice Changer API"
+        "Sonic Fast"
       ],
       "context_window": "N/A",
       "byok_support": true,
@@ -1720,10 +1398,27 @@
       "telemetry_privacy": true,
       "offline_support": false
     },
+    "best_for": "Voice AI engineers, customer support bot builders, and robotics teams requiring ultra-low latency audio streaming",
+    "key_features": [
+      "Groundbreaking State Space Model (SSM) architecture delivering sub-100ms time-to-first-audio chunk",
+      "Ultra-low latency WebSocket streaming designed for live conversational call center bots",
+      "Pay-as-you-go audio second billing ($0.075/min) significantly cheaper than character-based models",
+      "Voice cloning capabilities allowing rapid duplication of target voice personas",
+      "Zero minimum commitment on API usage with transparent per-second metering"
+    ],
     "gotchas": [
-      "Built specifically as an API-first platform; does not offer an end-user consumer reading app.",
-      "Long-form expressive audiobook narration has fewer community presets than ElevenLabs.",
-      "Requires active credit card on file for sustained production API concurrency."
+      "Focused primarily on developer API integration; lacks an end-user timeline audio editing suite.",
+      "Smaller pre-made voice library compared to ElevenLabs' community voice marketplace.",
+      "Requires developer implementation of telephony or WebSocket client stack."
+    ],
+    "affiliate_url": "https://cartesia.ai",
+    "url": "https://cartesia.ai",
+    "starting_price": "$5/mo",
+    "pricing_model": "Usage / Audio Seconds",
+    "free_tier": true,
+    "platforms": [
+      "Web",
+      "API"
     ]
   },
   {
@@ -1731,15 +1426,14 @@
     "name": "n8n",
     "slug": "n8n",
     "category": "Workflow AI",
-    "pricing_model": "Freemium",
-    "starting_price": "Self-hosted Free / $20/mo Cloud",
+    "pricing_model": "Execution-based",
+    "starting_price": "Free self-hosted / $20/mo Cloud",
     "free_tier": true,
     "primary_audience": "Software engineers, DevOps teams, and technical builders requiring data-sovereign workflow automation and native LLM agent orchestration.",
-    "best_for": "Developers, technical founders, and privacy-conscious teams needing sovereign workflow automation without per-task fees",
+    "best_for": "Developers, technical founders, and privacy-conscious enterprises wanting unlimited automations on private infrastructure",
     "platforms": [
       "Web",
-      "API",
-      "Self-Hosted"
+      "API"
     ],
     "supported_platforms": [
       "Web",
@@ -1747,7 +1441,7 @@
       "Self-Hosted"
     ],
     "core_positioning": "Extensible, node-based workflow automation platform combining standard REST/GraphQL API integration with native AI agent orchestration and fully self-hostable execution environments.",
-    "tagline": "Fair-code workflow automation platform offering 100% free self-hosted execution, LangChain AI agents, and $20/mo Cloud",
+    "tagline": "Fair-code workflow automation platform allowing self-hosting, full data privacy, and LangChain AI agent nodes",
     "key_capabilities": [
       "100% free and unmetered workflow executions when self-hosted on your own hardware or VPC",
       "Native AI orchestration connecting LangChain agents, vector stores, and custom LLM endpoints",
@@ -1755,11 +1449,11 @@
       "Direct SQL database connectivity (PostgreSQL, MySQL, Redis, MongoDB) without third-party proxy fees"
     ],
     "key_features": [
-      "Self-hosted Community Edition is 100% free with unlimited executions and zero task caps",
-      "Native LangChain AI agent integration nodes with memory, tools, and custom prompt chaining",
-      "Full data sovereignty: deploy locally or in private VPC via Docker, npm, or Kubernetes",
-      "Embedded JavaScript and Python code nodes with access to custom npm modules and direct DB queries",
-      "n8n Cloud hosted tier starting at $20/mo for teams wanting managed zero-maintenance infrastructure"
+      "Fair-code license allowing unlimited free executions when deployed on private VPS or Docker",
+      "Native LangChain and AI Agent nodes supporting tool-calling, vector databases, and memory",
+      "Execution-based pricing on Cloud ($20 for 2,500 full workflows) rather than charging per individual step",
+      "Complete data privacy with zero external telemetry when self-hosted in air-gapped environments",
+      "Custom JavaScript and Python code execution within any workflow node"
     ],
     "strengths": [
       "Complete data sovereignty and compliance control via air-gapped self-hosted execution options.",
@@ -1787,16 +1481,16 @@
     "source_url": "https://n8n.io/pricing",
     "last_checked_at": "2026-09-30",
     "pricing": {
-      "starting_price": "Self-hosted Free / $20/mo Cloud",
-      "billing_model": "Freemium",
-      "free_tier_details": "100% free and unlimited executions when self-hosted on your own infrastructure (Docker/npm)",
-      "tiers_summary": "Community Self-Hosted (Free, unlimited executions) / Cloud Starter $20/mo (2.5k executions) / Cloud Pro $50/mo"
+      "starting_price": "Free self-hosted / $20/mo Cloud",
+      "billing_model": "Execution-based",
+      "free_tier_details": "100% free forever when self-hosted on your own server or Docker container",
+      "tiers_summary": "Self-Hosted Free (Fair-Code) / Starter Cloud $20/mo (2.5k execs) / Pro Cloud $50/mo (10k execs)"
     },
     "technical_specs": {
       "current_models": [
-        "n8n AI Agent Nodes (LangChain)",
-        "Custom Python / Node.js Engine",
-        "Docker / Self-Hosted Core"
+        "n8n AI Agent Framework",
+        "LangChain Node Connectors",
+        "Custom Python & JS Nodes"
       ],
       "context_window": "N/A",
       "byok_support": true,
@@ -1805,9 +1499,9 @@
       "offline_support": true
     },
     "gotchas": [
-      "Self-hosted version requires maintaining your own server infrastructure, Docker updates, and PostgreSQL backups.",
-      "Fair-code license permits internal company use but restricts reselling n8n as a commercial hosted service.",
-      "Cloud tier ($20/mo) counts executions differently than Zapier tasks (entire workflow run = 1 execution)."
+      "Self-hosting requires maintaining your own Docker container, PostgreSQL database, and SSL certificates.",
+      "Cloud plans enforce monthly execution caps; high-frequency webhooks can exhaust tier quotas.",
+      "Community edition restricts advanced enterprise RBAC and SSO features."
     ]
   },
   {
@@ -1927,7 +1621,6 @@
     "primary_audience": "Businesses, marketing teams, and non-technical staff needing instant, no-code integrations across SaaS tools",
     "platforms": [
       "Web",
-      "Chrome Extension",
       "API"
     ],
     "core_positioning": "The market-leading cloud automation platform connecting 6,000+ business apps with built-in AI agents",
