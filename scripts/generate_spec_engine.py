@@ -214,10 +214,10 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       'You want deep Google Workspace integration (Docs, Gmail, Drive) and 2TB cloud storage included',
     ],
     specs: {
-      freeTier: 'Free Gemini tier powered by Gemini 2.0 Flash and 1.5 Flash',
+      freeTier: 'Free Gemini tier powered by Gemini 3.5 Flash-Lite and 3.8 Flash',
       byokSupport: false,
       openSource: false,
-      contextOrModel: 'Gemini 3.8 Flash, Gemini 3.8 Live, Gemini 1.5 Pro (2M context)',
+      contextOrModel: 'Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, 延伸思考 (Thinking)',
       teamCollab: true,
       apiAvailable: true,
     },

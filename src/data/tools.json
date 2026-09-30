@@ -564,10 +564,10 @@
     "name": "Gemini Advanced",
     "slug": "gemini",
     "category": "LLM",
-    "tagline": "Google's frontier assistant with native multimodal comprehension, Gemini 3.8 Flash agentic reasoning, and 2M token context",
+    "tagline": "Google's frontier assistant with native multimodal comprehension, Gemini 3.1 Pro deep reasoning, 3.8 Flash agentic speed, and 2M token context",
     "official_website": "https://gemini.google.com/advanced",
     "official_pricing_url": "https://one.google.com/about/plans",
-    "source_url": "https://blog.google/technology/ai/gemini-3-8-flash",
+    "source_url": "https://gemini.google.com",
     "last_checked_at": "2026-09-30",
     "pricing": {
       "starting_price": "$19.99/mo",
@@ -577,9 +577,10 @@
     },
     "technical_specs": {
       "current_models": [
-        "Gemini 3.8 Flash",
-        "Gemini 3.8 Live",
-        "Gemini 1.5 Pro (2M context)"
+        "Gemini 3.1 Pro (進階推論)",
+        "Gemini 3.8 Flash (全方位協助)",
+        "Gemini 3.5 Flash-Lite (回覆最快)",
+        "延伸思考 (Extended Thinking)"
       ],
       "context_window": "2M",
       "byok_support": false,

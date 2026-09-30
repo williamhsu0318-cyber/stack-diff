@@ -45,10 +45,15 @@ def get_env_var(key: str) -> str:
 VERIFIED_FLAGSHIP_SPECS = {
     "gemini": {
         "name": "Gemini Advanced",
-        "current_models": ["Gemini 3.8 Flash", "Gemini 3.8 Live", "Gemini 1.5 Pro (2M context)"],
-        "context_or_model": "Gemini 3.8 Flash, Gemini 3.8 Live, Gemini 1.5 Pro",
-        "tagline": "Google's frontier assistant with native multimodal comprehension, Gemini 3.8 Flash agentic reasoning, and 2M token context",
-        "source_url": "https://blog.google/technology/ai/gemini-3-8-flash",
+        "current_models": [
+            "Gemini 3.1 Pro (進階推論)",
+            "Gemini 3.8 Flash (全方位協助)",
+            "Gemini 3.5 Flash-Lite (回覆最快)",
+            "延伸思考 (Extended Thinking)"
+        ],
+        "context_or_model": "Gemini 3.1 Pro, Gemini 3.8 Flash, 3.5 Flash-Lite, 延伸思考 (Thinking)",
+        "tagline": "Google's frontier assistant with native multimodal comprehension, Gemini 3.1 Pro deep reasoning, 3.8 Flash agentic speed, and 2M token context",
+        "source_url": "https://gemini.google.com",
         "last_checked_at": "2026-09-30"
     },
     "chatgpt": {
@@ -293,7 +298,7 @@ def broadcast_to_discord():
             {
                 "name": "🤖 Frontier LLM 核心躍升",
                 "value": (
-                    "• **Google Gemini**: `Gemini 3.8 Flash`, `Gemini 3.8 Live` (9/2 官方發布)\n"
+                    "• **Google Gemini**: `Gemini 3.1 Pro` (進階推論), `3.8 Flash` (全方位協助), `3.5 Flash-Lite`, `延伸思考`\n"
                     "• **OpenAI ChatGPT**: `GPT-6 Astra`, `GPT-6.1 Sol`, `o3`, `o4-mini` (9/29 官方發布)\n"
                     "• **Anthropic Claude**: `Claude Opus 5.5`, `Claude Sonnet 5.5`, `Claude Haiku 4.5` (9/28 官方發布)\n"
                     "• **DeepSeek**: `DeepSeek-V4.1-Flash` (552B MoE, 9/10 官方發布)"
