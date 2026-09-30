@@ -1,4 +1,7 @@
-/**
+# scripts/generate_spec_engine.py
+import json
+
+spec_engine_content = '''/**
  * src/utils/specEngine.ts
  * ============================================================================
  * StackDiff Spec & Comparison Engine
@@ -102,7 +105,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     billingModel: 'Seat-based ($15/mo Pro)',
     officialPricingUrl: 'https://codeium.com/pricing',
     idealForBullets: [
-      'You want agentic flow state powered by Codeium\'s multi-file Cascade engine',
+      'You want agentic flow state powered by Codeium\\'s multi-file Cascade engine',
       'You need a modern AI-first IDE with unlimited completions at a lower price point than Cursor ($15 vs $20)',
     ],
     specs: {
@@ -165,7 +168,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     billingModel: 'Seat-based ($20/mo Plus / $200/mo Pro)',
     officialPricingUrl: 'https://openai.com/chatgpt/pricing',
     idealForBullets: [
-      'You need access to OpenAI\'s frontier reasoning models (o1, o3-mini) and Advanced Voice Mode',
+      'You need access to OpenAI\\'s frontier reasoning models (o1, o3-mini) and Advanced Voice Mode',
       'You want built-in web browsing, Canvas interactive code workspace, and custom GPTs',
     ],
     specs: {
@@ -587,7 +590,7 @@ const PAIR_DIFFERENTIATORS: Record<string, PairDifferentiator> = {
       },
       {
         title: 'Autocomplete Latency & Engine',
-        description: 'Cursor Copilot++ predicts multi-line next edits based on recent edits. Windsurf Supercomplete utilizes Codeium\'s proprietary low-latency inference engine for fluid multi-cursor tab completions.',
+        description: 'Cursor Copilot++ predicts multi-line next edits based on recent edits. Windsurf Supercomplete utilizes Codeium\\'s proprietary low-latency inference engine for fluid multi-cursor tab completions.',
       },
       {
         title: 'BYOK & Billing Model',
@@ -803,7 +806,7 @@ const PAIR_DIFFERENTIATORS: Record<string, PairDifferentiator> = {
       },
       {
         title: 'Infrastructure Reliability',
-        description: 'ChatGPT offers high-availability cloud infrastructure with Advanced Voice and Python sandboxes. DeepSeek\'s public web servers face frequent peak-hour capacity limits.',
+        description: 'ChatGPT offers high-availability cloud infrastructure with Advanced Voice and Python sandboxes. DeepSeek\\'s public web servers face frequent peak-hour capacity limits.',
       },
     ],
     decisiveQuestion: 'Do you want unencumbered open weights and near-zero API inference costs (DeepSeek), or a reliable, multimodal hosted platform with voice and Python sandboxes (ChatGPT)?',
@@ -822,7 +825,7 @@ const PAIR_DIFFERENTIATORS: Record<string, PairDifferentiator> = {
       },
       {
         title: 'Model Optionality',
-        description: 'ChatGPT exclusively runs OpenAI\'s model family. Perplexity Pro allows users to toggle between Claude, GPT-4o, Sonar, and DeepSeek within the same research session.',
+        description: 'ChatGPT exclusively runs OpenAI\\'s model family. Perplexity Pro allows users to toggle between Claude, GPT-4o, Sonar, and DeepSeek within the same research session.',
       },
     ],
     decisiveQuestion: 'Do you need an all-in-one generative creation platform with code execution (ChatGPT), or a real-time research engine with verified web citations (Perplexity)?',
@@ -894,7 +897,7 @@ const PAIR_DIFFERENTIATORS: Record<string, PairDifferentiator> = {
       },
       {
         title: 'Model Ownership',
-        description: 'DeepSeek provides open weights for self-hosting on private GPU infrastructure. Gemini is hosted entirely within Google\'s proprietary cloud environment.',
+        description: 'DeepSeek provides open weights for self-hosting on private GPU infrastructure. Gemini is hosted entirely within Google\\'s proprietary cloud environment.',
       },
       {
         title: 'Pricing Dynamics',
@@ -913,7 +916,7 @@ const PAIR_DIFFERENTIATORS: Record<string, PairDifferentiator> = {
       },
       {
         title: 'Model Architecture',
-        description: 'Gemini runs Google\'s proprietary multimodal engine with 2M token capacity. Perplexity acts as a multi-model intelligence layer routing across Claude, GPT-4o, and Sonar.',
+        description: 'Gemini runs Google\\'s proprietary multimodal engine with 2M token capacity. Perplexity acts as a multi-model intelligence layer routing across Claude, GPT-4o, and Sonar.',
       },
       {
         title: 'Output Presentation',
@@ -1524,3 +1527,9 @@ export function getComparisonStaticPaths(toolsData: any[]) {
 
   return paths;
 }
+'''
+
+with open('src/utils/specEngine.ts', 'w', encoding='utf-8') as f:
+    f.write(spec_engine_content)
+
+print("Successfully generated src/utils/specEngine.ts")

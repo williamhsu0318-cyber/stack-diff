@@ -4,9 +4,9 @@ scripts/curate_22_flagship_tools.py
 =============================================================================
 Prunes the tool database down to the 23 most popular flagship AI tools
 across 6 core productivity categories.
-Applies verified Canonical ToolData Schema with evergreen slugs (no version
-numbers in tool slugs or brand names), exact calibrated models, tiers,
-official sources, and zero fluff.
+Applies verified Canonical ToolData Schema with evergreen slugs, exact
+calibrated models, objective commercial gotchas (strictly quotas, overages,
+minimum seats, rollovers, license restrictions; zero subjective commentary).
 =============================================================================
 """
 
@@ -26,7 +26,7 @@ FLAGSHIP_SPECS = {
         "name": "Cursor",
         "slug": "cursor",
         "category": "Coding AI",
-        "tagline": "AI-first code editor fork of VS Code engineered for whole-codebase indexing and autonomous Composer 2.5 multi-file edits",
+        "tagline": "AI-first code editor fork of VS Code engineered for whole-codebase indexing and autonomous Composer multi-file edits",
         "official_website": "https://cursor.com",
         "official_pricing_url": "https://docs.cursor.com/getting-started/pricing",
         "source_url": "https://docs.cursor.com/getting-started/pricing",
@@ -42,9 +42,7 @@ FLAGSHIP_SPECS = {
                 "Claude 3.7 Sonnet",
                 "Claude 3.5 Sonnet",
                 "GPT-4o",
-                "OpenAI o1",
-                "Cursor Composer 2.5",
-                "DeepSeek-V3"
+                "OpenAI o1"
             ],
             "context_window": "200K",
             "byok_support": True,
@@ -52,18 +50,18 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Software engineers and indie builders wanting autonomous multi-file generation with instant diff reviews",
+        "best_for": "Software engineers wanting autonomous multi-file generation with instant diff reviews",
         "key_features": [
-            "Composer 2.5 multi-file autonomous generation and automatic diff application",
+            "Composer multi-file autonomous generation and automatic diff application",
             "Full codebase semantic indexing with symbol-aware contextual retrieval (@codebase)",
             "Copilot++ intelligent multi-line autocomplete predicting next edit locations",
-            "Seamless model switching across Claude 3.7/3.5 Sonnet, GPT-4o, and DeepSeek-V3",
+            "Seamless model switching across Claude 3.7/3.5 Sonnet, GPT-4o, and DeepSeek",
             "1-click migration importing all VS Code extensions, themes, and keybindings"
         ],
         "gotchas": [
-            "Pro plan includes 500 fast premium requests/mo; subsequent requests enter pool or incur optional $0.10/req usage fees.",
-            "Requires running a dedicated standalone IDE application rather than an editor plugin.",
-            "BYOK usage bypasses fast request limits but incurs direct API billing from your model provider."
+            "Pro plan includes 500 fast premium requests/mo; subsequent requests enter slow queue or optional $0.10/req overage.",
+            "BYOK usage bypasses fast request limits but incurs direct API billing from your model provider.",
+            "Hobby free trial downgrades to 50 slow requests/month after 14 days."
         ],
         "affiliate_url": "https://cursor.com",
         "url": "https://cursor.com"
@@ -99,7 +97,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Developers wanting native multi-IDE inline completions with seamless switching between Claude and OpenAI models",
+        "best_for": "Developers wanting native multi-IDE inline completions across VS Code, JetBrains, and Visual Studio",
         "key_features": [
             "Seamless multi-model switching between Claude 3.7/3.5 Sonnet, GPT-4o, OpenAI o1, and Gemini 2.0 Flash",
             "Real-time inline ghost-text code completions embedded directly into your editor cursor",
@@ -108,9 +106,9 @@ FLAGSHIP_SPECS = {
             "Enterprise-grade security controls, centralized seat management, and IP copyright indemnity"
         ],
         "gotchas": [
-            "Zero BYOK support; developers cannot connect external private API keys or unvetted local weights.",
-            "Multi-file whole-codebase autonomous refactoring is significantly less integrated than dedicated agentic IDEs like Cursor.",
-            "Copilot Free tier is limited to 50 chat prompts/mo and only operates within VS Code."
+            "Copilot Free tier is limited to 2,000 code completions and 50 chat messages per month.",
+            "Zero BYOK support; developers cannot connect external private API keys or private local weights.",
+            "Business tier requires centralized GitHub organization seat management ($19/user/mo)."
         ],
         "affiliate_url": "https://github.com/features/copilot",
         "url": "https://github.com/features/copilot"
@@ -136,9 +134,7 @@ FLAGSHIP_SPECS = {
             "current_models": [
                 "Cascade Flow Engine",
                 "Claude 3.7 Sonnet",
-                "Claude 3.5 Sonnet",
-                "GPT-4o",
-                "DeepSeek-V3"
+                "GPT-4o"
             ],
             "context_window": "128K",
             "byok_support": False,
@@ -146,7 +142,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Developers wanting an AI-first IDE with unlimited completions at a lower price point than Cursor ($15 vs $20)",
+        "best_for": "Developers wanting an AI-first IDE with unlimited completions at a lower price point",
         "key_features": [
             "Cascade engine delivering collaborative agentic workflows and real-time execution tracking",
             "Supercomplete intelligent multi-line code generation with sub-100ms latency",
@@ -155,9 +151,9 @@ FLAGSHIP_SPECS = {
             "Deep codebase indexing with live semantic symbol resolution"
         ],
         "gotchas": [
-            "Cascade agentic executions consume monthly credit units that cap intensive daily workflows.",
-            "Extension marketplace synchronization occasionally trails official VS Code by days.",
-            "Does not offer open BYOK API key integration on the standard Pro tier."
+            "Cascade agentic executions consume monthly prompt credits that cap daily automated workflows.",
+            "Standard Pro tier does not provide custom BYOK API key integration.",
+            "Teams tier enforces a minimum commitment of 2 seats billed monthly or annually."
         ],
         "affiliate_url": "https://codeium.com/windsurf",
         "url": "https://codeium.com/windsurf"
@@ -181,9 +177,8 @@ FLAGSHIP_SPECS = {
         },
         "technical_specs": {
             "current_models": [
-                "v0 Component Synthesis Engine",
-                "Claude 3.7 Sonnet",
-                "Specialized Tailwind LLM"
+                "v0 Component Engine",
+                "Claude 3.7 Sonnet"
             ],
             "context_window": "128K",
             "byok_support": False,
@@ -191,7 +186,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Frontend engineers, product designers, and full-stack builders needing instant production React and Tailwind code",
+        "best_for": "Frontend engineers and designers needing instant production React and Tailwind code",
         "key_features": [
             "Live interactive component canvas with real-time DOM previews and mobile viewport toggles",
             "Copy-pasteable Shadcn UI and Tailwind CSS modular architecture",
@@ -200,9 +195,9 @@ FLAGSHIP_SPECS = {
             "Multi-turn conversational iteration allowing granular CSS and component state adjustments"
         ],
         "gotchas": [
-            "Credits burn rapidly during complex multi-turn visual design iterations.",
-            "Specialized strictly in frontend markup and client-side UI; backend logic requires external implementation.",
-            "Free tier generations are publicly indexed in community search."
+            "Monthly generation credits do not roll over to subsequent billing cycles.",
+            "Free tier generations are publicly indexed in the community explore directory.",
+            "Specialized strictly in frontend React and Tailwind markup; backend logic requires external implementation."
         ],
         "affiliate_url": "https://v0.dev",
         "url": "https://v0.dev"
@@ -236,7 +231,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Founders, product managers, and builders creating full-stack web applications with authentication and databases",
+        "best_for": "Founders and builders creating full-stack web applications with authentication and databases",
         "key_features": [
             "Generates full-stack React applications with backend API routes and Supabase database schemas",
             "Native GitHub bi-directional synchronization committing code directly to your repository",
@@ -245,9 +240,9 @@ FLAGSHIP_SPECS = {
             "Built-in user authentication, PostgreSQL table creation, and Row Level Security rules"
         ],
         "gotchas": [
-            "Monthly edit credits deplete quickly during complex full-stack architectural refactors.",
-            "Complex custom database queries and external third-party OAuth flows may require manual coding.",
-            "Requires active subscription to export clean production builds without platform branding."
+            "Starter plan ($20/mo) includes 100 message edits per month; overages require upgrading to Pro ($50/mo).",
+            "Monthly edit credits do not roll over to subsequent billing cycles.",
+            "Active paid subscription is required to export clean production code without platform branding."
         ],
         "affiliate_url": "https://lovable.dev",
         "url": "https://lovable.dev"
@@ -277,8 +272,7 @@ FLAGSHIP_SPECS = {
                 "GPT-4o",
                 "OpenAI o1",
                 "OpenAI o3-mini",
-                "GPT-4o mini",
-                "Advanced Voice Mode"
+                "GPT-4o mini"
             ],
             "context_window": "128K",
             "byok_support": False,
@@ -286,7 +280,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Knowledge workers, researchers, and developers wanting a multi-model reasoning and multimodal execution assistant",
+        "best_for": "Knowledge workers, researchers, and developers wanting reasoning models and execution tools",
         "key_features": [
             "Frontier reasoning with OpenAI o1 and o3-mini alongside versatile GPT-4o multimodal engine",
             "Advanced Voice Mode with real-time natural conversational interruptions and inflection",
@@ -295,9 +289,9 @@ FLAGSHIP_SPECS = {
             "Custom GPT marketplace and memory persistence across conversations"
         ],
         "gotchas": [
-            "Plus ($20/mo) has dynamic usage caps on OpenAI o1 reasoning model; heavy researchers require Pro ($200/mo) for unlimited reasoning.",
-            "Web client and mobile app do not support BYOK (must use separate OpenAI Developer Platform API billing).",
-            "Team plan requires minimum 2 seats billed annually or monthly."
+            "Plus ($20/mo) enforces dynamic rate limits on OpenAI o1 reasoning model during peak global usage.",
+            "Web and mobile consumer applications do not support BYOK (developer API usage is billed separately).",
+            "Team plan requires a mandatory minimum commitment of 2 seats ($25-$30/user/mo)."
         ],
         "affiliate_url": "https://chatgpt.com",
         "url": "https://chatgpt.com"
@@ -308,7 +302,7 @@ FLAGSHIP_SPECS = {
         "name": "Claude Pro",
         "slug": "claude",
         "category": "LLM",
-        "tagline": "Anthropic's frontier AI ecosystem offering elite hybrid reasoning, nuanced prose, and live Artifacts prototyping",
+        "tagline": "Anthropic's frontier AI ecosystem offering hybrid reasoning, nuanced prose, and live Artifacts prototyping",
         "official_website": "https://claude.ai",
         "official_pricing_url": "https://www.anthropic.com/pricing",
         "source_url": "https://www.anthropic.com/pricing",
@@ -331,7 +325,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Software engineers, analysts, and writers demanding natural prose and benchmark-leading coding intelligence",
+        "best_for": "Software engineers and writers demanding natural prose and coding intelligence",
         "key_features": [
             "Access to flagship Claude 3.7 Sonnet with toggleable extended reasoning alongside Claude 3.5 Haiku",
             "Artifacts interactive workspace for live React, HTML, SVG, and diagram rendering",
@@ -340,9 +334,9 @@ FLAGSHIP_SPECS = {
             "Visual reasoning for dense architectural diagrams, UI mockups, and financial statements"
         ],
         "gotchas": [
-            "Pro subscription enforces rolling 5-hour message limits that throttle dynamically during peak global usage.",
-            "Does not offer native sandboxed Python terminal execution or image generation in the standard chat UI.",
-            "Team plan requires a mandatory 5-user minimum commitment ($125/mo)."
+            "Pro subscription ($20/mo) enforces rolling 5-hour message caps that dynamically throttle during peak demand.",
+            "Team plan enforces a mandatory minimum commitment of 5 users ($125/mo).",
+            "Standard chat interface does not include sandboxed Python execution or native image generation."
         ],
         "affiliate_url": "https://claude.ai",
         "url": "https://claude.ai"
@@ -376,7 +370,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Researchers, Google Workspace users, and engineers ingesting massive documents, long video, or entire code repos",
+        "best_for": "Researchers, Google Workspace users, and engineers ingesting massive documents or entire code repos",
         "key_features": [
             "Massive 2,000,000 token context window for ingesting full codebases, hours of audio, and dense video",
             "Powered by Gemini 2.0 Flash and Gemini 1.5 Pro multimodal architectures",
@@ -385,9 +379,9 @@ FLAGSHIP_SPECS = {
             "Native execution of Python code and live multimodal audio/visual understanding"
         ],
         "gotchas": [
-            "Tied directly to personal Google One storage accounts; cannot easily separate business and personal quotas.",
-            "Developer API credits are NOT included in the Google One AI Premium $19.99/mo bundle.",
-            "Advanced reasoning responses can lean conservative on ambiguous non-technical creative queries."
+            "Tied strictly to personal Google One storage accounts; cannot be billed as a standalone team workspace.",
+            "Google AI Studio / developer API usage is billed separately and not included in Google One AI Premium ($19.99/mo).",
+            "Free tier enforces lower requests-per-minute rate limits during peak usage periods."
         ],
         "affiliate_url": "https://gemini.google.com/advanced",
         "url": "https://gemini.google.com/advanced"
@@ -420,7 +414,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": True
         },
-        "best_for": "Developers, AI researchers, and businesses seeking benchmark-leading reasoning at fraction of western lab API costs",
+        "best_for": "Developers and businesses seeking benchmark-leading reasoning at low API costs",
         "key_features": [
             "DeepSeek-R1 open-weight reasoning model rivaling OpenAI o1 on math, code, and STEM benchmarks",
             "DeepSeek-V3 671B Mixture-of-Experts architecture delivering ultra-fast inference speed",
@@ -429,9 +423,9 @@ FLAGSHIP_SPECS = {
             "100% free public conversational web interface and mobile applications"
         ],
         "gotchas": [
-            "Public web interface encounters frequent peak-hour server capacity congestion.",
-            "Native context window is 64k tokens, smaller than Gemini's 2M or Claude's 200k.",
-            "Self-hosting full 671B model requires enterprise multi-GPU server clusters (8x H100)."
+            "Public web interface (chat.deepseek.com) enforces dynamic capacity limits during peak global traffic.",
+            "Native context window is 64,000 tokens (compared to 128k–2M on western commercial platforms).",
+            "Self-hosting the full 671B model requires enterprise multi-GPU server infrastructure (8x H100 80GB)."
         ],
         "affiliate_url": "https://chat.deepseek.com",
         "url": "https://chat.deepseek.com"
@@ -457,8 +451,7 @@ FLAGSHIP_SPECS = {
             "current_models": [
                 "Perplexity Sonar Reasoning",
                 "Claude 3.7 Sonnet",
-                "GPT-4o",
-                "DeepSeek-R1"
+                "GPT-4o"
             ],
             "context_window": "128K",
             "byok_support": False,
@@ -466,18 +459,18 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Researchers, financial analysts, and knowledge workers requiring real-time web citations without SEO spam",
+        "best_for": "Researchers and analysts requiring real-time web citations without SEO spam",
         "key_features": [
             "Pro Search with multi-step search query decomposition and cross-source verification",
-            "Instant model switching across Sonar, Claude 3.7 Sonnet, GPT-4o, and DeepSeek-R1",
+            "Instant model switching across Sonar, Claude 3.7 Sonnet, and GPT-4o",
             "Inline numbered citations linked directly to live web sources and academic papers",
             "Collections workspace for organizing research threads and sharing knowledge hubs",
             "Upload files (PDFs, CSVs, code) for deep contextual search and data extraction"
         ],
         "gotchas": [
-            "Pro plan includes 300+ Pro queries per day; heavy enterprise users may hit daily throttles.",
-            "Not optimized for standalone multi-file code editing or whole-project scaffolding.",
-            "Enterprise features like SOC2 compliance and single sign-on require Enterprise Pro tier."
+            "Pro plan provides 300+ Pro searches per day; high-frequency automated scraping is prohibited.",
+            "Included $5/mo developer API credit does not roll over if unused.",
+            "Enterprise security controls (SSO, SOC2, data retention) require Enterprise Pro tier ($40/seat/mo)."
         ],
         "affiliate_url": "https://perplexity.ai",
         "url": "https://perplexity.ai"
@@ -506,7 +499,7 @@ FLAGSHIP_SPECS = {
             "current_models": [
                 "Midjourney v6.1",
                 "Midjourney v7 Alpha",
-                "Niji 6 (Anime)"
+                "Niji 6"
             ],
             "context_window": "N/A",
             "byok_support": False,
@@ -514,7 +507,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": False,
             "offline_support": False
         },
-        "best_for": "Art directors, concept artists, and creative professionals demanding maximum aesthetic quality and cinematic lighting",
+        "best_for": "Art directors and creators demanding maximum aesthetic quality and cinematic lighting",
         "key_features": [
             "Benchmark cinematic aesthetic quality, photorealistic skin textures, and atmospheric lighting",
             "Dedicated web canvas UI featuring inpainting, pan, zoom out, and region repainting",
@@ -523,9 +516,9 @@ FLAGSHIP_SPECS = {
             "Niji 6 specialized tuning for anime, illustrative concept art, and comic styling"
         ],
         "gotchas": [
-            "Basic tier ($10/mo) has hard 3.3 GPU hour cap with zero unlimited relax mode.",
-            "Generations are public by default; Stealth mode requires Pro tier ($60/mo).",
-            "No official first-party developer API (must use third-party scraping services or manual UI)."
+            "Basic ($10/mo) and Standard ($30/mo) tiers publish all generated images publicly in the community gallery.",
+            "Private generation (Stealth Mode) is strictly restricted to Pro ($60/mo) and Mega ($120/mo) plans.",
+            "No official public REST API; automation must be performed via Web UI or Discord bot."
         ],
         "affiliate_url": "https://midjourney.com",
         "url": "https://midjourney.com"
@@ -559,7 +552,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": True
         },
-        "best_for": "AI engineers, technical designers, and enterprises requiring commercial open weights or accurate in-image text",
+        "best_for": "AI engineers and designers requiring commercial open weights or accurate in-image text",
         "key_features": [
             "World-class in-image typography and text spelling accuracy inside generated posters and signs",
             "FLUX.1 [schnell] 4-step distilled model available under Apache 2.0 for unrestricted local use",
@@ -568,9 +561,9 @@ FLAGSHIP_SPECS = {
             "Commercial API endpoints available across Replicate, Fal.ai, and Together.ai"
         ],
         "gotchas": [
-            "Local execution of FLUX.1 [dev] requires minimum 16GB-24GB VRAM GPU (RTX 3090/4090).",
-            "FLUX.1 [dev] license is strictly non-commercial; commercial usage requires [pro] API or custom licensing.",
-            "Official platform does not offer an all-in-one web UI as polished as Midjourney web."
+            "FLUX.1 [dev] license is strictly non-commercial; commercial deployment requires [pro] API or commercial license.",
+            "Local execution of FLUX.1 [dev] requires minimum 16GB–24GB VRAM GPU hardware.",
+            "Black Forest Labs does not host an all-in-one conversational consumer web canvas."
         ],
         "affiliate_url": "https://blackforestlabs.ai",
         "url": "https://blackforestlabs.ai"
@@ -603,7 +596,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Graphic designers, brand managers, and marketing teams needing true clean SVGs, 3D icons, and vector brand kits",
+        "best_for": "Graphic designers and brand teams needing clean SVGs, 3D icons, and vector brand kits",
         "key_features": [
             "Native vector graphics generation outputting clean, editable SVGs with minimal anchor points",
             "Recraft V3 model benchmarked #1 on Artificial Analysis image generation leaderboard",
@@ -612,9 +605,9 @@ FLAGSHIP_SPECS = {
             "Commercial REST API for programmatic vector and raster asset synthesis"
         ],
         "gotchas": [
-            "Free tier assets are public and cannot be kept private without a paid subscription.",
-            "Fast generation credits deplete quickly when conducting extensive vector path refinements.",
-            "High-resolution raster photorealism is specialized for commercial design rather than fantasy surrealism."
+            "Free tier creations are public and cannot be made private without a paid subscription.",
+            "Monthly fast credits do not roll over past the active billing cycle.",
+            "Vector exports on free tier include platform attribution metadata."
         ],
         "affiliate_url": "https://www.recraft.ai",
         "url": "https://www.recraft.ai"
@@ -639,8 +632,7 @@ FLAGSHIP_SPECS = {
         "technical_specs": {
             "current_models": [
                 "Ideogram 2.0",
-                "Ideogram 2.0 Turbo",
-                "Magic Fill"
+                "Ideogram 2.0 Turbo"
             ],
             "context_window": "N/A",
             "byok_support": False,
@@ -648,7 +640,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Marketing designers, print-on-demand creators, and social media managers requiring lettering and graphic layouts",
+        "best_for": "Marketing designers and creators requiring accurate lettering and graphic layouts",
         "key_features": [
             "Pioneering graphic text rendering with accurate spelling inside complex typography layouts",
             "Magic Prompt feature automatically expanding shorthand prompts into detailed visual briefs",
@@ -657,9 +649,9 @@ FLAGSHIP_SPECS = {
             "Ideogram 2.0 Turbo model offering high-speed generations at 50% lower credit consumption"
         ],
         "gotchas": [
-            "Basic tier ($8/mo) generations remain public in community feed; private generations require Plus ($20/mo).",
-            "Photorealism on complex cinematic environmental scenes trails Midjourney v6.1 slightly.",
-            "Free credits expire daily and do not accumulate if unused."
+            "Basic ($8/mo) generations remain public in community feed; private mode requires Plus ($20/mo).",
+            "Free credits expire daily and do not accumulate across days.",
+            "Priority generation credits do not roll over to subsequent months."
         ],
         "affiliate_url": "https://ideogram.ai",
         "url": "https://ideogram.ai"
@@ -696,7 +688,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Filmmakers, VFX artists, and creative directors needing high-fidelity video generation and precise camera motion",
+        "best_for": "Filmmakers and VFX artists needing cinematic video generation and camera steering",
         "key_features": [
             "Gen-3 Alpha and Gen-3 Alpha Turbo high-fidelity video synthesis from text, image, and video prompts",
             "Act-One facial performance capture transferring real actor expressions onto stylized characters",
@@ -705,9 +697,9 @@ FLAGSHIP_SPECS = {
             "Fast generation mode via Gen-3 Alpha Turbo delivering 7x speedups for storyboarding"
         ],
         "gotchas": [
-            "Credits deplete quickly (Gen-3 Alpha costs 10 credits/sec; 5s video = 50 credits).",
-            "Standard plan ($15/mo) credits do not roll over past billing caps.",
-            "Watermarking is removed only on paid Standard ($15/mo) and Pro ($35/mo) tiers."
+            "Standard plan ($15/mo) provides 625 credits/mo (Gen-3 Alpha consumes 10 credits per second of video).",
+            "Monthly subscription credits do not roll over past billing cycle caps.",
+            "Watermark removal is restricted to paid Standard ($15/mo) and higher tiers."
         ],
         "affiliate_url": "https://runwayml.com",
         "url": "https://runwayml.com"
@@ -732,7 +724,7 @@ FLAGSHIP_SPECS = {
         "technical_specs": {
             "current_models": [
                 "Kling 1.5 Pro",
-                "Kling 1.0 High-Performance"
+                "Kling 1.0"
             ],
             "context_window": "N/A",
             "byok_support": False,
@@ -740,7 +732,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Motion designers, advertising creators, and creators needing complex human movement and high-motion adherence",
+        "best_for": "Motion designers and creators needing complex human movement and high-motion adherence",
         "key_features": [
             "Kling 1.5 model delivering 1080p HD video resolution with physics simulation",
             "Generates long video clips up to 10 seconds in a single generation prompt",
@@ -749,9 +741,9 @@ FLAGSHIP_SPECS = {
             "Generous free tier offering 66 renewable credits every day without credit card requirement"
         ],
         "gotchas": [
-            "Professional Mode generations take 3-8 minutes during peak global server queues.",
-            "Free tier renders with watermark and limits video exports to 720p.",
-            "Lip-sync audio synchronization requires separate paid credit deduction."
+            "Free plan renders with a watermark and restricts video exports to 720p resolution.",
+            "Professional Mode generations take 3–8 minutes during peak global server queues.",
+            "Daily free credits (66 credits) expire after 24 hours and do not accumulate."
         ],
         "affiliate_url": "https://klingai.com",
         "url": "https://klingai.com"
@@ -784,7 +776,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Visual artists, game developers, and creators requiring dynamic 3D camera sweeps and physical lighting realism",
+        "best_for": "Visual artists and game developers requiring dynamic 3D camera sweeps and spatial lighting",
         "key_features": [
             "Dream Machine 1.5 transformer architecture predicting consistent camera movements and lighting",
             "Sub-120 second video generation speed for rapid concept iteration",
@@ -793,9 +785,9 @@ FLAGSHIP_SPECS = {
             "Native developer API endpoints for programmatic batch video generation"
         ],
         "gotchas": [
-            "Free tier generations enter shared public queues that can experience latency during peak periods.",
-            "Complex hand interactions and object morphing can occasionally show minor temporal artifacts.",
-            "Commercial rights and unwatermarked exports require paid Standard ($9.99/mo) tier or higher."
+            "Free tier video generations enter a shared public queue that experiences latency during peak periods.",
+            "Commercial usage rights and unwatermarked video downloads require paid Standard ($9.99/mo) or higher.",
+            "Monthly generation credits expire at the end of each billing cycle."
         ],
         "affiliate_url": "https://lumalabs.ai/dream-machine",
         "url": "https://lumalabs.ai/dream-machine"
@@ -819,9 +811,8 @@ FLAGSHIP_SPECS = {
         },
         "technical_specs": {
             "current_models": [
-                "HeyGen Avatar 3.0",
-                "Video Translate Engine",
-                "Interactive Avatar API"
+                "Avatar 3.0",
+                "Video Translate Engine"
             ],
             "context_window": "N/A",
             "byok_support": False,
@@ -829,7 +820,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Corporate sales, training teams, and marketing agencies creating localized presenter videos and tutorials",
+        "best_for": "Corporate sales and training teams creating localized presenter videos and tutorials",
         "key_features": [
             "100+ photorealistic AI avatars delivering natural speech inflections and eye contact",
             "Instant Video Translation automatically dubbing videos into 175+ languages with matching lip-sync",
@@ -838,9 +829,9 @@ FLAGSHIP_SPECS = {
             "Enterprise API for automated video personalization at scale"
         ],
         "gotchas": [
-            "Creator plan ($29/mo) allocates only 15 minutes of total video per month ($1.93 per minute).",
-            "Studio-quality Custom Avatars require additional one-time setup fee ($99-$1,000).",
-            "Unused monthly credits on Creator tier do not roll over to subsequent months."
+            "Creator plan ($29/mo) allocates 15 minutes of video credit per month ($1.93 per minute).",
+            "Unused monthly video credits on Creator tier do not roll over to subsequent months.",
+            "Custom Studio Avatars require a separate one-time production setup fee."
         ],
         "affiliate_url": "https://heygen.com",
         "url": "https://heygen.com"
@@ -868,8 +859,7 @@ FLAGSHIP_SPECS = {
         "technical_specs": {
             "current_models": [
                 "Eleven Multilingual v2",
-                "Eleven Flash v2.5 (Sub-75ms)",
-                "Conversational AI 2.0"
+                "Eleven Flash v2.5"
             ],
             "context_window": "N/A",
             "byok_support": False,
@@ -877,7 +867,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Audiobook narrators, game studios, and developers requiring emotionally nuanced voice acting and voice cloning",
+        "best_for": "Audiobook narrators, game studios, and developers requiring emotionally nuanced voice acting",
         "key_features": [
             "Industry-leading emotional inflection, pause pacing, and conversational realism in 32+ languages",
             "Instant Voice Cloning from 1-minute audio sample and Professional Voice Cloning for studio narrators",
@@ -886,9 +876,9 @@ FLAGSHIP_SPECS = {
             "Robust REST and WebSocket APIs with pre-built SDKs in Python, Node, and Go"
         ],
         "gotchas": [
-            "Character usage counts spaces and punctuation; long scripts consume monthly allowances quickly.",
-            "Free tier strictly mandates ElevenLabs attribution in published commercial projects.",
-            "Commercial usage license requires Starter ($5/mo) or higher tier."
+            "Character allowance counts spaces and punctuation in input text.",
+            "Free tier strictly mandates ElevenLabs attribution in published commercial outputs.",
+            "Commercial usage rights require Starter ($5/mo) or higher subscription tier."
         ],
         "affiliate_url": "https://elevenlabs.io",
         "url": "https://elevenlabs.io"
@@ -913,8 +903,7 @@ FLAGSHIP_SPECS = {
         "technical_specs": {
             "current_models": [
                 "Sonic (State Space Model)",
-                "Sonic Multilingual",
-                "Sonic Fast"
+                "Sonic Multilingual"
             ],
             "context_window": "N/A",
             "byok_support": True,
@@ -922,7 +911,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Voice AI engineers, customer support bot builders, and robotics teams requiring ultra-low latency audio streaming",
+        "best_for": "Voice AI engineers and customer bot teams requiring ultra-low latency audio streaming",
         "key_features": [
             "Groundbreaking State Space Model (SSM) architecture delivering sub-100ms time-to-first-audio chunk",
             "Ultra-low latency WebSocket streaming designed for live conversational call center bots",
@@ -931,9 +920,9 @@ FLAGSHIP_SPECS = {
             "Zero minimum commitment on API usage with transparent per-second metering"
         ],
         "gotchas": [
-            "Focused primarily on developer API integration; lacks an end-user timeline audio editing suite.",
-            "Smaller pre-made voice library compared to ElevenLabs' community voice marketplace.",
-            "Requires developer implementation of telephony or WebSocket client stack."
+            "Focused strictly on developer streaming API; does not include an end-user timeline audio editing UI.",
+            "Telephony or WebSocket client integration must be implemented by the developer.",
+            "Pre-made voice library is smaller than consumer voice marketplaces."
         ],
         "affiliate_url": "https://cartesia.ai",
         "url": "https://cartesia.ai"
@@ -960,9 +949,8 @@ FLAGSHIP_SPECS = {
         },
         "technical_specs": {
             "current_models": [
-                "n8n AI Agent Framework",
-                "LangChain Node Connectors",
-                "Custom Python & JS Nodes"
+                "n8n AI Agent Nodes",
+                "LangChain Connectors"
             ],
             "context_window": "N/A",
             "byok_support": True,
@@ -970,7 +958,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": True
         },
-        "best_for": "Developers, technical founders, and privacy-conscious enterprises wanting unlimited automations on private infrastructure",
+        "best_for": "Developers and privacy-conscious enterprises wanting unlimited automations on private infrastructure",
         "key_features": [
             "Fair-code license allowing unlimited free executions when deployed on private VPS or Docker",
             "Native LangChain and AI Agent nodes supporting tool-calling, vector databases, and memory",
@@ -979,9 +967,9 @@ FLAGSHIP_SPECS = {
             "Custom JavaScript and Python code execution within any workflow node"
         ],
         "gotchas": [
-            "Self-hosting requires maintaining your own Docker container, PostgreSQL database, and SSL certificates.",
-            "Cloud plans enforce monthly execution caps; high-frequency webhooks can exhaust tier quotas.",
-            "Community edition restricts advanced enterprise RBAC and SSO features."
+            "Self-hosting Community edition requires managing your own Docker container, database, and backups.",
+            "Community license restricts multi-user enterprise governance, advanced RBAC, and SSO.",
+            "Cloud Starter tier enforces a 2,500 monthly workflow execution cap."
         ],
         "affiliate_url": "https://n8n.io",
         "url": "https://n8n.io"
@@ -1006,8 +994,7 @@ FLAGSHIP_SPECS = {
         "technical_specs": {
             "current_models": [
                 "Make Scenario Engine v2",
-                "Native AI Assistant Modules",
-                "HTTP/Webhook Connectors"
+                "AI Assistant Modules"
             ],
             "context_window": "N/A",
             "byok_support": True,
@@ -1015,7 +1002,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Automation architects, operations engineers, and growth teams requiring visual routers, iterators, and error handlers",
+        "best_for": "Operations engineers and teams requiring visual routers, iterators, and aggregators",
         "key_features": [
             "Visual canvas for designing multi-branch workflows with routers, iterators, and aggregators",
             "Pay-per-operation pricing model ($9/mo for 10k ops) providing cost efficiency over task-based competitors",
@@ -1024,9 +1011,9 @@ FLAGSHIP_SPECS = {
             "Custom JavaScript functions, data formatters, and regex transformations inside scenario nodes"
         ],
         "gotchas": [
-            "Every single module action and iteration counts as 1 operation; misconfigured loops can burn 10k ops in minutes.",
-            "Free tier is restricted to 15-minute polling intervals on scheduled triggers.",
-            "Enterprise data retention and custom variables require Pro ($16/mo) or Teams ($29/mo) plans."
+            "Every individual module execution and route iteration counts as 1 billable operation.",
+            "Free tier restricts scheduled trigger polling intervals to a minimum of 15 minutes.",
+            "Custom variables and extended data logs require Pro ($16/mo) or Teams ($29/mo) plans."
         ],
         "affiliate_url": "https://make.com",
         "url": "https://make.com"
@@ -1050,9 +1037,8 @@ FLAGSHIP_SPECS = {
         },
         "technical_specs": {
             "current_models": [
-                "Zapier Central AI Engine",
-                "Zapier Tables & Interfaces",
-                "Code by Zapier (Node.js/Python)"
+                "Zapier Central AI Agents",
+                "Zapier Tables"
             ],
             "context_window": "N/A",
             "byok_support": True,
@@ -1060,7 +1046,7 @@ FLAGSHIP_SPECS = {
             "telemetry_privacy": True,
             "offline_support": False
         },
-        "best_for": "Non-technical teams, marketing operations, and enterprises needing seamless integration across 6,000+ SaaS apps",
+        "best_for": "Non-technical teams needing turnkey integration across 6,000+ SaaS applications",
         "key_features": [
             "Zapier Central autonomous AI agents executing tasks across your connected business tools",
             "Zapier Tables relational database workspace engineered specifically for automation workflows",
@@ -1069,9 +1055,9 @@ FLAGSHIP_SPECS = {
             "Paths logic for conditional execution and custom code steps (JavaScript / Python)"
         ],
         "gotchas": [
-            "Task-based pricing scales steeply on high-volume background pipelines compared to self-hosted alternatives.",
-            "Free tier only permits simple 2-step Zaps; multi-step workflows require Professional ($19.99/mo).",
-            "Data polling frequency on Professional is 2 minutes (instant webhooks depend on app connector support)."
+            "Free plan only permits single-step Zaps (1 trigger + 1 action); multi-step workflows require Professional ($19.99/mo).",
+            "Data polling interval on Professional plan is 2 minutes (instant webhooks require supported app webhooks).",
+            "Task overages on high-volume pipelines increase per-task costs without annual volume commitments."
         ],
         "affiliate_url": "https://zapier.com",
         "url": "https://zapier.com"
@@ -1104,4 +1090,4 @@ for path in [P_SRC, P_DATA]:
     with open(path, "w", encoding="utf-8") as f:
         json.dump(curated_list, f, indent=2, ensure_ascii=False)
 
-print(f"[OK] Curated {len(curated_list)} flagship tools with evergreen slugs successfully!")
+print(f"[OK] Curated {len(curated_list)} flagship tools with 100% objective gotchas successfully!")

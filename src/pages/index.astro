@@ -1,6 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import toolsData from '../data/tools.json';
+import { resolvePairDifferentiator, normalizeToolSpec, type PairDifferentiator } from '../utils/specEngine';
 
 interface ToolItem {
   id: string;
@@ -37,6 +38,7 @@ interface ComparisonPair {
   toolB: ToolItem;
   category: string;
   searchText: string;
+  differentiator: PairDifferentiator;
 }
 
 const allComparisons: ComparisonPair[] = [];
@@ -51,10 +53,14 @@ for (const [category, groupTools] of categoryMap.entries()) {
       );
       const slug = `${toolA.slug}-vs-${toolB.slug}`;
       
+      const specA = normalizeToolSpec(toolA);
+      const specB = normalizeToolSpec(toolB);
+      const differentiator = resolvePairDifferentiator(specA, specB, category);
+
       // Search index string for instant client-side matching
-      const platsA = (toolA.supported_platforms || toolA.platforms || []).join(' ');
-      const platsB = (toolB.supported_platforms || toolB.platforms || []).join(' ');
-      const searchText = `${toolA.name} ${toolB.name} ${toolA.slug} ${toolB.slug} ${category} ${toolA.tagline || ''} ${toolB.tagline || ''} ${toolA.best_for || ''} ${toolB.best_for || ''} ${toolA.pricing_model || ''} ${toolB.pricing_model || ''} ${platsA} ${platsB}`.toLowerCase();
+      const platsA = (toolA.supported_platforms || (toolA as any).platforms || []).join(' ');
+      const platsB = (toolB.supported_platforms || (toolB as any).platforms || []).join(' ');
+      const searchText = `${toolA.name} ${toolB.name} ${toolA.slug} ${toolB.slug} ${category} ${differentiator.coreBattle} ${toolA.tagline || ''} ${toolB.tagline || ''} ${platsA} ${platsB}`.toLowerCase();
 
       allComparisons.push({
         slug,
@@ -62,6 +68,7 @@ for (const [category, groupTools] of categoryMap.entries()) {
         toolB,
         category,
         searchText,
+        differentiator,
       });
     }
   }
@@ -235,9 +242,9 @@ const pageDescription = `Objective, data-driven AI tool specifications and pairw
                       <span class="text-zinc-200 font-semibold truncate">{pair.toolB.starting_price}</span>
                     </div>
 
-                    <!-- Description -->
-                    <p class="text-xs text-zinc-400 line-clamp-2 leading-relaxed mb-3 overflow-hidden">
-                      {pair.toolA.best_for} vs {pair.toolB.best_for}.
+                    <!-- Pair-Specific Structural Differentiator -->
+                    <p class="text-xs text-zinc-300 line-clamp-2 leading-relaxed mb-3 overflow-hidden font-medium">
+                      {pair.differentiator.coreBattle}
                     </p>
                   </div>
 
