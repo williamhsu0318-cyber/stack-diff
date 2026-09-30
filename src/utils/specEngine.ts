@@ -13,6 +13,7 @@ export interface ToolSpec {
   startingPrice: string;
   billingModel: string;
   affiliateUrl: string;
+  officialPricingUrl: string;
   idealForBullets: string[];
   specs: {
     freeTier: string;
@@ -29,14 +30,15 @@ export interface ComparisonData {
   toolA: ToolSpec;
   toolB: ToolSpec;
   category: string;
-  lastVerified: string;
-  faqs: { question: string; answer: string }[];
+  statusLabel: string;
+  verifiedFaqs: { question: string; answer: string }[];
 }
 
 // Curated spec catalog for known tools in StackDiff ecosystem
 const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   cursor: {
     billingModel: 'Seat-based (Monthly/Annual)',
+    officialPricingUrl: 'https://cursor.com/pricing',
     idealForBullets: [
       'You require autonomous multi-file Composer edits with instant accept/reject diffs',
       'You need complete VS Code extension, keybinding, and settings parity with zero friction',
@@ -57,6 +59,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'github-copilot': {
     billingModel: 'Seat-based ($10/mo or $19/user Enterprise)',
+    officialPricingUrl: 'https://github.com/features/copilot#pricing',
     idealForBullets: [
       'Your organization requires centralized GitHub Enterprise billing and IP copyright indemnity',
       'You want unobtrusive inline ghost-text completions embedded in JetBrains, VS Code, or Neovim',
@@ -77,6 +80,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   windsurf: {
     billingModel: 'Seat-based ($15/mo)',
+    officialPricingUrl: 'https://codeium.com/pricing',
     idealForBullets: [
       'You want agentic flow state powered by Codeium\'s multi-file Cascade engine',
       'You need a modern AI-first IDE with unlimited completions at a lower price point than Cursor',
@@ -96,6 +100,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'v0-by-vercel': {
     billingModel: 'Credit/Usage subscription ($20/mo)',
+    officialPricingUrl: 'https://v0.dev/pricing',
     idealForBullets: [
       'You need production-ready Next.js, React, and Tailwind UI components in seconds',
       'You want live interactive component previews and rapid image/Figma-to-code synthesis',
@@ -116,6 +121,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   supermaven: {
     billingModel: 'Seat-based ($10/mo)',
+    officialPricingUrl: 'https://supermaven.com/pricing',
     idealForBullets: [
       'You prioritize sub-50ms ultra-low latency inline autocomplete over chat interfaces',
       'You want an enormous 1,000,000+ token context window embedded directly inside Neovim or VS Code',
@@ -135,6 +141,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   lovable: {
     billingModel: 'Credit-based ($20/mo)',
+    officialPricingUrl: 'https://lovable.dev/pricing',
     idealForBullets: [
       'You want full-stack web applications generated from text prompts in under 60 seconds',
       'You require native Supabase authentication, database schema binding, and GitHub synchronization',
@@ -154,6 +161,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   chatgpt: {
     billingModel: 'Seat-based ($20/mo Plus / $200/mo Pro)',
+    officialPricingUrl: 'https://openai.com/chatgpt/pricing',
     idealForBullets: [
       'You need access to OpenAI\'s frontier reasoning models (o1, o3-mini) and Advanced Voice',
       'You want built-in web browsing, Canvas interactive code workspace, and custom GPTs',
@@ -174,6 +182,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'claude-3-5-sonnet': {
     billingModel: 'Seat-based ($20/mo Pro / $25/user Team)',
+    officialPricingUrl: 'https://www.anthropic.com/pricing',
     idealForBullets: [
       'You want benchmark-leading coding intelligence, nuanced reasoning, and cleaner prose',
       'You rely on interactive Artifacts for instant frontend rendering and 200k Projects',
@@ -194,6 +203,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   deepseek: {
     billingModel: 'Usage-based (Extremely low-cost API)',
+    officialPricingUrl: 'https://platform.deepseek.com/api-docs/pricing',
     idealForBullets: [
       'You require state-of-the-art reasoning at 90%+ lower API cost than western frontier labs',
       'You want open weights (MIT license) for unencumbered self-hosted private deployments',
@@ -214,6 +224,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'perplexity-ai': {
     billingModel: 'Subscription ($20/mo Pro)',
+    officialPricingUrl: 'https://www.perplexity.ai/pro',
     idealForBullets: [
       'You want real-time verified web citations and multi-model switching (Claude, GPT-4o, Sonar)',
       'You want deep multi-source research synthesis and $5/mo in included API credits',
@@ -233,6 +244,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'gemini-advanced': {
     billingModel: 'Google One Bundle ($19.99/mo)',
+    officialPricingUrl: 'https://one.google.com/about/plans',
     idealForBullets: [
       'You need a massive 1,000,000 to 2,000,000 token context window for full-repository ingestion',
       'You want deep Google Workspace integration (Docs, Gmail, Drive) and 2TB cloud storage included',
@@ -252,6 +264,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   midjourney: {
     billingModel: 'Subscription GPU Hours ($10 - $60/mo)',
+    officialPricingUrl: 'https://docs.midjourney.com/docs/plans',
     idealForBullets: [
       'You require photorealistic textures, cinematic lighting, and industry-benchmark aesthetic style',
       'You want superior prompt fidelity without complex local parameter tuning',
@@ -272,6 +285,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'flux-1': {
     billingModel: 'Open weights / Pay-per-image API',
+    officialPricingUrl: 'https://blackforestlabs.ai',
     idealForBullets: [
       'You need crisp legible typography, realistic human anatomy, and zero proprietary lock-in',
       'You want to run models locally on 16GB+ VRAM or via ultra-fast serverless APIs (Fal.ai, Replicate)',
@@ -291,6 +305,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   'stable-diffusion': {
     billingModel: 'Open Source / Cloud subscription',
+    officialPricingUrl: 'https://stability.ai/pricing',
     idealForBullets: [
       'You demand 100% offline generation, custom LoRA fine-tuning, and ControlNet precision',
       'You refuse monthly subscription fees and require complete data sovereignty on local hardware',
@@ -311,6 +326,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   n8n: {
     billingModel: 'Fair-code self-hosted free / $20/mo Cloud',
+    officialPricingUrl: 'https://n8n.io/pricing',
     idealForBullets: [
       'You want self-hosted, sovereign AI agent workflows with direct database and custom code access',
       'You refuse to pay per-task execution fees on high-volume background data pipelines',
@@ -331,6 +347,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   make: {
     billingModel: 'Operation / Task based ($9/mo)',
+    officialPricingUrl: 'https://www.make.com/en/pricing',
     idealForBullets: [
       'You need visual, complex branching automation with routers, iterators, and error handlers',
       'You want 1,000+ app connectors without writing webhook plumbing and polling scripts',
@@ -351,6 +368,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   zapier: {
     billingModel: 'Task-based ($19.99/mo)',
+    officialPricingUrl: 'https://zapier.com/pricing',
     idealForBullets: [
       'You need seamless integration with 6,000+ enterprise apps and SaaS ecosystems',
       'You want non-technical team members to build automated triggers without developer assistance',
@@ -371,6 +389,7 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   },
   elevenlabs: {
     billingModel: 'Character-based ($5/mo Starter / $22/mo Creator)',
+    officialPricingUrl: 'https://elevenlabs.io/pricing',
     idealForBullets: [
       'You need industry-leading emotional voice synthesis, voice cloning, and audio dubbing',
       'You want ultra-low latency Conversational AI agents via direct WebSockets',
@@ -424,6 +443,15 @@ export function normalizeToolSpec(raw: any): ToolSpec {
     `Advertised ${startingPrice} base pricing may scale upward depending on team seat tiers and heavy monthly usage.`,
   ];
 
+  // Pricing Official URL
+  const officialPricingUrl =
+    raw.pricing_url ||
+    curated.officialPricingUrl ||
+    raw.official_url ||
+    raw.url ||
+    raw.affiliate_url ||
+    '#';
+
   return {
     name: raw.name || id,
     slug: raw.slug || id,
@@ -431,6 +459,7 @@ export function normalizeToolSpec(raw: any): ToolSpec {
     startingPrice,
     billingModel,
     affiliateUrl,
+    officialPricingUrl,
     idealForBullets: idealForBullets.slice(0, 2),
     specs: {
       freeTier,
@@ -445,42 +474,39 @@ export function normalizeToolSpec(raw: any): ToolSpec {
 }
 
 /**
- * Builds standard ComparisonData with high-intent BOFU FAQ items.
+ * Builds standard ComparisonData with strict verified FAQ support.
+ * All fake/hallucinated boilerplate FAQs are deleted.
+ * Only verified FAQs from explicit data are passed; otherwise empty.
  */
-export function buildComparisonData(toolARaw: any, toolBRaw: any, category: string): ComparisonData {
+export function buildComparisonData(
+  toolARaw: any,
+  toolBRaw: any,
+  category: string,
+  options?: { verifiedFaqs?: { question: string; answer: string }[] }
+): ComparisonData {
   const toolA = normalizeToolSpec(toolARaw);
   const toolB = normalizeToolSpec(toolBRaw);
 
-  // Dynamic Current Month & Year verification tag
-  const now = new Date();
-  const lastVerified = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(now);
+  // Status label - objective data state
+  const statusLabel = 'Specs Snapshot';
 
-  // High-intent BOFU FAQs mapping directly to developer credit card decisions
-  const faqs = [
-    {
-      question: `Can I migrate from ${toolB.name} to ${toolA.name}?`,
-      answer: `Yes. Both tools operate within the ${category} domain, and migrating typically requires swapping API keys or workspace configurations with minimal downtime.`,
-    },
-    {
-      question: `Which tool is cheaper for solo developers?`,
-      answer: `${toolA.name} starts at ${toolA.startingPrice} (${toolA.billingModel}), while ${toolB.name} starts at ${toolB.startingPrice} (${toolB.billingModel}). Compare their free quotas above to minimize out-of-pocket costs.`,
-    },
-    {
-      question: `Do either of these tools train on your data?`,
-      answer: `Both platforms adhere to standard enterprise data governance; paid commercial tiers and API connections generally do not train on customer inputs, while free consumer tiers may require manual opt-out in settings.`,
-    },
-    {
-      question: `Can I use ${toolA.name} and ${toolB.name} together in the same workflow?`,
-      answer: `Yes. Many engineering teams leverage both side-by-side (e.g., using one for rapid exploratory ideation and the other for production-grade execution or self-hosted deployment).`,
-    },
-  ];
+  // Strictly check for verified_faqs array. If absent or empty, verifiedFaqs remains empty.
+  const rawFaqs =
+    options?.verifiedFaqs ||
+    toolARaw.verified_faqs ||
+    toolBRaw.verified_faqs ||
+    [];
+
+  const verifiedFaqs = Array.isArray(rawFaqs)
+    ? rawFaqs.filter((f: any) => f && f.question && f.answer)
+    : [];
 
   return {
     toolA,
     toolB,
     category,
-    lastVerified,
-    faqs,
+    statusLabel,
+    verifiedFaqs,
   };
 }
 

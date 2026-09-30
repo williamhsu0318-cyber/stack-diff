@@ -47,11 +47,12 @@ const {
 
 // Build structured BOFU comparison data
 const comparisonData: ComparisonData = buildComparisonData(toolA, toolB, category);
-const { toolA: specA, toolB: specB, lastVerified, faqs } = comparisonData;
+const { toolA: specA, toolB: specB, statusLabel, verifiedFaqs } = comparisonData;
+const hasVerifiedFaqs = verifiedFaqs && verifiedFaqs.length > 0;
 
 const categoryAnchor = category.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 const canonicalUrl = `https://getstackdiff.com/${baseRoute}/${specA.slug}-vs-${specB.slug}`;
-const pageTitle = `${specA.name} vs ${specB.name} (2026): Specs, Pricing & BOFU Diff | StackDiff`;
+const pageTitle = `${specA.name} vs ${specB.name}: Specs, Pricing & BOFU Diff | StackDiff`;
 const pageDescription = `Direct specification and developer pricing comparison between ${specA.name} and ${specB.name}. Free tier, BYOK support, open source status, and pricing gotchas compared.`;
 
 // Internal Linking Mesh: Related comparisons for Tool A and Tool B
@@ -96,84 +97,89 @@ for (const sib of allCategoryTools) {
 const numericPriceA = specA.startingPrice.replace(/[^0-9.]/g, '') || '0';
 const numericPriceB = specB.startingPrice.replace(/[^0-9.]/g, '') || '0';
 
+const jsonLdGraph: any[] = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://getstackdiff.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Comparisons',
+        item: 'https://getstackdiff.com/#comparisons',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: category,
+        item: `https://getstackdiff.com/#category-${categoryAnchor}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
+        name: `${specA.name} vs ${specB.name}`,
+        item: canonicalUrl,
+      },
+    ],
+  },
+  {
+    '@type': 'Product',
+    name: specA.name,
+    description: `Direct specification and developer pricing comparison for ${specA.name}.`,
+    offers: {
+      '@type': 'Offer',
+      price: numericPriceA,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: specA.affiliateUrl,
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      reviewCount: '128',
+    },
+  },
+  {
+    '@type': 'Product',
+    name: specB.name,
+    description: `Direct specification and developer pricing comparison for ${specB.name}.`,
+    offers: {
+      '@type': 'Offer',
+      price: numericPriceB,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: specB.affiliateUrl,
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.7',
+      reviewCount: '114',
+    },
+  },
+];
+
+if (hasVerifiedFaqs) {
+  jsonLdGraph.push({
+    '@type': 'FAQPage',
+    mainEntity: verifiedFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  });
+}
+
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@type': 'BreadcrumbList',
-      'itemListElement': [
-        {
-          '@type': 'ListItem',
-          'position': 1,
-          'name': 'Home',
-          'item': 'https://getstackdiff.com',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 2,
-          'name': 'Comparisons',
-          'item': 'https://getstackdiff.com/#comparisons',
-        },
-        {
-          '@type': 'ListItem',
-          'position': 3,
-          'name': category,
-          'item': `https://getstackdiff.com/#category-${categoryAnchor}`,
-        },
-        {
-          '@type': 'ListItem',
-          'position': 4,
-          'name': `${specA.name} vs ${specB.name}`,
-          'item': canonicalUrl,
-        },
-      ],
-    },
-    {
-      '@type': 'Product',
-      'name': specA.name,
-      'description': `Direct specification and developer pricing comparison for ${specA.name}.`,
-      'offers': {
-        '@type': 'Offer',
-        'price': numericPriceA,
-        'priceCurrency': 'USD',
-        'availability': 'https://schema.org/InStock',
-        'url': specA.affiliateUrl,
-      },
-      'aggregateRating': {
-        '@type': 'AggregateRating',
-        'ratingValue': '4.8',
-        'reviewCount': '128',
-      },
-    },
-    {
-      '@type': 'Product',
-      'name': specB.name,
-      'description': `Direct specification and developer pricing comparison for ${specB.name}.`,
-      'offers': {
-        '@type': 'Offer',
-        'price': numericPriceB,
-        'priceCurrency': 'USD',
-        'availability': 'https://schema.org/InStock',
-        'url': specB.affiliateUrl,
-      },
-      'aggregateRating': {
-        '@type': 'AggregateRating',
-        'ratingValue': '4.7',
-        'reviewCount': '114',
-      },
-    },
-    {
-      '@type': 'FAQPage',
-      'mainEntity': faqs.map((faq) => ({
-        '@type': 'Question',
-        'name': faq.question,
-        'acceptedAnswer': {
-          '@type': 'Answer',
-          'text': faq.answer,
-        },
-      })),
-    },
-  ],
+  '@graph': jsonLdGraph,
 };
 ---
 
@@ -203,11 +209,11 @@ const jsonLd = {
           {specA.name} <span class="text-zinc-500 font-light px-1 text-xl sm:text-2xl md:text-3xl">vs</span> {specB.name}
         </h1>
 
-        <!-- Freshness Badge (Verified for Current Month Year) -->
-        <div class="shrink-0">
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium bg-emerald-950/40 text-emerald-400 border border-emerald-800/60 shadow-sm">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span>Verified for {lastVerified}</span>
+        <!-- Objective Data Status -->
+        <div class="shrink-0 flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-medium bg-zinc-900 text-zinc-400 border border-zinc-800 shadow-sm">
+            <span class="w-1.5 h-1.5 rounded-full bg-zinc-500"></span>
+            <span>{statusLabel}</span>
           </span>
         </div>
       </div>
@@ -243,12 +249,21 @@ const jsonLd = {
                 </div>
               </div>
 
-              <!-- Starting Price Pill -->
-              <div class="text-right shrink-0">
+              <!-- Starting Price Pill & Official Pricing Link -->
+              <div class="text-right shrink-0 flex flex-col items-end">
                 <div class="text-base sm:text-lg font-bold font-mono text-white tracking-tight">
                   {specA.startingPrice}
                 </div>
-                <div class="text-[10px] font-mono text-zinc-400">Starting Price</div>
+                <div class="text-[10px] font-mono text-zinc-400 mb-1.5">Starting Price</div>
+                <a
+                  href={specA.officialPricingUrl}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  class="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-colors"
+                >
+                  <span>Official Pricing</span>
+                  <span>↗</span>
+                </a>
               </div>
             </div>
 
@@ -300,12 +315,21 @@ const jsonLd = {
                 </div>
               </div>
 
-              <!-- Starting Price Pill -->
-              <div class="text-right shrink-0">
+              <!-- Starting Price Pill & Official Pricing Link -->
+              <div class="text-right shrink-0 flex flex-col items-end">
                 <div class="text-base sm:text-lg font-bold font-mono text-white tracking-tight">
                   {specB.startingPrice}
                 </div>
-                <div class="text-[10px] font-mono text-zinc-400">Starting Price</div>
+                <div class="text-[10px] font-mono text-zinc-400 mb-1.5">Starting Price</div>
+                <a
+                  href={specB.officialPricingUrl}
+                  target="_blank"
+                  rel="nofollow noopener noreferrer"
+                  class="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-white px-2 py-0.5 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 hover:border-zinc-700 transition-colors"
+                >
+                  <span>Official Pricing</span>
+                  <span>↗</span>
+                </a>
               </div>
             </div>
 
@@ -398,15 +422,35 @@ const jsonLd = {
                 </td>
                 <td class="p-3.5 sm:p-4 border-l border-zinc-800 align-top">
                   <span class="font-bold font-mono text-white text-sm block mb-1">{specA.startingPrice}</span>
-                  <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-850 text-zinc-400 border border-zinc-750">
+                  <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-850 text-zinc-400 border border-zinc-750 mb-1.5">
                     {specA.billingModel}
                   </span>
+                  <div>
+                    <a
+                      href={specA.officialPricingUrl}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      class="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-2 decoration-zinc-700 hover:decoration-zinc-400 transition-colors"
+                    >
+                      Official Pricing ↗
+                    </a>
+                  </div>
                 </td>
                 <td class="p-3.5 sm:p-4 pr-4 border-l border-zinc-800 align-top">
                   <span class="font-bold font-mono text-white text-sm block mb-1">{specB.startingPrice}</span>
-                  <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-850 text-zinc-400 border border-zinc-750">
+                  <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-zinc-850 text-zinc-400 border border-zinc-750 mb-1.5">
                     {specB.billingModel}
                   </span>
+                  <div>
+                    <a
+                      href={specB.officialPricingUrl}
+                      target="_blank"
+                      rel="nofollow noopener noreferrer"
+                      class="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-400 hover:text-zinc-200 underline underline-offset-2 decoration-zinc-700 hover:decoration-zinc-400 transition-colors"
+                    >
+                      Official Pricing ↗
+                    </a>
+                  </div>
                 </td>
               </tr>
 
@@ -614,34 +658,36 @@ const jsonLd = {
     </section>
 
     <!-- ===================================================================== -->
-    <!-- BLOCK 5: Minimal FAQ (Collapsible / Clean) -->
+    <!-- BLOCK 5: Verified FAQ (Strict Conditional Rendering) -->
     <!-- ===================================================================== -->
-    <section class="mb-14" aria-label="Frequently Asked Questions">
-      <div class="mb-4">
-        <h2 class="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider flex items-center gap-2">
-          <span>Frequently Asked Questions</span>
-        </h2>
-        <p class="text-[11px] font-mono text-zinc-500 mt-1">
-          Concise, high-intent technical answers for prospective buyers.
-        </p>
-      </div>
+    {hasVerifiedFaqs && (
+      <section class="mb-14" aria-label="Frequently Asked Questions">
+        <div class="mb-4">
+          <h2 class="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider flex items-center gap-2">
+            <span>Frequently Asked Questions</span>
+          </h2>
+          <p class="text-[11px] font-mono text-zinc-500 mt-1">
+            Verified technical answers and integration notes.
+          </p>
+        </div>
 
-      <div class="border-t border-zinc-800 divide-y divide-zinc-800/80">
-        {faqs.map((faq, idx) => (
-          <details class="group py-3.5 cursor-pointer" open={idx === 0}>
-            <summary class="flex items-center justify-between text-xs sm:text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors list-none select-none">
-              <span>{faq.question}</span>
-              <span class="text-zinc-500 group-open:rotate-180 transition-transform font-mono text-xs ml-2 shrink-0">
-                &darr;
-              </span>
-            </summary>
-            <div class="pt-2.5 text-xs text-zinc-400 leading-relaxed pr-6">
-              {faq.answer}
-            </div>
-          </details>
-        ))}
-      </div>
-    </section>
+        <div class="border-t border-zinc-800 divide-y divide-zinc-800/80">
+          {verifiedFaqs.map((faq, idx) => (
+            <details class="group py-3.5 cursor-pointer" open={idx === 0}>
+              <summary class="flex items-center justify-between text-xs sm:text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors list-none select-none">
+                <span>{faq.question}</span>
+                <span class="text-zinc-500 group-open:rotate-180 transition-transform font-mono text-xs ml-2 shrink-0">
+                  &darr;
+                </span>
+              </summary>
+              <div class="pt-2.5 text-xs text-zinc-400 leading-relaxed pr-6">
+                {faq.answer}
+              </div>
+            </details>
+          ))}
+        </div>
+      </section>
+    )}
 
     <!-- Outbound Final Action Bar -->
     <section class="mb-14 p-6 sm:p-8 rounded-xl bg-[#121215] border border-zinc-800 text-center shadow-sm">

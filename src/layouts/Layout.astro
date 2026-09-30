@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import toolsData from '../data/tools.json';
 
 interface Props {
   title: string;
@@ -18,6 +19,8 @@ const {
   canonicalUrl = Astro.url.href,
   jsonLd,
 } = Astro.props;
+
+const toolsCount = toolsData.length;
 ---
 
 <!doctype html>
@@ -99,7 +102,7 @@ const {
           <span class="text-zinc-800">|</span>
           <div class="flex items-center gap-1.5 text-[11px] text-zinc-400 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded font-mono">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span>31 Tools Indexed</span>
+            <span>{toolsCount} Tools Indexed</span>
           </div>
         </nav>
 
@@ -136,7 +139,7 @@ const {
             <span>Objective side-by-side AI tool specifications.</span>
           </div>
           <div class="flex items-center gap-4 font-mono text-[11px] text-zinc-500">
-            <span>Updated for 2026</span>
+            <span>Data Reference</span>
             <span>•</span>
             <a href="/#categories" class="hover:text-zinc-300 transition-colors">All Taxonomies</a>
             <span>•</span>
