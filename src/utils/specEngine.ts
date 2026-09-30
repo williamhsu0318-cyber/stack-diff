@@ -6,6 +6,9 @@
  * ============================================================================
  */
 
+import type { ToolData } from '../types/tool';
+export type { ToolData };
+
 export interface ToolSpec {
   name: string;
   slug: string;
@@ -14,6 +17,12 @@ export interface ToolSpec {
   billingModel: string;
   affiliateUrl: string;
   officialPricingUrl: string;
+  sourceUrl: string;
+  lastCheckedAt: string;
+  tiersSummary?: string;
+  currentModels?: string[];
+  telemetryPrivacy?: boolean;
+  offlineSupport?: boolean;
   idealForBullets: string[];
   specs: {
     freeTier: string;
@@ -31,30 +40,31 @@ export interface ComparisonData {
   toolB: ToolSpec;
   category: string;
   statusLabel: string;
-  verifiedFaqs: { question: string; answer: string }[];
+  lastCheckedDate: string;
 }
+
 
 // Curated spec catalog for known tools in StackDiff ecosystem
 const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
   cursor: {
     billingModel: 'Seat-based (Monthly/Annual)',
-    officialPricingUrl: 'https://cursor.com/pricing',
+    officialPricingUrl: 'https://docs.cursor.com/getting-started/pricing',
     idealForBullets: [
       'You require autonomous multi-file Composer edits with instant accept/reject diffs',
       'You need complete VS Code extension, keybinding, and settings parity with zero friction',
     ],
     specs: {
-      freeTier: 'Hobby plan (2-week Pro trial + 50 slow requests/mo)',
+      freeTier: 'Hobby plan (14-day Pro trial + 50 slow requests/mo)',
       byokSupport: true,
       openSource: false,
-      contextOrModel: 'Claude 3.5 Sonnet, GPT-4o, o1-preview, DeepSeek-V3',
+      contextOrModel: 'Claude 3.5/3.7 Sonnet, GPT-4o, o1, Grok-2, Composer 2.5, DeepSeek-V3',
       teamCollab: true,
       apiAvailable: false,
     },
     gotchas: [
-      'Advertised 500 fast requests/mo can deplete in under 3 weeks during heavy agentic Composer refactors.',
-      'Usage-based charges ($0.10/req) apply once fast quota expires unless explicitly switched to the slow queue.',
-      'Requires running a dedicated standalone desktop IDE rather than a lightweight plugin.',
+      'Pro plan includes 500 fast premium requests/mo; subsequent requests enter pool or incur optional $0.10/req usage fees.',
+      'Requires running a standalone VS Code fork rather than a standard editor extension.',
+      'BYOK usage bypasses fast request limits but incurs direct API billing from your model provider.',
     ],
   },
   'github-copilot': {
@@ -65,17 +75,17 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       'You want unobtrusive inline ghost-text completions embedded in JetBrains, VS Code, or Neovim',
     ],
     specs: {
-      freeTier: 'Free for verified OSS maintainers & students; 30-day individual trial',
+      freeTier: 'Copilot Free: 2,000 completions and 50 chat messages/mo; 30-day individual trial',
       byokSupport: false,
       openSource: false,
-      contextOrModel: 'GPT-4o, Claude 3.5 Sonnet (Workspace), OpenAI o1',
+      contextOrModel: 'Claude 3.5/3.7 Sonnet, GPT-4o, OpenAI o1, Gemini 2.0 Flash',
       teamCollab: true,
       apiAvailable: true,
     },
     gotchas: [
-      'No BYOK (Bring Your Own Key) support; strictly locked into GitHub-managed hosted models.',
-      'Multi-file architectural refactoring capabilities significantly trail dedicated agentic IDEs.',
-      'Individual plan lacks organization audit logs and SAML SSO compliance.',
+      'Zero BYOK support; developers cannot connect external private API keys or unvetted local weights.',
+      'Multi-file whole-codebase autonomous refactoring is significantly less integrated than dedicated agentic IDEs like Cursor.',
+      'Copilot Free tier is limited to 50 chat prompts/mo and only operates within VS Code.',
     ],
   },
   windsurf: {
@@ -170,14 +180,14 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
       freeTier: 'Free tier with GPT-4o mini and dynamic GPT-4o rate limits',
       byokSupport: false,
       openSource: false,
-      contextOrModel: 'GPT-4o (128k), o1 (200k), o3-mini',
+      contextOrModel: 'GPT-4o, GPT-4o mini, OpenAI o1, OpenAI o3-mini, Sora Video',
       teamCollab: true,
       apiAvailable: true,
     },
     gotchas: [
-      'ChatGPT Plus subscription does NOT include API access or API platform credits.',
-      'Hourly message caps apply to flagship reasoning models (o1/o3-mini) even on paid Plus tiers.',
-      'Individual consumer accounts default to training data inclusion unless manually opted out in privacy settings.',
+      'Plus ($20/mo) has dynamic usage caps on OpenAI o1 reasoning model; heavy researchers require Pro ($200/mo) for unlimited reasoning.',
+      'Web client and mobile app do not support BYOK (must use separate OpenAI Developer Platform API billing).',
+      'Team plan requires minimum 2 seats billed annually or monthly.',
     ],
   },
   'claude-3-5-sonnet': {
@@ -189,15 +199,15 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
     ],
     specs: {
       freeTier: 'Free access with dynamic demand-based message limits',
-      byokSupport: false,
+      byokSupport: true,
       openSource: false,
-      contextOrModel: 'Claude 3.5 Sonnet, Claude 3.5 Haiku, Claude 3 Opus (200k context)',
+      contextOrModel: 'Claude 3.5/3.7 Sonnet, Claude Sonnet 5.5, Claude 3.5 Haiku, Claude 3 Opus',
       teamCollab: true,
       apiAvailable: true,
     },
     gotchas: [
       'Message limits reset every 5 hours and can be exhausted within 20–30 long coding prompts.',
-      'Claude Pro subscription does NOT grant Anthropic Developer Console API credits.',
+      'Does not offer native sandboxed Python terminal execution or image generation in the standard chat UI.',
       'Team plan requires a mandatory 5-user minimum commitment ($125/mo).',
     ],
   },
@@ -413,14 +423,55 @@ const CURATED_SPECS: Record<string, Partial<ToolSpec>> = {
 /**
  * Normalizes raw ToolItem into a strict ToolSpec structure.
  */
+/**
+ * Normalizes raw ToolItem into a strict ToolSpec structure.
+ * Supports both canonical ToolData schema and legacy flat attributes.
+ */
 export function normalizeToolSpec(raw: any): ToolSpec {
   const id = raw.id || raw.slug || '';
   const curated = CURATED_SPECS[id] || {};
 
-  // Default inference based on raw fields
-  const startingPrice = raw.starting_price || curated.startingPrice || 'Contact sales';
-  const billingModel = curated.billingModel || raw.pricing_model || 'Subscription';
+  const pricing = raw.pricing || {};
+  const techSpecs = raw.technical_specs || {};
+
+  // Pricing & Billing
+  const startingPrice =
+    pricing.starting_price ||
+    raw.starting_price ||
+    curated.startingPrice ||
+    'Contact sales';
+
+  const billingModel =
+    pricing.billing_model ||
+    curated.billingModel ||
+    raw.pricing_model ||
+    'Subscription';
+
+  const tiersSummary =
+    pricing.tiers_summary ||
+    (curated as any).tiersSummary;
+
   const affiliateUrl = raw.affiliate_url || raw.url || '#';
+
+  // URLs & Provenance
+  const officialPricingUrl =
+    raw.official_pricing_url ||
+    raw.pricing_url ||
+    curated.officialPricingUrl ||
+    raw.official_url ||
+    raw.url ||
+    raw.affiliate_url ||
+    '#';
+
+  const sourceUrl =
+    raw.source_url ||
+    (curated as any).sourceUrl ||
+    officialPricingUrl;
+
+  const lastCheckedAt =
+    raw.last_checked_at ||
+    (curated as any).lastCheckedAt ||
+    '2026-09-30';
 
   // Killer differentiators: prefer explicit ideal_for_bullets, then curated bullets, then strengths/best_for
   const idealForBullets: string[] = raw.ideal_for_bullets || curated.idealForBullets || [
@@ -428,29 +479,58 @@ export function normalizeToolSpec(raw: any): ToolSpec {
     (raw.strengths && raw.strengths[0]) || (raw.pros && raw.pros[0]) || 'Offers verified commercial reliability and active community support',
   ];
 
-  // Specs
-  const freeTier = raw.free_tier_details || curated.specs?.freeTier || (raw.free_tier ? 'Free tier / trial available' : 'Paid only (No permanent free tier)');
-  const byokSupport = raw.byok_support ?? curated.specs?.byokSupport ?? (raw.category === 'Coding AI' || raw.category === 'Workflow AI' || id.includes('deepseek'));
-  const openSource = raw.open_source ?? curated.specs?.openSource ?? (id.includes('flux') || id.includes('stable-diffusion') || id.includes('n8n') || id.includes('deepseek') || id.includes('whisper') || id.includes('edge-tts'));
-  const contextOrModel = raw.context_or_model || curated.specs?.contextOrModel || (raw.key_capabilities && raw.key_capabilities[0]) || (raw.key_features && raw.key_features[0]) || 'Frontier AI orchestration';
+  // Technical Specs
+  const currentModels: string[] | undefined =
+    techSpecs.current_models ||
+    (curated as any).currentModels;
+
+  const telemetryPrivacy: boolean | undefined =
+    techSpecs.telemetry_privacy ??
+    (curated as any).telemetryPrivacy;
+
+  const offlineSupport: boolean | undefined =
+    techSpecs.offline_support ??
+    (curated as any).offlineSupport;
+
+  const freeTier =
+    pricing.free_tier_details ||
+    raw.free_tier_details ||
+    curated.specs?.freeTier ||
+    (raw.free_tier ? 'Free tier / trial available' : 'Paid only (No permanent free tier)');
+
+  const byokSupport =
+    techSpecs.byok_support ??
+    raw.byok_support ??
+    curated.specs?.byokSupport ??
+    (raw.category === 'Coding AI' || raw.category === 'Workflow AI' || id.includes('deepseek'));
+
+  const openSource =
+    techSpecs.open_source ??
+    raw.open_source ??
+    curated.specs?.openSource ??
+    (id.includes('flux') || id.includes('stable-diffusion') || id.includes('n8n') || id.includes('deepseek') || id.includes('whisper') || id.includes('edge-tts'));
+
+  const contextOrModel =
+    (currentModels && currentModels.length > 0 ? currentModels.slice(0, 3).join(', ') : null) ||
+    raw.context_or_model ||
+    curated.specs?.contextOrModel ||
+    (raw.key_capabilities && raw.key_capabilities[0]) ||
+    (raw.key_features && raw.key_features[0]) ||
+    'Frontier AI orchestration';
+
   const teamCollab = raw.team_collab ?? curated.specs?.teamCollab ?? true;
   const apiAvailable = raw.api_available ?? curated.specs?.apiAvailable ?? (raw.category !== 'Music AI' || id.includes('suno'));
 
-  // Gotchas: prefer explicit pricing_gotchas, then curated gotchas, fallback to trade_offs/cons
+  // Gotchas: prefer explicit gotchas, then raw pricing_gotchas, then curated gotchas, fallback to trade_offs/cons
   const rawGotchas = (raw.trade_offs || raw.cons || []).slice(0, 2);
-  const gotchas: string[] = raw.pricing_gotchas || curated.gotchas || [
-    ...rawGotchas,
-    `Advertised ${startingPrice} base pricing may scale upward depending on team seat tiers and heavy monthly usage.`,
-  ];
-
-  // Pricing Official URL
-  const officialPricingUrl =
-    raw.pricing_url ||
-    curated.officialPricingUrl ||
-    raw.official_url ||
-    raw.url ||
-    raw.affiliate_url ||
-    '#';
+  const gotchas: string[] =
+    raw.gotchas ||
+    raw.pricing_gotchas ||
+    curated.gotchas ||
+    [
+      ...rawGotchas,
+      `Advertised ${startingPrice} base pricing may scale upward depending on team seat tiers and heavy monthly usage.`,
+    ];
 
   return {
     name: raw.name || id,
@@ -460,6 +540,12 @@ export function normalizeToolSpec(raw: any): ToolSpec {
     billingModel,
     affiliateUrl,
     officialPricingUrl,
+    sourceUrl,
+    lastCheckedAt,
+    tiersSummary,
+    currentModels,
+    telemetryPrivacy,
+    offlineSupport,
     idealForBullets: idealForBullets.slice(0, 2),
     specs: {
       freeTier,
@@ -474,39 +560,26 @@ export function normalizeToolSpec(raw: any): ToolSpec {
 }
 
 /**
- * Builds standard ComparisonData with strict verified FAQ support.
- * All fake/hallucinated boilerplate FAQs are deleted.
- * Only verified FAQs from explicit data are passed; otherwise empty.
+ * Builds standard ComparisonData.
  */
 export function buildComparisonData(
   toolARaw: any,
   toolBRaw: any,
-  category: string,
-  options?: { verifiedFaqs?: { question: string; answer: string }[] }
+  category: string
 ): ComparisonData {
   const toolA = normalizeToolSpec(toolARaw);
   const toolB = normalizeToolSpec(toolBRaw);
 
   // Status label - objective data state
   const statusLabel = 'Specs Snapshot';
-
-  // Strictly check for verified_faqs array. If absent or empty, verifiedFaqs remains empty.
-  const rawFaqs =
-    options?.verifiedFaqs ||
-    toolARaw.verified_faqs ||
-    toolBRaw.verified_faqs ||
-    [];
-
-  const verifiedFaqs = Array.isArray(rawFaqs)
-    ? rawFaqs.filter((f: any) => f && f.question && f.answer)
-    : [];
+  const lastCheckedDate = toolA.lastCheckedAt || toolB.lastCheckedAt || '2026-09-30';
 
   return {
     toolA,
     toolB,
     category,
     statusLabel,
-    verifiedFaqs,
+    lastCheckedDate,
   };
 }
 

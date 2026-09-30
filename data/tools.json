@@ -5,7 +5,7 @@
     "slug": "cursor",
     "category": "Coding AI",
     "tagline": "AI-first code editor fork of VS Code engineered for whole-codebase indexing and autonomous multi-file editing",
-    "pricing_model": "Freemium",
+    "pricing_model": "Seat-based",
     "starting_price": "$20/mo",
     "free_tier": true,
     "best_for": "Software engineers and indie developers wanting autonomous multi-file generation and instant diff reviews",
@@ -54,7 +54,38 @@
       "Requires running a dedicated standalone IDE application rather than an extension"
     ],
     "verdict_context": "The premier choice for developers seeking an agentic, multi-file IDE with seamless VS Code compatibility",
-    "url": "https://cursor.com"
+    "url": "https://cursor.com",
+    "official_website": "https://cursor.com",
+    "official_pricing_url": "https://docs.cursor.com/getting-started/pricing",
+    "source_url": "https://docs.cursor.com/getting-started/pricing",
+    "last_checked_at": "2026-09-30",
+    "pricing": {
+      "starting_price": "$20/mo",
+      "billing_model": "Seat-based",
+      "free_tier_details": "Hobby plan: 14-day Pro trial, 50 slow premium requests/mo, 200 cursor-small requests",
+      "tiers_summary": "Hobby Free / Pro $20 / Pro+ $60 / Ultra $200 / Usage Pools"
+    },
+    "technical_specs": {
+      "current_models": [
+        "Claude 3.5 Sonnet",
+        "Claude 3.7 Sonnet",
+        "GPT-4o",
+        "OpenAI o1",
+        "Grok-2",
+        "Cursor Composer 2.5",
+        "DeepSeek-V3"
+      ],
+      "context_window": "200K",
+      "byok_support": true,
+      "open_source": false,
+      "telemetry_privacy": true,
+      "offline_support": false
+    },
+    "gotchas": [
+      "Pro plan includes 500 fast premium requests/mo; subsequent requests enter pool or incur optional $0.10/req usage fees.",
+      "Requires running a standalone VS Code fork rather than a standard editor extension.",
+      "BYOK usage bypasses fast request limits but incurs direct API billing from your model provider."
+    ]
   },
   {
     "id": "github-copilot",
@@ -62,7 +93,7 @@
     "slug": "github-copilot",
     "category": "Coding AI",
     "tagline": "The enterprise-standard AI pair programmer seamlessly embedded across all major development IDEs",
-    "pricing_model": "Paid Only",
+    "pricing_model": "Seat-based",
     "starting_price": "$10/mo",
     "free_tier": true,
     "best_for": "Enterprise developers, engineering teams, and JetBrains/Visual Studio users wanting integrated completions",
@@ -115,7 +146,36 @@
       "No permanent free tier for individual standard users"
     ],
     "verdict_context": "The industry standard for corporate engineering teams requiring enterprise security and broad IDE support",
-    "url": "https://github.com/features/copilot"
+    "url": "https://github.com/features/copilot",
+    "official_website": "https://github.com/features/copilot",
+    "official_pricing_url": "https://github.com/features/copilot#pricing",
+    "source_url": "https://github.com/features/copilot#pricing",
+    "last_checked_at": "2026-09-30",
+    "pricing": {
+      "starting_price": "$10/mo",
+      "billing_model": "Seat-based",
+      "free_tier_details": "Copilot Free: 2,000 code completions and 50 chat messages/mo in VS Code",
+      "tiers_summary": "Free (Limited) / Individual $10/mo ($100/yr) / Business $19/user/mo / Enterprise $39/user/mo"
+    },
+    "technical_specs": {
+      "current_models": [
+        "Claude 3.5 Sonnet",
+        "Claude 3.7 Sonnet",
+        "GPT-4o",
+        "OpenAI o1",
+        "Gemini 2.0 Flash"
+      ],
+      "context_window": "128K",
+      "byok_support": false,
+      "open_source": false,
+      "telemetry_privacy": true,
+      "offline_support": false
+    },
+    "gotchas": [
+      "Zero BYOK support; developers cannot connect external private API keys or unvetted local weights.",
+      "Multi-file whole-codebase autonomous refactoring is significantly less integrated than dedicated agentic IDEs like Cursor.",
+      "Copilot Free tier is limited to 50 chat prompts/mo and only operates within VS Code."
+    ]
   },
   {
     "id": "supermaven",
@@ -582,7 +642,7 @@
     "slug": "chatgpt",
     "category": "LLM",
     "tagline": "OpenAI's flagship conversational AI assistant featuring advanced multi-step reasoning and multimodal tools",
-    "pricing_model": "Freemium",
+    "pricing_model": "Seat-based",
     "starting_price": "$20/mo",
     "free_tier": true,
     "best_for": "Knowledge workers, software developers, and general consumers needing an all-round versatile AI assistant",
@@ -637,7 +697,36 @@
       "Strict automated guardrails can occasionally refuse benign technical prompts"
     ],
     "verdict_context": "The benchmark all-in-one assistant for general productivity, multimodal voice, and frontier reasoning",
-    "url": "https://chat.openai.com"
+    "url": "https://chat.openai.com",
+    "official_website": "https://chatgpt.com",
+    "official_pricing_url": "https://openai.com/chatgpt/pricing",
+    "source_url": "https://openai.com/chatgpt/pricing",
+    "last_checked_at": "2026-09-30",
+    "pricing": {
+      "starting_price": "$20/mo",
+      "billing_model": "Seat-based",
+      "free_tier_details": "Free tier includes GPT-4o mini with limited access to GPT-4o and web browsing",
+      "tiers_summary": "Free / Plus $20/mo / Pro $200/mo / Team $25/user/mo (min 2 seats) / Enterprise"
+    },
+    "technical_specs": {
+      "current_models": [
+        "GPT-4o",
+        "GPT-4o mini",
+        "OpenAI o1",
+        "OpenAI o3-mini",
+        "Sora Video (Pro)"
+      ],
+      "context_window": "128K",
+      "byok_support": false,
+      "open_source": false,
+      "telemetry_privacy": true,
+      "offline_support": false
+    },
+    "gotchas": [
+      "Plus ($20/mo) has dynamic usage caps on OpenAI o1 reasoning model; heavy researchers require Pro ($200/mo) for unlimited reasoning.",
+      "Web client and mobile app do not support BYOK (must use separate OpenAI Developer Platform API billing).",
+      "Team plan requires minimum 2 seats billed annually or monthly."
+    ]
   },
   {
     "id": "claude-3-5-sonnet",
@@ -645,7 +734,7 @@
     "slug": "claude-3-5-sonnet",
     "category": "LLM",
     "tagline": "Anthropic's frontier AI model renowned for superior code generation, nuanced reasoning, and Artifacts workspace",
-    "pricing_model": "Freemium",
+    "pricing_model": "Seat-based",
     "starting_price": "$20/mo",
     "free_tier": true,
     "best_for": "Software engineers, analysts, and writers demanding natural prose and elite coding benchmarks",
@@ -700,7 +789,36 @@
       "Lacks native image generation and sandboxed Python code execution in UI"
     ],
     "verdict_context": "The reigning champion for coding accuracy, complex reasoning, and natural literary writing tone",
-    "url": "https://claude.ai"
+    "url": "https://claude.ai",
+    "official_website": "https://claude.ai",
+    "official_pricing_url": "https://www.anthropic.com/pricing",
+    "source_url": "https://www.anthropic.com/pricing",
+    "last_checked_at": "2026-09-30",
+    "pricing": {
+      "starting_price": "$20/mo",
+      "billing_model": "Seat-based",
+      "free_tier_details": "Daily free message allowance subject to dynamic server capacity limits",
+      "tiers_summary": "Free / Pro $20/mo / Team $25/user/mo (min 5 seats) / Enterprise"
+    },
+    "technical_specs": {
+      "current_models": [
+        "Claude 3.5 Sonnet",
+        "Claude 3.7 Sonnet",
+        "Claude Sonnet 5.5",
+        "Claude 3.5 Haiku",
+        "Claude 3 Opus"
+      ],
+      "context_window": "200K",
+      "byok_support": true,
+      "open_source": false,
+      "telemetry_privacy": true,
+      "offline_support": false
+    },
+    "gotchas": [
+      "Pro subscription enforces rolling 5-hour message limits that throttle dynamically during peak global usage.",
+      "Does not offer native sandboxed Python terminal execution or image generation in the standard chat UI.",
+      "Team plan requires a minimum commitment of 5 seats ($125/mo)."
+    ]
   },
   {
     "id": "deepseek",
